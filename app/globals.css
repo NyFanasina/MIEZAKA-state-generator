@@ -7,3 +7,7 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.floating-label {
+  @apply text-rose-600;
+}
