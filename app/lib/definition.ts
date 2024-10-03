@@ -5,11 +5,25 @@ export const SignInSchema = z.object({
   password: z.coerce.string().min(6),
 });
 
+export const SignUpSchema = z.object({
+  name: z.coerce.string(),
+  password: z.coerce.string(),
+  email: z.coerce.string().email(),
+});
+
 export type AuthState =
   | {
       error: {
-        email?: string[];
-        password?: string[];
+        name?: string;
+        code?: number;
+        email?: string | string[];
+        password?: string | string[];
+        message?: string;
       };
     }
   | undefined;
+
+export type AuthPayload = {
+  id: number;
+  admin: boolean;
+};

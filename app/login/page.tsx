@@ -3,8 +3,6 @@ import { RiUser3Line } from "react-icons/ri";
 import { Button, Checkbox, FloatingLabel, Label } from "flowbite-react";
 import { authenticate } from "@/app/lib/actions/auth";
 import { useFormState } from "react-dom";
-import { AuthState } from "../lib/definition";
-import clsx from "clsx";
 import { useFormStatus } from "react-dom";
 
 export default function Page() {
@@ -23,7 +21,7 @@ export default function Page() {
           <FloatingLabel
             color={!state?.error.email?.[0] ? "default" : "error"}
             variant="outlined"
-            helperText={showError(state, "email")}
+            helperText={state?.error.email?.[0]}
             label="Votre email"
             type="text"
             name="email"
@@ -31,7 +29,7 @@ export default function Page() {
           <FloatingLabel
             color={!state?.error.password?.[0] ? "default" : "error"}
             variant="outlined"
-            helperText={showError(state, "password")}
+            helperText={state?.error.password?.[0]}
             label="Mots de passe"
             type="password"
             name="password"
@@ -42,9 +40,7 @@ export default function Page() {
           <Label htmlFor="remember">Se souvenir de moi</Label>
         </div>
         <div className="flex flex-col gap-y-2">
-          <Button type="submit" disabled={pending}>
-            se connecter
-          </Button>
+          <Button type="submit">se connecter</Button>
           <Button type="button" color="light">
             Mots de passe oublié
           </Button>
@@ -52,8 +48,4 @@ export default function Page() {
       </form>
     </div>
   );
-}
-
-function showError(state: AuthState, field: "email" | "password"): string | undefined {
-  if (state?.error[field]) return state?.error[field]?.[0];
 }
