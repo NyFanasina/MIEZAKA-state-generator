@@ -11,3 +11,7 @@ body {
 .floating-label {
   @apply text-rose-600;
 }
+
+.navLink-active {
+  @apply border-s-4 border-s-rose-600 bg-slate-900;
+}
