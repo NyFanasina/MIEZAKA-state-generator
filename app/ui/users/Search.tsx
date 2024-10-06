@@ -1,4 +1,5 @@
 "use client";
+import { AiFillPlusCircle } from "react-icons/ai";
 import { SlMagnifier } from "react-icons/sl";
 import { Button, TextInput } from "flowbite-react";
 import { ChangeEvent } from "react";
@@ -19,13 +20,16 @@ export default function Search() {
   }
 
   return (
-    <form action="" className="flex py-5">
+    <div className="flex py-5">
       <div className="flex relative flex-1">
         <TextInput className="flex-1 pe-1" icon={SlMagnifier} placeholder="Tapez un nom ou un email" onChange={handleChange} />
       </div>
-      <Button>
-        <Link href="/users/new">Nouveau Utilisateur</Link>
-      </Button>
-    </form>
+      <Link href={"/users/new"}>
+        <Button>
+          Nouveau Utilisateur
+          <AiFillPlusCircle className="ms-1 h-5 w-5" />
+        </Button>
+      </Link>
+    </div>
   );
 }

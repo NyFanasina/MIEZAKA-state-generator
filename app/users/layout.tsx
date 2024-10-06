@@ -1,8 +1,8 @@
-import { Breadcrumb } from "flowbite-react";
-import { HiHome } from "react-icons/hi";
 import Sidenav from "../ui/users/Sidenav";
+import { PropsWithChildren } from "react";
+import BreadCrumbItemProvider from "../ui/BreadcrumbItemProvider";
 
-export default function layout({ children }) {
+export default function layout({ children }: PropsWithChildren) {
   return (
     <div className="h-screen">
       <div className="flex justify-between items-center bg-slate-900 text-white">
@@ -12,13 +12,7 @@ export default function layout({ children }) {
       <div className="flex h-full">
         <Sidenav />
         <main className="flex-1">
-          <Breadcrumb className="px-10 py-6 bg-slate-100">
-            <Breadcrumb.Item href="#" icon={HiHome}>
-              Home
-            </Breadcrumb.Item>
-            <Breadcrumb.Item href="#">Projects</Breadcrumb.Item>
-            <Breadcrumb.Item>Flowbite React</Breadcrumb.Item>
-          </Breadcrumb>
+          <BreadCrumbItemProvider />
           <div className="p-10 ">{children}</div>
         </main>
       </div>
