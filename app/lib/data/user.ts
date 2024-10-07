@@ -1,7 +1,6 @@
 "use server";
 import { prisma } from "@/prisma/client";
 import { formatDateToFr } from "../utils";
-import { number } from "zod";
 
 export async function fetchFilteredUsers(keyword = "") {
   try {

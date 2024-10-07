@@ -21,6 +21,11 @@ export async function createSession(user: User) {
   });
 }
 
+export async function getSession() {
+  const session = cookies().get(cookiesName)?.value ?? "";
+  return decryptJWT(session);
+}
+
 export async function updateSession() {
   const session = cookies().get(cookiesName)?.value ?? "";
   const payload = decryptJWT(session);
