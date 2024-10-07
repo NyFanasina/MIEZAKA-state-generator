@@ -24,7 +24,7 @@ export const metadata: Metadata = {
 
 export default function layout({ children }: PropsWithChildren) {
   return (
-    <div className="h-screen">
+    <div className="flex flex-col h-full">
       <div className="flex justify-between items-center bg-slate-900 text-white">
         <h1 className="text-3xl p-3">Miezaka EURL</h1>
         <AccountSetting />

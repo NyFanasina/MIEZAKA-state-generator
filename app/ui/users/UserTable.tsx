@@ -1,10 +1,6 @@
 import { Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow } from "flowbite-react";
 import { fetchFilteredUsers } from "@/app/lib/data/user";
-import { BsTrash3 } from "react-icons/bs";
-import { FiEdit } from "react-icons/fi";
-import { Button } from "flowbite-react";
-import Link from "next/link";
-import { deleteUser } from "@/app/lib/actions/userActions";
+import TableButton from "./TableButton";
 
 export default async function UserTable({ query }: { query: string }) {
   const users = await fetchFilteredUsers(query);
@@ -28,14 +24,7 @@ export default async function UserTable({ query }: { query: string }) {
             <TableCell>{user.admin}</TableCell>
             <TableCell>{user.created_at}</TableCell>
             <TableCell>
-              <form action={deleteUser.bind(null, user.id)} className="flex gap-x-2">
-                <Button color="light" href={`/users/${user.id}/edit`} as={Link}>
-                  <FiEdit />
-                </Button>
-                <Button type="submit" color="gray">
-                  <BsTrash3 />
-                </Button>
-              </form>
+              <TableButton userId={user.id} />
             </TableCell>
           </TableRow>
         </TableBody>
