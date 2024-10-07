@@ -9,8 +9,8 @@ export default function Page() {
   const { pending } = useFormStatus();
 
   return (
-    <div className="h-full flex flex-col justify-center items-center bg-slate-50">
-      <form action={action} className="flex max-w-md flex-col gap-4 min-w-[480px] bg-white shadow p-9 rounded-2xl border-2 border-blue-300">
+    <div className="h-full flex flex-col justify-center items-center bg-gray-50">
+      <form action={action} className="flex flex-col gap-4 max-w-md m-5 bg-white shadow p-5 rounded-2xl border">
         <div className="flex justify-center p-2">
           <RiUser3Line size={100} className="border rounded-full w-40 h-40 p-5" />
         </div>
@@ -40,7 +40,7 @@ export default function Page() {
             Mot de passe oublié
           </Button>
         </div>
-        <div className="border-b-4 mx-20  mt-4 border-gray-400"></div>
+        <div className="border-b-4 mx-20  border-gray-400"></div>
       </form>
     </div>
   );
