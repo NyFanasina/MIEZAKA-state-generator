@@ -4,6 +4,7 @@ import Sidenav from "@/app/ui/users/Sidenav";
 import { PropsWithChildren } from "react";
 import BreadCrumbItemProvider from "@/app/ui/BreadcrumbItemProvider";
 import "@/app/globals.css";
+import AccountSetting from "../ui/AccountSetting";
 
 const geistSans = localFont({
   src: "../fonts/GeistVF.woff",
@@ -23,30 +24,18 @@ export const metadata: Metadata = {
 
 export default function layout({ children }: PropsWithChildren) {
   return (
-    <html lang="fr">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <div className="h-screen">
-          <div className="flex justify-between items-center bg-slate-900 text-white">
-            <h1 className="text-3xl p-3">Miezaka EURL</h1>
-            <Setting />
-          </div>
-          <div className="flex h-full">
-            <Sidenav />
-            <main className="flex-1">
-              <BreadCrumbItemProvider />
-              <div className="p-10 ">{children}</div>
-            </main>
-          </div>
-        </div>
-      </body>
-    </html>
-  );
-}
-
-function Setting() {
-  return (
-    <div className="px-3">
-      <h3>Ny Fanasina</h3>
+    <div className="h-screen">
+      <div className="flex justify-between items-center bg-slate-900 text-white">
+        <h1 className="text-3xl p-3">Miezaka EURL</h1>
+        <AccountSetting />
+      </div>
+      <div className="flex h-full">
+        <Sidenav />
+        <main className="flex-1">
+          <BreadCrumbItemProvider />
+          <div className="p-10 ">{children}</div>
+        </main>
+      </div>
     </div>
   );
 }

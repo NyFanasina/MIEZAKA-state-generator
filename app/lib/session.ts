@@ -49,7 +49,6 @@ export async function generateJWT(payload: SessionPayload) {
 export async function decryptJWT(token: string) {
   try {
     const { payload } = await jose.jwtVerify(token, encodedSecretKey, { algorithms: ["HS256"] });
-    // console.log(payload);
     return payload;
   } catch (e) {
     console.log("Failed to verify session", e);

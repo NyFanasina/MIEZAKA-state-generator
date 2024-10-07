@@ -2,9 +2,9 @@
 
 import { AuthState, RegisterState, SignInSchema, SignUpSchema } from "@/app/lib/definition";
 import { prisma } from "@/prisma/client";
-import { redirect } from "next/navigation";
 import * as Session from "@/app/lib/session";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { redirect } from "next/navigation";
 const bcrypt = require("bcrypt");
 
 export async function authenticate(state: AuthState, formData: FormData) {
@@ -29,12 +29,12 @@ export async function authenticate(state: AuthState, formData: FormData) {
   const isConnected = await bcrypt.compare(password, user.password);
 
   if (isConnected) {
-    await Session.createSession(user);
+    const tt = await Session.createSession(user);
     redirect("/dashboard");
   }
 
   return {
-    message: "Veuillez réessayer, email ou mot de passe invalide :( .",
+    message: "Mot de passe invalide .",
   };
 }
 
@@ -73,4 +73,9 @@ export async function register(state: RegisterState, formData: FormData) {
         message: "Email déja pris, veuillez choisir un autre.",
       };
   }
+}
+
+export async function logOut() {
+  await Session.deleteSession();
+  redirect("/login");
 }

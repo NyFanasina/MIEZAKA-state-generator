@@ -18,10 +18,11 @@ export default async function (req: NextRequest) {
 
     // Redirect if user is not authenticated
     if (!session?.id && isProtectedRoute) {
+      console.log("ato");
       return NextResponse.redirect(new URL("/login", req.url));
     }
   }
-  return NextResponse.next();
+  // return NextResponse.next();
 }
 
 export const config = {
