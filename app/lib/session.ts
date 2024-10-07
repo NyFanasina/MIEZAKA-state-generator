@@ -14,7 +14,7 @@ export async function createSession(user: User) {
 
   cookies().set(cookiesName, session, {
     httpOnly: true,
-    secure: true,
+    secure: false,
     sameSite: "lax",
     path: "/",
     expires: new Date(Date.now() + 7 * 24 * 3600 * 1000),
