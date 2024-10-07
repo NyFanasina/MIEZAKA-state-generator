@@ -24,6 +24,7 @@ export async function updateUser(state: RegisterState, formData: FormData) {
     id: formData.get("id"),
     name: formData.get("name"),
     email: formData.get("email"),
+    admin: formData.get("admin"),
     password: formData.get("password"),
     photo: formData.get("photo"),
   });

@@ -43,6 +43,7 @@ export async function register(state: RegisterState, formData: FormData) {
     name: formData.get("name"),
     email: formData.get("email"),
     password: formData.get("password"),
+    admin: formData.get("admin"),
     photo: formData.get("photo"),
   });
 
