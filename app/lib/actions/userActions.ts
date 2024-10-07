@@ -1,10 +1,9 @@
 "use server";
 import { prisma } from "@/prisma/client";
 import { revalidatePath } from "next/cache";
-import { RegisterState, SignUpEditSchema, SignUpSchema } from "../definition";
+import { RegisterState, SignUpEditSchema } from "../definition";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { redirect } from "next/navigation";
-import { z } from "zod";
 const bcrypt = require("bcrypt");
 
 export async function deleteUser(id: number) {

@@ -1,5 +1,5 @@
-import Search from "../ui/users/Search";
-import UserTable from "../ui/users/UserTable";
+import Search from "@/app/ui/users/Search";
+import UserTable from "@/app/ui/users/UserTable";
 
 interface searchParamsProps {
   searchParams?: { search?: string };

@@ -1,9 +1,8 @@
 "use client";
 import { RiUser3Line } from "react-icons/ri";
-import { Button, Checkbox, FloatingLabel, Label } from "flowbite-react";
+import { Button, FloatingLabel } from "flowbite-react";
 import { authenticate } from "@/app/lib/actions/auth";
-import { useFormState } from "react-dom";
-import { useFormStatus } from "react-dom";
+import { useFormState, useFormStatus } from "react-dom";
 
 export default function Page() {
   const [state, action] = useFormState(authenticate, undefined);

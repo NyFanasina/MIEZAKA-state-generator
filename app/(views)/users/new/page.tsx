@@ -52,7 +52,7 @@ export default function Page({ user }: { user?: User }) {
         <FileInput id="file-upload-helper-text" helperText="SVG, PNG, JPG or GIF (MAX. 800x400px)." />
       </div>
       <div className="flex justify-end gap-2">
-        <Link href="/user?s">
+        <Link href="/users">
           <Button color="light">Annuler</Button>
         </Link>
         <Button color="dark" type="submit">

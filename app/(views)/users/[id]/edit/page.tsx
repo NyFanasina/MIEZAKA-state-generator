@@ -1,6 +1,5 @@
 import { fectchUserByid } from "@/app/lib/data/user";
 import Page from "../../new/page";
-import { User } from "@prisma/client";
 
 type ParamsProps = {
   params: {

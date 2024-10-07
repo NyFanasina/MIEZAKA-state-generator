@@ -4,10 +4,10 @@ import Link from "next/link";
 interface Props {
   href: string;
   value: string;
-  isActive: boolean;
+  isActive?: boolean;
 }
 
-export default function NavLink({ href = "#", value, isActive = false }: Props) {
+export default function NavLink({ href = "#", value, isActive }: Props) {
   return (
     <Link
       href={href}

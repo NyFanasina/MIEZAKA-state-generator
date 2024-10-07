@@ -7,7 +7,7 @@ export default function Sidenav() {
       <ul className="flex flex-col mt-5 ">
         <NavLink value="Tableau de board" href="/dashboard" />
         <NavLink value="Utilisateurs" href="/users" />
-        <NavLink value="Etats" />
+        <NavLink value="Etats" href="/states" />
       </ul>
     </nav>
   );
