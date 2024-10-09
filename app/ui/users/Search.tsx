@@ -20,7 +20,7 @@ export default function Search() {
   }
 
   return (
-    <div className="flex py-5">
+    <div className="flex pb-5">
       <div className="flex relative flex-1">
         <TextInput className="flex-1 pe-1" icon={SlMagnifier} placeholder="Tapez un nom ou un email" onChange={handleChange} />
       </div>
