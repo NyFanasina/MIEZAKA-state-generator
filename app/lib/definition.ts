@@ -10,7 +10,7 @@ export const SignUpSchema = z.object({
   password: z.string().trim().min(6, "Le mot doit être au moins 6 caractères"),
   email: z.string().email(),
   admin: z.coerce.boolean(),
-  photo: z.string().nullable(),
+  photo: z.instanceof(File),
 });
 
 export const SignUpEditSchema = SignUpSchema.merge(z.object({ id: z.coerce.number() }));

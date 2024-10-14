@@ -5,6 +5,7 @@ import { prisma } from "@/prisma/client";
 import * as Session from "@/app/lib/session";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { redirect } from "next/navigation";
+import { uploadFile } from "../uploadFileHandler";
 const bcrypt = require("bcrypt");
 
 export async function authenticate(state: AuthState, formData: FormData) {
@@ -47,20 +48,21 @@ export async function register(state: RegisterState, formData: FormData) {
     photo: formData.get("photo"),
   });
 
-  if (!validatedFields.success) {
-    console.log(validatedFields.error.flatten());
+  if (!validatedFields.success)
     return {
       ok: false,
       error: validatedFields.error.flatten().fieldErrors,
     };
-  }
 
-  const { password } = validatedFields.data;
+  const { password, photo } = validatedFields.data;
   const hashedPassword = await bcrypt.hash(password, 10);
 
   try {
+    const file = photo as File;
+    const photoname = await uploadFile(file);
+
     const user = await prisma.user.create({
-      data: { ...validatedFields.data, password: hashedPassword },
+      data: { ...validatedFields.data, password: hashedPassword, photo: photoname },
     });
     return {
       ok: true,
@@ -68,6 +70,7 @@ export async function register(state: RegisterState, formData: FormData) {
       message: `Succes ! Utilisateur creé avec l'email ${user.email}.`,
     };
   } catch (e) {
+    console.log(e);
     if (e instanceof PrismaClientKnownRequestError)
       return {
         ok: false,

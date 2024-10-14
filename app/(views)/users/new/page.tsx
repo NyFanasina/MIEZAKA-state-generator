@@ -21,7 +21,7 @@ export default function Page({ user }: { user?: User }) {
   const required = <span className="text-red-500 text-lg">*&nbsp;</span>;
 
   return (
-    <form action={action} className="flex flex-col gap-5">
+    <form action={action} className="flex flex-col gap-5" encType="multipart/form-data">
       {state?.message && (
         <Alert color={clsx(state?.ok ? "success" : "failure")} icon={state.ok ? AiFillCheckCircle : HiInformationCircle}>
           {state?.message}
@@ -49,7 +49,7 @@ export default function Page({ user }: { user?: User }) {
       </div>
       <div>
         <Label htmlFor="file-upload-helper-text">Photo</Label>
-        <FileInput id="file-upload-helper-text" helperText="SVG, PNG, JPG or GIF (MAX. 800x400px)." />
+        <FileInput id="file-upload-helper-text" helperText="SVG, PNG, JPG or GIF (MAX. 800x400px)." name="photo" />
       </div>
       <div className="flex justify-end gap-2">
         <Link href="/users">
