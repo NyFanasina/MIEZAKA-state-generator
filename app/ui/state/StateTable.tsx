@@ -1,6 +1,7 @@
+import { DateSearchParamsProps } from "@/app/(views)/states/page";
 import TableBody from "./TableBody";
 
-export default function StateTable() {
+export default function StateTable({ searchParams }: DateSearchParamsProps) {
   return (
     <table id="state-table" className="text-sm">
       <thead>
@@ -51,7 +52,7 @@ export default function StateTable() {
           <th className="bg-orange-300 text-orange-800 border-orange-400 border">Marge %</th>
         </tr>
       </thead>
-      <TableBody />
+      <TableBody searchParams={searchParams} />
     </table>
   );
 }
