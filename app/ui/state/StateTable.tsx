@@ -1,5 +1,6 @@
 import { DateSearchParamsProps } from "@/app/(views)/states/page";
 import TableBody from "./TableBody";
+import TableFoot from "./TableFoot";
 
 export default function StateTable({ searchParams }: DateSearchParamsProps) {
   return (
@@ -53,6 +54,7 @@ export default function StateTable({ searchParams }: DateSearchParamsProps) {
         </tr>
       </thead>
       <TableBody searchParams={searchParams} />
+      <TableFoot />
     </table>
   );
 }

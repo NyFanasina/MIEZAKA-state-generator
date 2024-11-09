@@ -21,6 +21,14 @@ export function capitalizeString(word: string) {
 }
 
 export function parseDecimal(value: any) {
-  if (isNaN(value)) return "0.00";
-  return value.toFixed(2);
+  if (isNaN(value)) return parseFloat("0").toFixed(2);
+  return parseFloat(value).toFixed(2);
+}
+
+export function lowerThan15(value: number) {
+  if (value < 15) return "-15";
+  else if (value < 30) return "-30";
+  else if (value < 50) return "-50";
+  else if (value > 50) return "+50";
+  else if (value > 75) return "+75";
 }

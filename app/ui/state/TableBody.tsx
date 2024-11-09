@@ -1,17 +1,16 @@
 import { DateSearchParamsProps } from "@/app/(views)/states/page";
-import { fecthAchats, fecthArticles, fetchProductions, fetchReports, fetchStock, fetchVentes } from "@/app/lib/data/ste";
-import { parseDecimal } from "@/app/lib/utils";
+import { fecthAchats, fecthArticles, fetchProductions, fetchReports, fetchVentes } from "@/app/lib/data/ste";
+import { lowerThan15, parseDecimal } from "@/app/lib/utils";
+import { clsx } from "clsx";
 
 export default async function TableBody({ searchParams }: DateSearchParamsProps) {
-  const articles = await fecthArticles(searchParams?.from, searchParams?.to);
-  const achats = await fecthAchats();
-  const ventes = await fetchVentes();
-  const productions = await fetchProductions();
+  const articles = await fecthArticles();
+  const achats = await fecthAchats(searchParams?.from, searchParams?.to);
+  const ventes = await fetchVentes(searchParams?.from, searchParams?.to);
+  const productions = await fetchProductions(searchParams?.from, searchParams?.to);
   const reports = await fetchReports(searchParams?.from);
 
-  console.log(reports);
-
-  const rows = await articles.map((article: any) => {
+  const rows: Array<any> = await articles.map((article: any) => {
     return {
       article,
       achat: achats.filter((achat) => achat.AR_Ref == article.AR_Ref)[0],
@@ -21,44 +20,92 @@ export default async function TableBody({ searchParams }: DateSearchParamsProps)
     };
   });
 
+  const rowsGroupedByFournisseur = rows.reduce((acc: Array<any>, curr, i) => {
+    const fournisseur = curr.article.Nom_Fournisseur;
+
+    if (!acc[fournisseur]) acc[fournisseur] = [];
+
+    acc[fournisseur].push(curr.article.AR_Ref);
+
+    return acc;
+  }, []);
+
+  console.log(" ----> \n", rowsGroupedByFournisseur);
+
   return (
     <tbody className="text-end text-[15px]">
       {rows.map((row: any, i: number) => {
-        const Stock_Qte = (row.achat?.Achat_Qte ?? 0) + (row.report?.Report_Qte ?? 0) + (row.production?.Prod_Qte ?? 0) - (row.vente?.Vente_Qte ?? 0);
+        const Stock_Qte =
+          parseInt(row.report?.Report_Qte ?? 0) +
+          parseInt(row.production?.Prod_Qte ?? 0) +
+          parseInt(row.achat?.Achat_Qte ?? 0) -
+          parseInt(row.vente?.Vente_Qte ?? 0);
+
+        const Vente_Poids = parseDecimal(row.article?.AR_PoidsNet * row.vente?.Vente_Qte);
+        const Stock_Poids = parseFloat(parseDecimal(row.article?.AR_PoidsNet * Stock_Qte));
+        const Report_Poids = parseDecimal(row.article?.AR_PoidsNet * row.report?.Report_Qte);
+        const Achat_Poids = parseDecimal(row.article?.AR_PoidsNet * row.achat?.Achat_Qte);
+        const Prod_Poids = parseDecimal(row.production?.Prod_Qte * row.article.AR_PoidsNet);
+
+        // Calcul % vente
+        let Vente_p100 = parseFloat(Vente_Poids) * 100;
+        if (!(parseFloat(Report_Poids ?? 0) + parseFloat(Achat_Poids ?? 0) + parseFloat(Prod_Poids ?? 0))) Vente_p100 /= 1;
+        else Vente_p100 /= parseFloat(Report_Poids ?? 0) + parseFloat(Achat_Poids ?? 0) + parseFloat(Prod_Poids ?? 0);
+
+        // Calcul % marge
+        const Marge_p100 = (parseFloat(row.article.AC_PrixVen ?? 0) - parseFloat(row.article.AR_PoidsBrut ?? 0)) / parseFloat(row.article.AR_PoidsBrut ?? 0);
+
+        // INFO Fournisseur
+
         return (
           <tr key={i}>
             {/* Article */}
-            <td>-15</td>
-            <td>{row.article.Etat}</td>
-            <td>*</td>
-            <td className="text-red-700 font-bold text-start">{row.article.AR_Ref}</td>
+            <td
+              className={clsx("border-orange-400 border ", {
+                "text-red-vif": Marge_p100 < 0,
+              })}
+            >
+              {lowerThan15(Vente_p100)}
+            </td>
+            <td className="text-center ">{row.article.Etat}</td>
+            <td>
+              <sub className="text-lg ">{Stock_Poids >= 5000 ? "*" : ""}</sub>
+            </td>
+            <td className="text-start font-bold text-red-600">{row.article.AR_Ref}</td>
             <td>{parseDecimal(row.article.AR_PrixAch)}</td>
-            <td>{parseDecimal(row.article.Prix_Revient)}</td>
+            <td>{parseDecimal(row.article.AR_PoidsBrut)}</td>
             <td>{parseDecimal(row.article.AC_PrixVen)}</td>
             {/* Report */}
             <td>{parseDecimal(row.report?.Report_Qte)}</td>
+            <td>{Report_Poids}</td>
             <td>{parseDecimal(row.article?.AR_PoidsNet * row.report?.Report_Qte)}</td>
-            <td></td>
             <td>{parseDecimal(row.article?.AR_PoidsBrut * row.article?.Report_Qte)}</td>
             {/* Achats */}
             <td>{parseDecimal(row.achat?.Achat_Qte)}</td>
-            <td>{parseDecimal(row.article?.AR_PoidsNet * row.achat?.Achat_Qte)}</td>
+            <td>{Achat_Poids}</td>
             <td>{parseDecimal(row.article?.AR_PrixAch * row.achat?.Achat_Qte)}</td>
             <td>{parseDecimal(row.achat?.Achat_Qte * row.article?.AR_PoidsBrut)}</td>
             {/* Production */}
             <td>{parseDecimal(row.production?.Prod_Qte)}</td>
-            <td>{parseDecimal(row.production?.Prod_Qte * row.article.AR_PoidsNet)}</td>
+            <td>{Prod_Poids}</td>
             {/* Vente */}
             <td>{parseDecimal(row.vente?.Vente_Qte)}</td>
-            <td>{parseDecimal(row.article?.AR_PoidsNet * row.vente?.Vente_Qte)}</td>
+            <td>{Vente_Poids}</td>
             <td>{parseDecimal(row.article?.AR_PoidsBrut * row.vente?.Vente_Qte)}</td>
-            <td>{parseDecimal(row.vente?.Vente_Reel)}</td>
+            <td>{parseDecimal(row.vente?.Vente_Reelle)}</td>
             {/* Stock */}
             <td>{parseDecimal(Stock_Qte)}</td>
-            <td>{parseDecimal(row.article?.AR_PoidsNet * Stock_Qte)}</td>
+            <td>{Stock_Poids}</td>
             <td>{parseDecimal(row.article?.AR_PoidsBrut * Stock_Qte)}</td>
-            <td className="border-orange-400 border"></td>
-            <td className="border-orange-400 border"></td>
+            {/* %vente et Marge % */}
+            <td className="border-orange-400 border text-red ">{Vente_p100.toFixed(2)}</td>
+            <td
+              className={clsx("border-orange-400 border ", {
+                "text-red-vif": Marge_p100 < 0,
+              })}
+            >
+              {Marge_p100.toFixed(2)}
+            </td>
           </tr>
         );
       })}
