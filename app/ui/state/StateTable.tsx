@@ -54,7 +54,7 @@ export default function StateTable({ searchParams }: DateSearchParamsProps) {
         </tr>
       </thead>
       <TableBody searchParams={searchParams} />
-      <TableFoot />
+      {/* <TableFoot /> */}
     </table>
   );
 }

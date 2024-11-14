@@ -29,6 +29,22 @@ export function lowerThan15(value: number) {
   if (value < 15) return "-15";
   else if (value < 30) return "-30";
   else if (value < 50) return "-50";
-  else if (value > 50) return "+50";
   else if (value > 75) return "+75";
+  else if (value > 50) return "+50";
+}
+
+export function calculateTotalQteForOneProvider(rows: Array<any>, type: "vente" | "report" | "achat" | "production") {
+  const onlyQte = rows.map((elt) => elt[type]?.Qte ?? 0);
+  const total = onlyQte.reduce((acc, cur) => parseInt(acc) + parseInt(cur), 0);
+  return total;
+}
+
+export function calculateTotalPoidsForOneProvider(rows: Array<any>, type: "vente" | "report" | "achat" | "production") {
+  const onlyPoids = rows.map((item) => item.article?.AR_PoidsNet * (item[type]?.Qte ?? 0));
+  return onlyPoids.reduce((acc, cur) => acc + cur, 0);
+}
+
+export function calculateTotalMontAchatForOneProvider(rows: Array<any>, type: "report" | "achat") {
+  const onlyMontAchat = rows.map((item) => item.article?.AR_PoidsNet * item.article.AR_PrixAch * (item[type]?.Qte ?? 0));
+  return onlyMontAchat.reduce((acc, cur) => acc + cur, 0);
 }

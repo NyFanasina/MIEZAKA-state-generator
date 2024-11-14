@@ -14,7 +14,11 @@ export async function fecthArticles() {
     ,dbo.[F_ARTICLE].[cbCreation]
     ,dbo.[F_ARTFOURNISS].[CT_Num]
     ,CASE 
-        WHEN dbo.[F_ARTICLE].[AR_Ref] LIKE '%PRO%' THEN  CONCAT(dbo.[F_COMPTET].[CT_Intitule], ' ' ,'PRO')
+      WHEN dbo.[F_ARTICLE].[AR_Ref] LIKE '%PRO%' THEN  CONCAT(dbo.[F_COMPTET].[CT_Intitule], ' ' ,'PRO')
+      WHEN dbo.[F_ARTICLE].[AR_Ref] LIKE '%TTR% O' THEN CONCAT(dbo.[F_COMPTET].[CT_Intitule], ' ', '/O')
+      WHEN dbo.[F_ARTICLE].[AR_Ref] LIKE '%TTR% T' THEN CONCAT(dbo.[F_COMPTET].[CT_Intitule], ' ', '/T')
+      WHEN dbo.[F_ARTICLE].[AR_Ref] LIKE '%TTR% N' THEN CONCAT(dbo.[F_COMPTET].[CT_Intitule], ' ', '/N')
+      WHEN dbo.[F_ARTICLE].[AR_Ref] = 'TTR' THEN CONCAT('Ancien',' ',dbo.[F_COMPTET].[CT_Intitule])
         ELSE dbo.[F_COMPTET].[CT_Intitule]
     END    as Nom_Fournisseur                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
     FROM dbo.F_ARTICLE 
@@ -26,13 +30,16 @@ export async function fecthArticles() {
         ON dbo.[F_ARTFOURNISS].[AR_Ref] = dbo.[F_ARTICLE].[AR_Ref]
     JOIN dbo.[F_COMPTET] ON dbo.[F_ARTFOURNISS].[CT_Num] = dbo.[F_COMPTET].[CT_Num]
     WHERE 
-    dbo.[F_DOCLIGNE].[DO_Domaine] in (0,1,2)
-        AND 
-    dbo.[F_DOCLIGNE].[DO_Type] in (6,7,16,17,26) AND dbo.[F_DOCLIGNE].[DL_Qte] > 0
-        AND
-    dbo.[F_DOCLIGNE].[cbCreation] BETWEEN CAST('01-01-2024' as date) AND CAST('18-07-2024'as date)
-        AND dbo.[F_ARTICLE].AR_Ref LIKE '%PRO20%'
-    ORDER BY Nom_Fournisseur ASC;
+        dbo.[F_ARTICLE].[Ref_Art] = 'PRO'
+            AND 
+        dbo.[F_ARTICLE].[FA_CodeFamille] IN  ('BALLE', 'FRIPPE')
+            AND
+        dbo.[F_DOCLIGNE].[DO_Domaine] in (0,1,2)
+            AND 
+        dbo.[F_DOCLIGNE].[DO_Type] in (6,7,16,17,26) --AND dbo.[F_DOCLIGNE].[DL_Qte] >= 0
+            AND 
+        dbo.[F_ARTICLE].AR_Ref LIKE '%PRO%'
+        ORDER BY Nom_Fournisseur ASC;
     `;
 }
 
@@ -40,7 +47,7 @@ export async function fecthAchats(from: string, to: string) {
   return await STE_miezaka.$queryRaw`
         SELECT
         DISTINCT(dbo.[F_DOCLIGNE].[AR_Ref])
-        ,SUM(dbo.[F_DOCLIGNE].[DL_Qte]) as Achat_Qte
+        ,SUM(dbo.[F_DOCLIGNE].[DL_Qte]) as Qte
         ,SUM(dbo.[F_DOCLIGNE].DL_MontantHT)
         FROM dbo.[F_DOCLIGNE] 
             JOIN dbo.[F_ARTICLE]
@@ -64,7 +71,7 @@ export async function fetchVentes(from?: string, to?: string) {
   return await STE_miezaka.$queryRaw`
     SELECT
     DISTINCT(dbo.[F_DOCLIGNE].[AR_Ref])
-    ,SUM(dbo.[F_DOCLIGNE].[DL_Qte]) as Vente_Qte
+    ,SUM(dbo.[F_DOCLIGNE].[DL_Qte]) as Qte
     ,SUM(dbo.[F_DOCLIGNE].[DL_MontantTTC]) as Vente_Reelle
     FROM dbo.[F_DOCLIGNE] 
         JOIN dbo.[F_ARTICLE]
@@ -76,8 +83,6 @@ export async function fetchVentes(from?: string, to?: string) {
             AND 
         dbo.[F_DOCLIGNE].[AR_Ref] IS NOT NULL
             AND 
-        dbo.[F_DOCLIGNE].[DL_Qte] >= 0
-            AND 
         dbo.[F_DOCLIGNE].[DO_Date] BETWEEN CAST(${from} as date) AND CAST(${to} as date)
     GROUP BY 
         dbo.[F_DOCLIGNE].[AR_Ref] 
@@ -87,7 +92,7 @@ export async function fetchVentes(from?: string, to?: string) {
 export async function fetchProductions(from?: string, to?: string) {
   return await STE_miezaka.$queryRaw`SELECT 
         dbo.[F_DOCLIGNE].[AR_Ref],
-        sum(dbo.[F_DOCLIGNE].[DL_Qte]) AS Prod_Qte
+        sum(dbo.[F_DOCLIGNE].[DL_Qte]) AS Qte
         FROM dbo.[F_DOCLIGNE] 
         WHERE 
             dbo.[F_DOCLIGNE].[DO_Domaine] = 2
@@ -110,22 +115,34 @@ export async function fetchReports(from: string) {
   const dayBefore = calculateDayBefore(from);
 
   return await STE_miezaka.$queryRaw`SELECT 
-    dbo.[F_DOCLIGNE].[AR_Ref],
-    CAST(sum(dbo.[F_DOCLIGNE].[DL_Qte]) as INT) AS Report_Qte
-    FROM dbo.[F_DOCLIGNE] 
-    WHERE 
-        dbo.[F_DOCLIGNE].[DO_Domaine] in (1,2)
-            AND 
-        dbo.[F_DOCLIGNE].[DL_Qte] >= 0 
-            AND 
-        dbo.[F_DOCLIGNE].[AR_Ref] IS NOT NULL
-            AND 
-        dbo.[F_DOCLIGNE].[DO_Type] in (16,17,26)
-            AND
-        dbo.[F_DOCLIGNE].[Do_Date]  < CAST(${dayBefore} as date) 
-    GROUP BY 
-        dbo.[F_DOCLIGNE].[AR_Ref]
-    ORDER BY 
-        dbo.[F_DOCLIGNE].[AR_Ref]
-    ASC;`;
+  AR_Ref
+  ,Qte_Prod - Qte_Vente + Qte_Achat AS Qte
+FROM
+(
+  SELECT 
+  DISTINCT
+  dbo.[F_DOCLIGNE].AR_Ref,
+  SUM(CASE 
+         WHEN dbo.F_DOCLIGNE.DO_Type = 26 THEN dbo.[F_DOCLIGNE].[DL_Qte]
+         ELSE 0
+      END) AS Qte_Prod,
+  SUM(CASE 
+         WHEN dbo.F_DOCLIGNE.DO_Type IN (6,7) THEN dbo.[F_DOCLIGNE].[DL_Qte]
+         ELSE 0
+      END) AS Qte_Vente,
+  SUM(CASE 
+         WHEN dbo.F_DOCLIGNE.DO_Type IN (16,17) THEN dbo.[F_DOCLIGNE].[DL_Qte]
+         ELSE 0
+      END) AS Qte_Achat
+FROM dbo.[F_DOCLIGNE]
+WHERE 
+  dbo.[F_DOCLIGNE].[DO_Domaine] IN (0,2,1)
+  AND dbo.[F_DOCLIGNE].AR_Ref IS NOT NULL
+  --AND dbo.[F_DOCLIGNE].[DL_Qte] >= 0
+  AND dbo.[F_DOCLIGNE].[DO_Type] IN (6,7,16,17,26)
+  AND dbo.[F_DOCLIGNE].[Do_Date] < CAST('2024-01-01' AS date) 
+GROUP BY 
+  dbo.[F_DOCLIGNE].AR_Ref
+
+) AS Fango`;
 }
