@@ -1,7 +1,9 @@
 import {
   calculateTotalMontAchatForOneProvider,
+  calculateTotalMontDedouanForOneProvider,
   calculateTotalPoidsForOneProvider,
   calculateTotalQteForOneProvider,
+  calculateTotalVenteReelForOneProvider,
   lowerThan15,
   parseDecimal,
 } from "@/app/lib/utils";
@@ -44,14 +46,23 @@ export default async function TableBody({ searchParams }: DateSearchParamsProps)
         {Object.entries(rowsByFournisseur).map(([provider, rowsGrouped]: [string, any], index) => {
           const Vente_Qte_Provider = calculateTotalQteForOneProvider(rowsGrouped, "vente");
           const Achat_Qte_Provider = calculateTotalQteForOneProvider(rowsGrouped, "achat");
+          const Stock_Qte_Provider = calculateTotalQteForOneProvider(rowsGrouped, "stock");
           const Prod_Qte_Provider = calculateTotalQteForOneProvider(rowsGrouped, "production");
           const Report_Qte_Provider = calculateTotalQteForOneProvider(rowsGrouped, "report");
           const Achat_Poids_Provider = calculateTotalPoidsForOneProvider(rowsGrouped, "achat");
           const Report_Poids_Provider = calculateTotalPoidsForOneProvider(rowsGrouped, "report");
+          const Stock_Poids_Provider = calculateTotalPoidsForOneProvider(rowsGrouped, "stock");
           const Prod_Poids_Provider = calculateTotalPoidsForOneProvider(rowsGrouped, "production");
           const Vente_Poids_Provider = calculateTotalPoidsForOneProvider(rowsGrouped, "vente");
           const Report_MontAchat_Provider = calculateTotalMontAchatForOneProvider(rowsGrouped, "report");
           const Achat_MontAchat_Provider = calculateTotalMontAchatForOneProvider(rowsGrouped, "achat");
+          const Vente_MontDedouan_Provider = calculateTotalMontDedouanForOneProvider(rowsGrouped, "vente");
+          const Achat_MontDedouan_Provider = calculateTotalMontDedouanForOneProvider(rowsGrouped, "achat");
+          const Report_MontDedouan_Provider = calculateTotalMontDedouanForOneProvider(rowsGrouped, "report");
+          const Stock_MontDedouan_Provider = calculateTotalMontDedouanForOneProvider(rowsGrouped, "stock");
+          const Vente_VenteReelle_Provider = calculateTotalVenteReelForOneProvider(rowsGrouped, "vente");
+          const Vente_p100_Provider = calculateVente_p100ForOneProvider(rowsGrouped);
+          const Marge_p100_Provider = calculateMarge_p100ForOneProvider(rowsGrouped);
 
           return (
             <Fragment key={index}>
@@ -59,18 +70,18 @@ export default async function TableBody({ searchParams }: DateSearchParamsProps)
                 const Stock_Qte =
                   parseInt(row.report?.Qte ?? 0) + parseInt(row.production?.Qte ?? 0) + parseInt(row.achat?.Qte ?? 0) - parseInt(row.vente?.Qte ?? 0);
 
-                const Vente_Poids = row.article?.AR_PoidsNet * row.vente?.Qte;
+                const Vente_Poids = row.article?.AR_PoidsNet * (row.vente?.Qte ?? 0);
                 const Stock_Poids = parseFloat(parseDecimal(row.article?.AR_PoidsNet * Stock_Qte));
-                const Report_Poids = row.article?.AR_PoidsNet * row.report?.Qte;
-                const Achat_Poids = row.article?.AR_PoidsNet * row.achat?.Qte;
-                const Prod_Poids = row.production?.Qte * row.article.AR_PoidsNet;
+                const Report_Poids = row.article?.AR_PoidsNet * (row.report?.Qte ?? 0);
+                const Achat_Poids = row.article?.AR_PoidsNet * (row.achat?.Qte ?? 0);
+                const Prod_Poids = (row.production?.Qte ?? 0) * row.article.AR_PoidsNet;
 
                 // Calcul % vente
                 const Vente_p100 = calculateVente_p100(Vente_Poids, Report_Poids, Achat_Poids, Prod_Poids);
 
                 // Calcul % marge
                 const Marge_p100 =
-                  (parseFloat(row.article.AC_PrixVen ?? 0) - parseFloat(row.article.AR_PoidsBrut ?? 0)) / parseFloat(row.article.AR_PoidsBrut ?? 0);
+                  ((parseFloat(row.article.AC_PrixVen ?? 0) - parseFloat(row.article.AR_PoidsBrut ?? 0)) / parseFloat(row.article.AR_PoidsBrut ?? 0)) * 100;
 
                 return (
                   <tr key={i} className="active:bg-amber-400 hover:bg-slate-100 hover:border hover:border-amber-500">
@@ -124,43 +135,79 @@ export default async function TableBody({ searchParams }: DateSearchParamsProps)
                   </tr>
                 );
               })}
-
-              {/* Row article provider  */}
+              {/* ---------------<>------------- */}
               {
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td className="text-amber-700 text-start font-semibold">{provider}</td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  {/* Report */}
-                  <td>{parseDecimal(Report_Qte_Provider)}</td>
-                  <td>{parseDecimal(Report_Poids_Provider)}</td>
-                  <td>{parseDecimal(Report_MontAchat_Provider)}</td>
-                  <td></td>
-                  {/* Achat */}
-                  <td>{parseDecimal(Achat_Qte_Provider)}</td>
-                  <td>{parseDecimal(Achat_Poids_Provider)}</td>
-                  <td>{parseDecimal(Achat_MontAchat_Provider)}</td>
-                  <td></td>
-                  {/* Production */}
-                  <td>{parseDecimal(Prod_Qte_Provider)}</td>
-                  <td>{parseDecimal(Prod_Poids_Provider)}</td>
-                  {/* Vente */}
-                  <td>{parseDecimal(Vente_Qte_Provider)}</td>
-                  <td>{parseDecimal(Vente_Poids_Provider)}</td>
-                  <td></td>
-                  <td></td>
-                  {/* Stock */}
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  {/* % vente and % marge */}
-                  <td></td>
-                  <td></td>
-                </tr>
+                <Fragment>
+                  {/* Row article provider  */}
+                  <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td className="text-amber-700 text-start font-semibold">{provider}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    {/* Report */}
+                    <td>{parseDecimal(Report_Qte_Provider)}</td>
+                    <td>{parseDecimal(Report_Poids_Provider)}</td>
+                    <td>{parseDecimal(Report_MontAchat_Provider)}</td>
+                    <td>{parseDecimal(Report_MontDedouan_Provider)}</td>
+                    {/* Achat */}
+                    <td>{parseDecimal(Achat_Qte_Provider)}</td>
+                    <td>{parseDecimal(Achat_Poids_Provider)}</td>
+                    <td>{parseDecimal(Achat_MontAchat_Provider)}</td>
+                    <td>{parseDecimal(Achat_MontDedouan_Provider)}</td>
+                    {/* Production */}
+                    <td>{parseDecimal(Prod_Qte_Provider)}</td>
+                    <td>{parseDecimal(Prod_Poids_Provider)}</td>
+                    {/* Vente */}
+                    <td>{parseDecimal(Vente_Qte_Provider)}</td>
+                    <td>{parseDecimal(Vente_Poids_Provider)}</td>
+                    <td>{parseDecimal(Vente_MontDedouan_Provider)}</td>
+                    <td>{parseDecimal(Vente_VenteReelle_Provider)}</td>
+                    {/* Stock */}
+                    <td>{parseDecimal(Stock_Qte_Provider)}</td>
+                    <td>{parseDecimal(Stock_Poids_Provider)}</td>
+                    <td>{parseDecimal(Stock_MontDedouan_Provider)}</td>
+                    {/* % vente and % marge */}
+                    <td>{parseDecimal(Vente_p100_Provider)}</td>
+                    <td>{parseDecimal(Marge_p100_Provider)}</td>
+                  </tr>
+                  <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td className="text-amber-700 text-start font-semibold">-</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    {/* Report */}
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    {/* Achat */}
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    {/* Production */}
+                    <td></td>
+                    <td></td>
+                    {/* Vente */}
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    {/* Stock */}
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    {/* % vente and % marge */}
+                    <td></td>
+                    <td></td>
+                  </tr>
+                </Fragment>
               }
             </Fragment>
           );
@@ -173,7 +220,38 @@ export default async function TableBody({ searchParams }: DateSearchParamsProps)
 
 export function calculateVente_p100(Vente_Poids: number, Report_Poids: number, Achat_Poids: number, Prod_Poids: number) {
   let Vente_p100 = Vente_Poids * 100;
-  if (!((Report_Poids ?? 0) + (Achat_Poids ?? 0) + (Prod_Poids ?? 0))) Vente_p100 /= 1;
+  if ((Report_Poids ?? 0) + (Achat_Poids ?? 0) + (Prod_Poids ?? 0) === 0) Vente_p100 = 0;
   else Vente_p100 /= (Report_Poids ?? 0) + (Achat_Poids ?? 0) + (Prod_Poids ?? 0);
   return Vente_p100;
+}
+
+function calculateVente_p100ForOneProvider(rows: Array<any>) {
+  const onlyVente_p100 = rows.map((row) => {
+    const Stock_Qte = parseInt(row.report?.Qte ?? 0) + parseInt(row.production?.Qte ?? 0) + parseInt(row.achat?.Qte ?? 0) - parseInt(row.vente?.Qte ?? 0);
+
+    const Vente_Poids = row.article?.AR_PoidsNet * (row.vente?.Qte ?? 0);
+    const Stock_Poids = parseFloat(parseDecimal(row.article?.AR_PoidsNet * Stock_Qte));
+    const Report_Poids = row.article?.AR_PoidsNet * (row.report?.Qte ?? 0);
+    const Achat_Poids = row.article?.AR_PoidsNet * (row.achat?.Qte ?? 0);
+    const Prod_Poids = (row.production?.Qte ?? 0) * row.article.AR_PoidsNet;
+
+    // Calcul % vente
+    return calculateVente_p100(Vente_Poids, Report_Poids, Achat_Poids, Prod_Poids);
+  });
+  const vente_p100_Provider = onlyVente_p100.reduce((acc, cur, i, array) => {
+    if (array.length - 1 === i) return (acc + cur) / array.length;
+    return acc + cur;
+  }, 0);
+  return vente_p100_Provider;
+}
+
+function calculateMarge_p100ForOneProvider(rows: Array<any>) {
+  const onlyMarge_p100 = rows.map(
+    (row) => ((parseFloat(row.article.AC_PrixVen ?? 0) - parseFloat(row.article.AR_PoidsBrut ?? 0)) / parseFloat(row.article.AR_PoidsBrut ?? 0)) * 100
+  );
+
+  return onlyMarge_p100.reduce((acc, cur, i, array) => {
+    if (array.length - 1 === i) return (acc + cur) / array.length;
+    return acc + cur;
+  });
 }

@@ -38,7 +38,7 @@ export async function fecthArticles() {
             AND 
         dbo.[F_DOCLIGNE].[DO_Type] in (6,7,16,17,26) --AND dbo.[F_DOCLIGNE].[DL_Qte] >= 0
             AND 
-        dbo.[F_ARTICLE].AR_Ref LIKE '%PRO%'
+        dbo.[F_COMPTET].[CT_Intitule] = 'ATTAR'
         ORDER BY Nom_Fournisseur ASC;
     `;
 }
@@ -114,35 +114,43 @@ export async function fetchProductions(from?: string, to?: string) {
 export async function fetchReports(from: string) {
   const dayBefore = calculateDayBefore(from);
 
-  return await STE_miezaka.$queryRaw`SELECT 
-  AR_Ref
-  ,Qte_Prod - Qte_Vente + Qte_Achat AS Qte
-FROM
-(
-  SELECT 
+  return await STE_miezaka.$queryRaw`SELECT
+      AR_Ref
+  ,Qte_Prod + Qte_Achat + MouvEntree - MouveSortie - Qte_Vente  AS Qte
+      FROM
+      (
+      SELECT
   DISTINCT
-  dbo.[F_DOCLIGNE].AR_Ref,
-  SUM(CASE 
+      dbo.[F_DOCLIGNE].AR_Ref,
+      SUM(CASE
          WHEN dbo.F_DOCLIGNE.DO_Type = 26 THEN dbo.[F_DOCLIGNE].[DL_Qte]
-         ELSE 0
-      END) AS Qte_Prod,
-  SUM(CASE 
+              ELSE 0
+          END) AS Qte_Prod,
+      SUM(CASE
          WHEN dbo.F_DOCLIGNE.DO_Type IN (6,7) THEN dbo.[F_DOCLIGNE].[DL_Qte]
-         ELSE 0
-      END) AS Qte_Vente,
-  SUM(CASE 
-         WHEN dbo.F_DOCLIGNE.DO_Type IN (16,17) THEN dbo.[F_DOCLIGNE].[DL_Qte]
-         ELSE 0
-      END) AS Qte_Achat
-FROM dbo.[F_DOCLIGNE]
-WHERE 
-  dbo.[F_DOCLIGNE].[DO_Domaine] IN (0,2,1)
-  AND dbo.[F_DOCLIGNE].AR_Ref IS NOT NULL
-  --AND dbo.[F_DOCLIGNE].[DL_Qte] >= 0
-  AND dbo.[F_DOCLIGNE].[DO_Type] IN (6,7,16,17,26)
-  AND dbo.[F_DOCLIGNE].[Do_Date] < CAST('2024-01-01' AS date) 
-GROUP BY 
-  dbo.[F_DOCLIGNE].AR_Ref
+              ELSE 0
+          END) AS Qte_Vente,
+      SUM(CASE
+              WHEN dbo.F_DOCLIGNE.DO_Type IN (16,17) THEN dbo.[F_DOCLIGNE].[DL_Qte]
+              ELSE 0
+          END) AS Qte_Achat,
+      SUM(CASE
+              WHEN dbo.F_DOCLIGNE.DO_Type IN (20) THEN dbo.[F_DOCLIGNE].[DL_Qte]
+              ELSE 0
+          END) AS MouvEntree,
+      SUM(CASE
+              WHEN dbo.F_DOCLIGNE.DO_Type IN (21) THEN dbo.[F_DOCLIGNE].[DL_Qte]
+              ELSE 0
+          END) AS MouveSortie
+      FROM dbo.[F_DOCLIGNE]
+      WHERE
+            dbo.[F_DOCLIGNE].[DO_Domaine] IN (0,2,1)
+            AND dbo.[F_DOCLIGNE].AR_Ref IS NOT NULL
+            --AND dbo.[F_DOCLIGNE].[DL_Qte] >= 0
+            AND dbo.[F_DOCLIGNE].[DO_Type] IN (6,7,16,17,20,21,26)
+            AND dbo.[F_DOCLIGNE].[Do_Date] < CAST(${from} AS date) 
+      GROUP BY
+      dbo.[F_DOCLIGNE].AR_Ref
 
-) AS Fango`;
+    ) AS Fango`;
 }
