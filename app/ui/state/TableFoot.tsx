@@ -29,13 +29,14 @@ export default function TableFoot({ rows }: { rows: [] }) {
   const Vente_VenteReelle = calculateTotalVenteReelForOneProvider(rows, "vente");
   const Vente_p100 = calculateVente_p100ForOneProvider(rows);
   const Marge_p100 = calculateMarge_p100ForOneProvider(rows);
+  const PU_G = Achat_MontAchat / Achat_Poids;
 
   return (
     <tfoot>
       <tr>
         <td colSpan={3}></td>
         <td className="border">TOTAL GENERAL</td>
-        <td className="border"></td>
+        <td className="border">{parseDecimal(PU_G)}</td>
         <td className="border"></td>
         <td className="border"></td>
         {/* Repport */}

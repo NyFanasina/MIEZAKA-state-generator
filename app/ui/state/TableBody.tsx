@@ -83,6 +83,7 @@ export default async function TableBody({ searchParams }: DateSearchParamsProps)
           const Vente_VenteReelle_Category = Object.entries(rowsBySize).map(([useless, data]) => calculateTotalVenteReelForOneProvider(data, "vente"));
           const Vente_p100_Category = Object.entries(rowsBySize).map(([useless, data]) => calculateVente_p100ForOneProvider(data));
           const Marge_p100_Category = Object.entries(rowsBySize).map(([useless, data]) => calculateMarge_p100ForOneProvider(data));
+          const PU_Category = Object.entries(rowsBySize).map(([useless, data]) => calculate_PU_Provider(data));
 
           return (
             <Fragment key={i1}>
@@ -107,6 +108,7 @@ export default async function TableBody({ searchParams }: DateSearchParamsProps)
                   const Vente_VenteReelle_Provider = calculateTotalVenteReelForOneProvider(rowsGrouped, "vente");
                   const Vente_p100_Provider = calculateVente_p100ForOneProvider(rowsGrouped);
                   const Marge_p100_Provider = calculateMarge_p100ForOneProvider(rowsGrouped);
+                  const PU_Provider = calculate_PU_Provider(rowsGrouped);
 
                   return (
                     <Fragment key={i2}>
@@ -186,7 +188,7 @@ export default async function TableBody({ searchParams }: DateSearchParamsProps)
                         <td></td>
                         <td></td>
                         <td className="text-amber-700 text-start font-semibold">{provider}</td>
-                        <td></td>
+                        <td>{parseDecimal(PU_Provider)}</td>
                         <td></td>
                         <td></td>
                         {/* Report */}
@@ -225,7 +227,7 @@ export default async function TableBody({ searchParams }: DateSearchParamsProps)
                 <td></td>
                 <td></td>
                 <td className="text-amber-700 text-start font-extrabold">{category}</td>
-                <td></td>
+                <td>{parseDecimal(PU_Category[i1])}</td>
                 <td></td>
                 <td></td>
                 {/* Report */}
@@ -299,4 +301,9 @@ export function calculateMarge_p100ForOneProvider(rows: Array<any>) {
     if (array.length - 1 === i) return (acc + cur) / array.length;
     return acc + cur;
   });
+}
+
+function calculate_PU_Provider(rows: Array<any>) {
+  const onlyPU = rows.map((row) => parseFloat(row.article.AR_PrixAch ?? 0));
+  return onlyPU.reduce((acc, cur) => acc + cur, 0) / onlyPU.length;
 }
