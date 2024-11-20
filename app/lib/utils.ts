@@ -21,8 +21,9 @@ export function capitalizeString(word: string) {
 }
 
 export function parseDecimal(value: any) {
+  const formatter = Intl.NumberFormat("fr-FR", { style: "decimal", minimumFractionDigits: 2, maximumFractionDigits: 2 });
   if (isNaN(value)) return parseFloat("0").toFixed(2);
-  return parseFloat(value).toFixed(2);
+  return formatter.format(value);
 }
 
 export function lowerThan15(value: number) {
@@ -62,7 +63,7 @@ export function calculateTotalMontAchatForOneProvider(rows: Array<any>, type: "r
   return onlyMontAchat.reduce((acc, cur) => acc + cur, 0);
 }
 
-export function calculateTotalMontDedouanForOneProvider(rows: Array<any>, type: "vente" | "achat" | "report" | "stock") {
+export function calculateTotalMontDedouanForOneProvider(rows: Array<any>, type: "vente" | "achat" | "report" | "stock" | "production") {
   if (type === "stock") {
     const onlyMontDedouan = rows.map((elt) => {
       const Stock_Qte = parseInt(elt.report?.Qte ?? 0) + parseInt(elt.production?.Qte ?? 0) + parseInt(elt.achat?.Qte ?? 0) - parseInt(elt.vente?.Qte ?? 0);

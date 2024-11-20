@@ -11,7 +11,7 @@ export interface DateSearchParamsProps {
 
 export default function page({ searchParams }: DateSearchParamsProps) {
   return (
-    <div>
+    <div className="overflow-auto">
       <Header />
       <Search />
       <StateTable searchParams={searchParams} />

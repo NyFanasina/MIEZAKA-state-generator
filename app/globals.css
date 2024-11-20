@@ -22,6 +22,6 @@ body {
 
 td {
   white-space: nowrap;
-  padding: 2px;
-  font-size: 14px;
+  padding: 2px 0px;
+  padding-left: 1px;
 }

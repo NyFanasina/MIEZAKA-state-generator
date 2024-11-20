@@ -13,6 +13,7 @@ import { clsx } from "clsx";
 import { Fragment } from "react";
 import TableFoot from "./TableFoot";
 import { CategorieBalle } from "@/app/lib/definition";
+import { on } from "events";
 
 export default async function TableBody({ searchParams }: DateSearchParamsProps) {
   const articles = await fecthArticles();
@@ -62,7 +63,7 @@ export default async function TableBody({ searchParams }: DateSearchParamsProps)
 
   return (
     <>
-      <tbody>
+      <tbody className="text-end">
         {Object.entries(rowsBySizeByProvider).map(([category, dataInCategories], i1) => {
           const Vente_Qte_Category = Object.entries(rowsBySize).map(([useless, data]) => calculateTotalQteForOneProvider(data, "vente"));
           const Achat_Qte_Category = Object.entries(rowsBySize).map(([useless, data]) => calculateTotalQteForOneProvider(data, "achat"));
@@ -146,14 +147,14 @@ export default async function TableBody({ searchParams }: DateSearchParamsProps)
                               <sub className="text-lg ">{Stock_Poids >= 5000 ? "*" : ""}</sub>
                             </td>
                             <td className="text-start font-bold text-red-600">{row.article.AR_Ref}</td>
-                            <td>{parseDecimal(row.article.AR_PrixAch)}</td>
+                            <td className="text-center">{parseDecimal(row.article.AR_PrixAch)}</td>
                             <td>{parseDecimal(row.article.AR_PoidsBrut)}</td>
                             <td>{parseDecimal(row.article.AC_PrixVen)}</td>
                             {/* Report */}
                             <td>{parseDecimal(row.report?.Qte)}</td>
                             <td>{parseDecimal(Report_Poids)}</td>
                             <td>{parseDecimal(Report_Poids * row.article.AR_PrixAch)}</td>
-                            <td>{parseDecimal(row.article?.AR_PoidsBrut * row.article?.Qte)}</td>
+                            <td>{parseDecimal(row.article?.AR_PoidsBrut * row.report?.Qte)}</td>
                             {/* Achats */}
                             <td>{parseDecimal(row.achat?.Qte)}</td>
                             <td>{parseDecimal(Achat_Poids)}</td>
@@ -296,11 +297,10 @@ export function calculateMarge_p100ForOneProvider(rows: Array<any>) {
   const onlyMarge_p100 = rows.map(
     (row) => ((parseFloat(row.article.AC_PrixVen ?? 0) - parseFloat(row.article.AR_PoidsBrut ?? 0)) / parseFloat(row.article.AR_PoidsBrut ?? 0)) * 100
   );
-
   return onlyMarge_p100.reduce((acc, cur, i, array) => {
     if (array.length - 1 === i) return (acc + cur) / array.length;
     return acc + cur;
-  });
+  }, 0);
 }
 
 function calculate_PU_Provider(rows: Array<any>) {

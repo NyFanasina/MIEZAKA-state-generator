@@ -33,7 +33,7 @@ export default function layout({ children }: PropsWithChildren) {
         <Sidenav />
         <main className="flex-1">
           <BreadCrumbItemProvider />
-          <div className="px-10 pt-5">{children}</div>
+          <div className="px-1 pt-5">{children}</div>
         </main>
       </div>
     </div>
