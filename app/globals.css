@@ -16,10 +16,19 @@ body {
   @apply border-s-4 border-s-rose-600 bg-slate-900;
 }
 
-#state-table tbody td {
+#state-table tbody td,
+#state-table tfoot td {
   border: 1px dotted gray;
 }
-
+#state-table tfoot .border-none {
+  border: none;
+  background-color: white;
+}
+#state-table tfoot :nth-child(2),
+#state-table tfoot :nth-child(3),
+#state-table tfoot :nth-child(4) {
+  font-weight: 600;
+}
 td {
   white-space: nowrap;
   padding: 2px 0px;

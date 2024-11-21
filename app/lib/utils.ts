@@ -80,3 +80,40 @@ export function calculateTotalVenteReelForOneProvider(rows: Array<any>, type: "v
   const onlyVentesReelles = rows.map((item: any) => parseFloat(item.vente?.Vente_Reelle ?? 0));
   return onlyVentesReelles.reduce((acc, cur) => acc + cur, 0);
 }
+
+export function calculateVente_p100(Vente_Poids: number, Report_Poids: number, Achat_Poids: number, Prod_Poids: number) {
+  let Vente_p100 = Vente_Poids * 100;
+  if ((Report_Poids ?? 0) + (Achat_Poids ?? 0) + (Prod_Poids ?? 0) === 0) Vente_p100 = 0;
+  else Vente_p100 /= (Report_Poids ?? 0) + (Achat_Poids ?? 0) + (Prod_Poids ?? 0);
+  return Vente_p100;
+}
+
+export function calculateVente_p100ForOneProvider(rows: Array<any>) {
+  const onlyVente_p100 = rows.map((row) => {
+    const Stock_Qte = parseInt(row.report?.Qte ?? 0) + parseInt(row.production?.Qte ?? 0) + parseInt(row.achat?.Qte ?? 0) - parseInt(row.vente?.Qte ?? 0);
+
+    const Vente_Poids = row.article?.AR_PoidsNet * (row.vente?.Qte ?? 0);
+    const Stock_Poids = parseFloat(parseDecimal(row.article?.AR_PoidsNet * Stock_Qte));
+    const Report_Poids = row.article?.AR_PoidsNet * (row.report?.Qte ?? 0);
+    const Achat_Poids = row.article?.AR_PoidsNet * (row.achat?.Qte ?? 0);
+    const Prod_Poids = (row.production?.Qte ?? 0) * row.article.AR_PoidsNet;
+
+    // Calcul % vente
+    return calculateVente_p100(Vente_Poids, Report_Poids, Achat_Poids, Prod_Poids);
+  });
+  const vente_p100_Provider = onlyVente_p100.reduce((acc, cur, i, array) => {
+    if (array.length - 1 === i) return (acc + cur) / array.length;
+    return acc + cur;
+  }, 0);
+  return vente_p100_Provider;
+}
+
+export function calculateMarge_p100ForOneProvider(rows: Array<any>) {
+  const onlyMarge_p100 = rows.map(
+    (row) => ((parseFloat(row.article.AC_PrixVen ?? 0) - parseFloat(row.article.AR_PoidsBrut ?? 0)) / parseFloat(row.article.AR_PoidsBrut ?? 0)) * 100
+  );
+  return onlyMarge_p100.reduce((acc, cur, i, array) => {
+    if (array.length - 1 === i) return (acc + cur) / array.length;
+    return acc + cur;
+  }, 0);
+}

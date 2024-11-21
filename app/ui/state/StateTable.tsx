@@ -1,11 +1,32 @@
 import { DateSearchParamsProps } from "@/app/(views)/states/page";
 import TableBody from "./TableBody";
+import { fecthAchats, fecthArticles, fetchProductions, fetchReports, fetchVentes } from "@/app/lib/data/ste";
+import { Suspense } from "react";
+import TableFoot from "./TableFoot";
 
-export default function StateTable({ searchParams }: DateSearchParamsProps) {
+export default async function StateTable({ searchParams }: DateSearchParamsProps) {
+  const articles = await fecthArticles(searchParams?.to);
+  const reports = await fetchReports(searchParams?.from);
+  const achats = await fecthAchats(searchParams?.from, searchParams?.to);
+  const ventes = await fetchVentes(searchParams?.from, searchParams?.to);
+  const productions = await fetchProductions(searchParams?.from, searchParams?.to);
+
+  let rows: Array<any> = await articles.map((article: any) => {
+    return {
+      article,
+      achat: achats.filter((achat) => achat.AR_Ref == article.AR_Ref)[0],
+      vente: ventes.filter((vente) => vente.AR_Ref == article.AR_Ref)[0],
+      production: productions.filter((prod) => prod.AR_Ref == article.AR_Ref)[0],
+      report: reports.filter((report) => report.AR_Ref == article.AR_Ref)[0],
+    };
+  });
+
+  rows = await JSON.parse(JSON.stringify(rows));
+
   return (
     <div className="flex justify-center">
-      <table id="state-table" className="text-[11px] w-min table-auto">
-        <thead className="">
+      <table id="state-table" className="text-[11px] w-min table-auto mb-12">
+        <thead>
           <tr className="text-[12px]">
             <th colSpan={7}></th>
             <th colSpan={4} className="bg-violet-300 text-violet-950 border-violet-400 border py-1">
@@ -53,7 +74,10 @@ export default function StateTable({ searchParams }: DateSearchParamsProps) {
             <th className="bg-orange-300 text-orange-800 border-orange-400 border">Marge %</th>
           </tr>
         </thead>
-        <TableBody searchParams={searchParams} />
+        <Suspense>
+          <TableBody rows={rows} />
+        </Suspense>
+        <TableFoot rows={rows} />
       </table>
     </div>
   );

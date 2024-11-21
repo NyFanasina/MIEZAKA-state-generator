@@ -1,7 +1,7 @@
 "use client";
 import { FaFilter } from "react-icons/fa";
 import { Button, TextInput } from "flowbite-react";
-import { ChangeEvent, useEffect } from "react";
+import { ChangeEvent } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 export default function Search() {

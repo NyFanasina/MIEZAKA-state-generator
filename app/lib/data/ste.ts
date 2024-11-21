@@ -2,15 +2,15 @@
 import { STE_miezaka } from "@/prisma/clientSTE_Miezaka";
 import { calculateDayBefore } from "../utils";
 
-export async function fecthArticles() {
+export async function fecthArticles(to: string) {
   return await STE_miezaka.$queryRaw`SELECT 
     DISTINCT
      dbo.[F_ARTICLE].[AR_Ref]
     ,dbo.[F_ARTICLE].[Etat]                -- P+
-    ,dbo.[F_ARTICLE].[AR_PrixAch]          -- Prix Unitaire achat  
+    ,dbo.[F_ARTICLE].[AR_PrixAch]          -- Prix Unitaire achat
     ,dbo.[F_ARTCLIENT].[AC_PrixVen]        -- PU gros
-    ,dbo.[F_ARTICLE].[AR_PoidsNet]         -- Poid article                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
-    ,dbo.[F_ARTICLE].[AR_PoidsBrut]         -- Poid article      
+    ,dbo.[F_ARTICLE].[AR_PoidsNet]         -- Poid article
+    ,dbo.[F_ARTICLE].[AR_PoidsBrut]        -- Poid article      
     ,dbo.[F_ARTICLE].[cbCreation]
     ,dbo.[F_ARTFOURNISS].[CT_Num]
     ,dbo.[F_ARTFOURNISS].[AF_Devise]
@@ -51,6 +51,8 @@ export async function fecthArticles() {
         dbo.[F_DOCLIGNE].[DE_No] NOT IN (18,29,31,38,39,47,50)
             AND
         dbo.[F_COMPTET].[CT_Intitule] = 'ATTAR'
+            AND
+            dbo.[F_ARTICLE].[cbCreation] <= CAST(${to} as date)
         ORDER BY Nom_Fournisseur ASC;
     `;
 }
@@ -70,8 +72,6 @@ export async function fecthAchats(from: string, to: string) {
             dbo.[F_DOCLIGNE].[DO_Type] in (16,17)
                 AND 
             dbo.F_DOCLIGNE.AR_Ref IS NOT NULL
-                AND 
-            dbo.[F_DOCLIGNE].[DL_Qte] >= 0
                 AND 
             dbo.[F_DOCLIGNE].[DO_Date] BETWEEN CAST(${from} as date) AND CAST(${to} as date)
         GROUP BY 
@@ -109,7 +109,7 @@ export async function fetchProductions(from?: string, to?: string) {
         WHERE 
             dbo.[F_DOCLIGNE].[DO_Domaine] = 2
                 AND 
-            dbo.[F_DOCLIGNE].[DL_Qte] >= 0 
+            dbo.[F_DOCLIGNE].DL_TNomencl = 0 
                 AND 
             dbo.[F_DOCLIGNE].[AR_Ref] IS NOT NULL
                 AND 
@@ -127,44 +127,46 @@ export async function fetchReports(from: string) {
   const dayBefore = calculateDayBefore(from);
 
   return await STE_miezaka.$queryRaw`SELECT
-      AR_Ref
-  ,Qte_Prod + Qte_Achat + MouvEntree - MouveSortie - Qte_Vente  AS Qte
-      FROM
-      (
-      SELECT
-  DISTINCT
-      dbo.[F_DOCLIGNE].AR_Ref,
-      SUM(CASE
-         WHEN dbo.F_DOCLIGNE.DO_Type = 26 THEN dbo.[F_DOCLIGNE].[DL_Qte]
-              ELSE 0
-          END) AS Qte_Prod,
-      SUM(CASE
-         WHEN dbo.F_DOCLIGNE.DO_Type IN (6,7) THEN dbo.[F_DOCLIGNE].[DL_Qte]
-              ELSE 0
-          END) AS Qte_Vente,
-      SUM(CASE
-              WHEN dbo.F_DOCLIGNE.DO_Type IN (16,17) THEN dbo.[F_DOCLIGNE].[DL_Qte]
-              ELSE 0
-          END) AS Qte_Achat,
-      SUM(CASE
-              WHEN dbo.F_DOCLIGNE.DO_Type IN (20) THEN dbo.[F_DOCLIGNE].[DL_Qte]
-              ELSE 0
-          END) AS MouvEntree,
-      SUM(CASE
-              WHEN dbo.F_DOCLIGNE.DO_Type IN (21) THEN dbo.[F_DOCLIGNE].[DL_Qte]
-              ELSE 0
-          END) AS MouveSortie
-      FROM dbo.[F_DOCLIGNE]
-      WHERE
-            dbo.[F_DOCLIGNE].[DO_Domaine] IN (0,2,1)
-            AND dbo.[F_DOCLIGNE].AR_Ref IS NOT NULL
-            --AND dbo.[F_DOCLIGNE].[DL_Qte] >= 0
-            AND dbo.[F_DOCLIGNE].[DO_Type] IN (6,7,16,17,20,21,26)
-            AND dbo.[F_DOCLIGNE].[Do_Date] < CAST(${from} AS date) 
-      GROUP BY
-      dbo.[F_DOCLIGNE].AR_Ref
+  AR_Ref
+,Qte_Prod + Qte_Achat + MouvEntree -MouveSortie - Qte_Vente AS Qte
+  FROM
+  (
+  SELECT
+DISTINCT
+  dbo.[F_DOCLIGNE].AR_Ref,
+  SUM(CASE
+      WHEN dbo.F_DOCLIGNE.DO_Type = 26 AND dbo.[F_DOCLIGNE].DL_TNomencl = 0 THEN dbo.[F_DOCLIGNE].[DL_Qte]
+      WHEN dbo.F_DOCLIGNE.DO_Type = 26 AND dbo.[F_DOCLIGNE].DL_TNomencl = 1 THEN -dbo.[F_DOCLIGNE].[DL_Qte]
+      ELSE 0
+      END) AS Qte_Prod,
+  SUM(CASE
+      WHEN dbo.F_DOCLIGNE.DO_Type IN (6,7) THEN dbo.[F_DOCLIGNE].[DL_Qte]
+          ELSE 0
+      END) AS Qte_Vente,
+  SUM(CASE
+          WHEN dbo.F_DOCLIGNE.DO_Type IN (16,17) THEN dbo.[F_DOCLIGNE].[DL_Qte]
+          ELSE 0
+      END) AS Qte_Achat,
+  SUM(CASE
+          WHEN dbo.F_DOCLIGNE.DO_Type IN (20) THEN dbo.[F_DOCLIGNE].[DL_Qte]
+          ELSE 0
+      END) AS MouvEntree,
+  SUM(CASE
+          WHEN dbo.F_DOCLIGNE.DO_Type IN (21) THEN dbo.[F_DOCLIGNE].[DL_Qte]
+          ELSE 0
+      END) AS MouveSortie
+  FROM dbo.[F_DOCLIGNE]
+  WHERE
+          dbo.[F_DOCLIGNE].[DO_Domaine] IN (0,2,1)
+          AND dbo.[F_DOCLIGNE].AR_Ref IS NOT NULL
+          --AND dbo.[F_DOCLIGNE].[DL_Qte] >= 0
+          AND dbo.[F_DOCLIGNE].[DO_Type] IN (6,7,16,17,20,21,26)
+          AND dbo.[F_DOCLIGNE].[Do_Date] < CAST(${from} AS date) 
+          AND dbo.[F_DOCLIGNE].[DE_No] NOT IN (18,29,31,38,39,47,50)
+  GROUP BY
+  dbo.[F_DOCLIGNE].AR_Ref
 
-    ) AS Fango`;
+  ) AS Fango`;
 }
 
 export async function fetchDeviseFournisseur() {

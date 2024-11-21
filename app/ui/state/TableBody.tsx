@@ -1,38 +1,23 @@
+"use client";
 import {
+  calculateMarge_p100ForOneProvider,
   calculateTotalMontAchatForOneProvider,
   calculateTotalMontDedouanForOneProvider,
   calculateTotalPoidsForOneProvider,
   calculateTotalQteForOneProvider,
   calculateTotalVenteReelForOneProvider,
+  calculateVente_p100,
+  calculateVente_p100ForOneProvider,
   lowerThan15,
   parseDecimal,
 } from "@/app/lib/utils";
-import { DateSearchParamsProps } from "@/app/(views)/states/page";
-import { fecthAchats, fecthArticles, fetchProductions, fetchReports, fetchVentes } from "@/app/lib/data/ste";
 import { clsx } from "clsx";
-import { Fragment } from "react";
-import TableFoot from "./TableFoot";
+import { Fragment, useState } from "react";
 import { CategorieBalle } from "@/app/lib/definition";
-import { on } from "events";
 
-export default async function TableBody({ searchParams }: DateSearchParamsProps) {
-  const articles = await fecthArticles();
-  const reports = await fetchReports(searchParams?.from);
-  const achats = await fecthAchats(searchParams?.from, searchParams?.to);
-  const ventes = await fetchVentes(searchParams?.from, searchParams?.to);
-  const productions = await fetchProductions(searchParams?.from, searchParams?.to);
-
-  const rows: Array<any> = await articles.map((article: any) => {
-    return {
-      article,
-      achat: achats.filter((achat) => achat.AR_Ref == article.AR_Ref)[0],
-      vente: ventes.filter((vente) => vente.AR_Ref == article.AR_Ref)[0],
-      production: productions.filter((prod) => prod.AR_Ref == article.AR_Ref)[0],
-      report: reports.filter((report) => report.AR_Ref == article.AR_Ref)[0],
-    };
-  });
-
-  const rowsBySize: CategorieBalle = await rows.reduce((acc: Array<any>, curr, i) => {
+export default function TableBody({ rows }: { rows: any[] }) {
+  const [isActive, setActive] = useState<number>();
+  const rowsBySize: CategorieBalle = rows.reduce((acc: Array<any>, curr, i) => {
     const { Size } = curr.article;
 
     if (!acc[Size]) acc[Size] = [];
@@ -60,6 +45,10 @@ export default async function TableBody({ searchParams }: DateSearchParamsProps)
       return acc;
     }, {}),
   };
+
+  function handleRowClick(i: number) {
+    setActive(i);
+  }
 
   return (
     <>
@@ -116,7 +105,7 @@ export default async function TableBody({ searchParams }: DateSearchParamsProps)
                       {/* Article's rows */}
                       {rowsGrouped.map((row, i: number) => {
                         const Stock_Qte =
-                          parseInt(row.report?.Qte ?? 0) + parseInt(row.production?.Qte ?? 0) + parseInt(row.achat?.Qte ?? 0) - parseInt(row.vente?.Qte ?? 0);
+                          parseFloat(row.report?.Qte ?? 0) + parseInt(row.production?.Qte ?? 0) + parseInt(row.achat?.Qte ?? 0) - parseInt(row.vente?.Qte ?? 0);
 
                         const Vente_Poids = row.article?.AR_PoidsNet * (row.vente?.Qte ?? 0);
                         const Stock_Poids = parseFloat(parseDecimal(row.article?.AR_PoidsNet * Stock_Qte));
@@ -133,7 +122,13 @@ export default async function TableBody({ searchParams }: DateSearchParamsProps)
                           100;
 
                         return (
-                          <tr key={i} className="active:bg-amber-400 hover:bg-slate-100 hover:border hover:border-amber-500">
+                          <tr
+                            key={i}
+                            onClick={() => handleRowClick(i)}
+                            className={clsx("active:bg-amber-500 hover:bg-amber-200 hover:border hover:border-amber-200", {
+                              "bg-amber-400": isActive == i,
+                            })}
+                          >
                             {/* Article */}
                             <td
                               className={clsx("border-orange-400 border", {
@@ -143,8 +138,8 @@ export default async function TableBody({ searchParams }: DateSearchParamsProps)
                               {lowerThan15(Vente_p100)}
                             </td>
                             <td className="text-center ">{row.article.Etat}</td>
-                            <td>
-                              <sub className="text-lg ">{Stock_Poids >= 5000 ? "*" : ""}</sub>
+                            <td className="text-sm px-1 py-0">
+                              <sub>{Stock_Poids >= 5000 ? "*" : ""}</sub>
                             </td>
                             <td className="text-start font-bold text-red-600">{row.article.AR_Ref}</td>
                             <td className="text-center">{parseDecimal(row.article.AR_PrixAch)}</td>
@@ -261,46 +256,8 @@ export default async function TableBody({ searchParams }: DateSearchParamsProps)
           );
         })}
       </tbody>
-      <TableFoot rows={rows} />
     </>
   );
-}
-
-export function calculateVente_p100(Vente_Poids: number, Report_Poids: number, Achat_Poids: number, Prod_Poids: number) {
-  let Vente_p100 = Vente_Poids * 100;
-  if ((Report_Poids ?? 0) + (Achat_Poids ?? 0) + (Prod_Poids ?? 0) === 0) Vente_p100 = 0;
-  else Vente_p100 /= (Report_Poids ?? 0) + (Achat_Poids ?? 0) + (Prod_Poids ?? 0);
-  return Vente_p100;
-}
-
-export function calculateVente_p100ForOneProvider(rows: Array<any>) {
-  const onlyVente_p100 = rows.map((row) => {
-    const Stock_Qte = parseInt(row.report?.Qte ?? 0) + parseInt(row.production?.Qte ?? 0) + parseInt(row.achat?.Qte ?? 0) - parseInt(row.vente?.Qte ?? 0);
-
-    const Vente_Poids = row.article?.AR_PoidsNet * (row.vente?.Qte ?? 0);
-    const Stock_Poids = parseFloat(parseDecimal(row.article?.AR_PoidsNet * Stock_Qte));
-    const Report_Poids = row.article?.AR_PoidsNet * (row.report?.Qte ?? 0);
-    const Achat_Poids = row.article?.AR_PoidsNet * (row.achat?.Qte ?? 0);
-    const Prod_Poids = (row.production?.Qte ?? 0) * row.article.AR_PoidsNet;
-
-    // Calcul % vente
-    return calculateVente_p100(Vente_Poids, Report_Poids, Achat_Poids, Prod_Poids);
-  });
-  const vente_p100_Provider = onlyVente_p100.reduce((acc, cur, i, array) => {
-    if (array.length - 1 === i) return (acc + cur) / array.length;
-    return acc + cur;
-  }, 0);
-  return vente_p100_Provider;
-}
-
-export function calculateMarge_p100ForOneProvider(rows: Array<any>) {
-  const onlyMarge_p100 = rows.map(
-    (row) => ((parseFloat(row.article.AC_PrixVen ?? 0) - parseFloat(row.article.AR_PoidsBrut ?? 0)) / parseFloat(row.article.AR_PoidsBrut ?? 0)) * 100
-  );
-  return onlyMarge_p100.reduce((acc, cur, i, array) => {
-    if (array.length - 1 === i) return (acc + cur) / array.length;
-    return acc + cur;
-  }, 0);
 }
 
 function calculate_PU_Provider(rows: Array<any>) {

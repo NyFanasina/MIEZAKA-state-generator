@@ -1,12 +1,13 @@
 import {
+  calculateMarge_p100ForOneProvider,
   calculateTotalMontAchatForOneProvider,
   calculateTotalMontDedouanForOneProvider,
   calculateTotalPoidsForOneProvider,
   calculateTotalQteForOneProvider,
   calculateTotalVenteReelForOneProvider,
+  calculateVente_p100ForOneProvider,
   parseDecimal,
 } from "@/app/lib/utils";
-import { calculateMarge_p100ForOneProvider, calculateVente_p100ForOneProvider } from "./TableBody";
 import { fetchDeviseFournisseur } from "@/app/lib/data/ste";
 
 export default async function TableFoot({ rows }: { rows: any[] }) {
@@ -22,7 +23,6 @@ export default async function TableFoot({ rows }: { rows: any[] }) {
   function calculateValDedouanDev(rowsByProvider: any[], type: "report" | "achat" | "stock" | "vente" | "production") {
     const ValEnDevise = Object.entries(rowsByProvider).map(([provider, data]: [string, Array<any>]) => {
       let valDevise = 1;
-      if (type === "production") console.log(data);
       const AF_Devise = devise_Fournisseur.filter((item: any) => item.Nom_Fournisseur === provider)[0]?.Devise;
       if (AF_Devise == 2) valDevise = 5000;
       return calculateTotalMontDedouanForOneProvider(data, type) / valDevise;
@@ -71,108 +71,108 @@ export default async function TableFoot({ rows }: { rows: any[] }) {
   return (
     <tfoot className="text-end">
       <tr>
-        <td colSpan={3}></td>
-        <td className="border text-start">TOTAL GENERAL</td>
-        <td className="border text-center">{parseDecimal(PU_G)}</td>
-        <td className="border"></td>
-        <td className="border"></td>
+        <td colSpan={3} className="border-none"></td>
+        <td className=" text-start">TOTAL GENERAL</td>
+        <td className=" text-center">{parseDecimal(PU_G)}</td>
+        <td className=""></td>
+        <td className=""></td>
         {/* Repport */}
-        <td className="border">{parseDecimal(Report_Qte)}</td>
-        <td className="border">{parseDecimal(Report_Poids)}</td>
-        <td className="border">{parseDecimal(Report_MontAchat)}</td>
-        <td className="border">{parseDecimal(Report_MontDedouan)}</td>
+        <td className="">{parseDecimal(Report_Qte)}</td>
+        <td className="">{parseDecimal(Report_Poids)}</td>
+        <td className="">{parseDecimal(Report_MontAchat)}</td>
+        <td className="">{parseDecimal(Report_MontDedouan)}</td>
         {/* Achat */}
-        <td className="border">{parseDecimal(Achat_Qte)}</td>
-        <td className="border">{parseDecimal(Achat_Poids)}</td>
-        <td className="border">{parseDecimal(Achat_MontAchat)}</td>
-        <td className="border">{parseDecimal(Achat_MontDedouan)}</td>
+        <td className="">{parseDecimal(Achat_Qte)}</td>
+        <td className="">{parseDecimal(Achat_Poids)}</td>
+        <td className="">{parseDecimal(Achat_MontAchat)}</td>
+        <td className="">{parseDecimal(Achat_MontDedouan)}</td>
         {/* Production */}
-        <td className="border">{parseDecimal(Prod_Qte)}</td>
-        <td className="border">{parseDecimal(Prod_Poids)}</td>
+        <td className="">{parseDecimal(Prod_Qte)}</td>
+        <td className="">{parseDecimal(Prod_Poids)}</td>
         {/* Vente */}
-        <td className="border">{parseDecimal(Vente_Qte)}</td>
-        <td className="border">{parseDecimal(Vente_Poids)}</td>
-        <td className="border">{parseDecimal(Vente_MontDedouan)}</td>
-        <td className="border">{parseDecimal(Vente_VenteReelle)}</td>
+        <td className="">{parseDecimal(Vente_Qte)}</td>
+        <td className="">{parseDecimal(Vente_Poids)}</td>
+        <td className="">{parseDecimal(Vente_MontDedouan)}</td>
+        <td className="">{parseDecimal(Vente_VenteReelle)}</td>
         {/* Stock */}
-        <td className="border">{parseDecimal(Stock_Qte)}</td>
-        <td className="border">{parseDecimal(Stock_Poids)}</td>
-        <td className="border">{parseDecimal(Stock_MontDedouan)}</td>
+        <td className="">{parseDecimal(Stock_Qte)}</td>
+        <td className="">{parseDecimal(Stock_Poids)}</td>
+        <td className="">{parseDecimal(Stock_MontDedouan)}</td>
         {/* vente % and marge % */}
-        <td className="border">{parseDecimal(Vente_p100)}</td>
-        <td className="border">{parseDecimal(Marge_p100)}</td>
+        <td className="">{parseDecimal(Vente_p100)}</td>
+        <td className="">{parseDecimal(Marge_p100)}</td>
       </tr>
       <tr>
-        <td colSpan={3}></td>
-        <td className="border text-start">TOTAL VAL ACH DEVISE</td>
-        <td className="border text-center"></td>
-        <td className="border"></td>
-        <td className="border"></td>
-        <td colSpan={4} className="border">
+        <td colSpan={3} className="border-none"></td>
+        <td className=" text-start">TOTAL VAL ACH DEVISE</td>
+        <td className=" text-center"></td>
+        <td></td>
+        <td></td>
+        <td colSpan={4} className="pe-1">
           {parseDecimal(REPORT_TOTAL_VAL_ACH_DEVISE)}
         </td>
-        <td colSpan={4} className="border">
+        <td colSpan={4} className="pe-1">
           {parseDecimal(ACHAT_TOTAL_VAL_ACH_DEVISE)}
         </td>
-        <td colSpan={2} className="border">
+        <td colSpan={2} className="pe-1">
           {parseDecimal(PROD_TOTAL_VAL_ACH_DEVISE)}
         </td>
-        <td colSpan={4} className="border">
+        <td colSpan={4} className="pe-1">
           {parseDecimal(VENTE_TOTAL_VAL_ACH_DEVISE)}
         </td>
-        <td colSpan={3} className="border">
+        <td colSpan={3} className="pe-1">
           {parseDecimal(STOCK_TOTAL_VAL_ACH_DEVISE)}
         </td>
-        <td className="border"></td>
-        <td className="border"></td>
+        <td className=""></td>
+        <td className=""></td>
       </tr>
       <tr>
-        <td colSpan={3}></td>
-        <td className="border text-start">TOTAL VAL DEDOUANE DEV</td>
-        <td className="border text-center"></td>
-        <td className="border"></td>
-        <td className="border"></td>
-        <td colSpan={4} className="border">
+        <td colSpan={3} className="border-none"></td>
+        <td className=" text-start">TOTAL VAL DEDOUANE DEV</td>
+        <td className=" text-center"></td>
+        <td></td>
+        <td></td>
+        <td colSpan={4} className="pe-1">
           {parseDecimal(REPORT_VAL_DEDOUAN_DEV)}
         </td>
-        <td colSpan={4} className="border">
+        <td colSpan={4} className="pe-1">
           {ACHAT_VAL_DEDOUAN_DEV}
         </td>
-        <td colSpan={2} className="border">
+        <td colSpan={2} className="pe-1">
           {parseDecimal(PROD_VAL_DEDOUAN_DEV)}
         </td>
-        <td colSpan={4} className="border">
+        <td colSpan={4} className="pe-1">
           {parseDecimal(VENTE_VAL_DEDOUAN_DEV)}
         </td>
-        <td colSpan={3} className="border">
+        <td colSpan={3} className="pe-1">
           {parseDecimal(STOCK_VAL_DEDOUAN_DEV)}
         </td>
-        <td className="border"></td>
-        <td className="border"></td>
+        <td></td>
+        <td></td>
       </tr>
-      <tr>
-        <td colSpan={3}></td>
-        <td className="border text-start">VALEUR DEDOUANEÉ AR</td>
-        <td className="border text-center">{parseDecimal(PU_G)}</td>
-        <td className="border"></td>
-        <td className="border"></td>
-        <td colSpan={4} className="border">
+      <tr className="bg-green-300">
+        <td colSpan={3} className="border-none"></td>
+        <td className=" text-start">VALEUR DEDOUANEÉ AR</td>
+        <td className=" text-center">{parseDecimal(PU_G)}</td>
+        <td></td>
+        <td></td>
+        <td colSpan={4} className="pe-1">
           {parseDecimal(REPORT_VAL_DEDOUAN_AR)}
         </td>
-        <td colSpan={4} className="border">
+        <td colSpan={4} className="pe-1">
           {parseDecimal(Achat_MontDedouan)}
         </td>
-        <td colSpan={2} className="border">
+        <td colSpan={2} className="pe-1">
           {parseDecimal(PROD_VAL_DEDOUAN_AR)}
         </td>
-        <td colSpan={4} className="border">
+        <td colSpan={4} className="pe-1">
           {parseDecimal(Vente_MontDedouan)}
         </td>
-        <td colSpan={3} className="border">
+        <td colSpan={3} className="pe-1">
           {parseDecimal(STOCK_VAL_DEDOUAN_AR)}
         </td>
-        <td className="border">{parseDecimal(Vente_p100)}</td>
-        <td className="border">{parseDecimal(Marge_p100)}</td>
+        <td className="text-center">{parseDecimal(Vente_p100)}</td>
+        <td className="text-center">{parseDecimal(Marge_p100)}</td>
       </tr>
     </tfoot>
   );
