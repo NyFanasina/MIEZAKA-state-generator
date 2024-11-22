@@ -1,4 +1,4 @@
-// "use server";
+"use server";
 import { STE_miezaka } from "@/prisma/clientSTE_Miezaka";
 import { calculateDayBefore } from "../utils";
 

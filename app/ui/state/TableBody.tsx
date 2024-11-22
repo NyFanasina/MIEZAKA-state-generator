@@ -1,6 +1,9 @@
 "use client";
 import {
   calculateMarge_p100ForOneProvider,
+  calculatePoids,
+  calculatePoidsStock,
+  calculateQteStock,
   calculateTotalMontAchatForOneProvider,
   calculateTotalMontDedouanForOneProvider,
   calculateTotalPoidsForOneProvider,
@@ -28,22 +31,24 @@ export default function TableBody({ rows }: { rows: any[] }) {
   }, {});
 
   const rowsBySizeByProvider: CategorieBalle = {
-    "GROSSE BALLE": rowsBySize["GROSSE BALLE"]?.reduce((acc, curr) => {
-      const provider = curr.article.Nom_Fournisseur;
+    "GROSSE BALLE":
+      rowsBySize["GROSSE BALLE"]?.reduce((acc, curr) => {
+        const provider = curr.article.Nom_Fournisseur;
 
-      if (!acc[provider]) acc[provider] = [];
+        if (!acc[provider]) acc[provider] = [];
 
-      acc[provider].push(curr);
-      return acc;
-    }, {}),
-    "PETITE BALLE": rowsBySize["PETITE BALLE"]?.reduce((acc, curr) => {
-      const provider = curr.article.Nom_Fournisseur;
+        acc[provider].push(curr);
+        return acc;
+      }, {}) ?? [],
+    "PETITE BALLE":
+      rowsBySize["PETITE BALLE"]?.reduce((acc, curr) => {
+        const provider = curr.article.Nom_Fournisseur;
 
-      if (!acc[provider]) acc[provider] = [];
+        if (!acc[provider]) acc[provider] = [];
 
-      acc[provider].push(curr);
-      return acc;
-    }, {}),
+        acc[provider].push(curr);
+        return acc;
+      }, {}) ?? [],
   };
 
   function handleRowClick(i: number) {
@@ -104,22 +109,19 @@ export default function TableBody({ rows }: { rows: any[] }) {
                     <Fragment key={i2}>
                       {/* Article's rows */}
                       {rowsGrouped.map((row, i: number) => {
-                        const Stock_Qte =
-                          parseFloat(row.report?.Qte ?? 0) + parseInt(row.production?.Qte ?? 0) + parseInt(row.achat?.Qte ?? 0) - parseInt(row.vente?.Qte ?? 0);
-
-                        const Vente_Poids = row.article?.AR_PoidsNet * (row.vente?.Qte ?? 0);
-                        const Stock_Poids = parseFloat(parseDecimal(row.article?.AR_PoidsNet * Stock_Qte));
-                        const Report_Poids = row.article?.AR_PoidsNet * (row.report?.Qte ?? 0);
-                        const Achat_Poids = row.article?.AR_PoidsNet * (row.achat?.Qte ?? 0);
-                        const Prod_Poids = (row.production?.Qte ?? 0) * row.article.AR_PoidsNet;
+                        const Stock_Qte = calculateQteStock(row);
+                        const Vente_Poids = calculatePoids(row, "vente");
+                        const Stock_Poids = calculatePoidsStock(row);
+                        const Report_Poids = calculatePoids(row, "report");
+                        const Achat_Poids = calculatePoids(row, "achat");
+                        const Prod_Poids = calculatePoids(row, "production");
 
                         // Calcul % vente
-                        const Vente_p100 = calculateVente_p100(Vente_Poids, Report_Poids, Achat_Poids, Prod_Poids);
+                        const Vente_p100 = calculateVente_p100(row);
 
                         // Calcul % marge
                         const Marge_p100 =
-                          ((parseFloat(row.article.AC_PrixVen ?? 0) - parseFloat(row.article.AR_PoidsBrut ?? 0)) / parseFloat(row.article.AR_PoidsBrut ?? 0)) *
-                          100;
+                          ((parseFloat(row.article.AC_PrixVen ?? 0) - parseFloat(row.article.AR_PoidsBrut ?? 0)) / parseFloat(row.article.AR_PoidsBrut ?? 0)) * 100;
 
                         return (
                           <tr
@@ -131,7 +133,7 @@ export default function TableBody({ rows }: { rows: any[] }) {
                           >
                             {/* Article */}
                             <td
-                              className={clsx("border-orange-400 border", {
+                              className={clsx("border-orange-400 border text-center", {
                                 "text-red-vif": Marge_p100 < 0,
                               })}
                             >

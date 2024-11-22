@@ -11,7 +11,7 @@ import {
 import { fetchDeviseFournisseur } from "@/app/lib/data/ste";
 
 export default async function TableFoot({ rows }: { rows: any[] }) {
-  const devise_Fournisseur: any = await fetchDeviseFournisseur();
+  // const devise_Fournisseur: any = await fetchDeviseFournisseur();
   const rowsByProvider = rows.reduce((acc: any, cur: any) => {
     const providername = cur.article.Nom_Fournisseur;
 
@@ -23,7 +23,7 @@ export default async function TableFoot({ rows }: { rows: any[] }) {
   function calculateValDedouanDev(rowsByProvider: any[], type: "report" | "achat" | "stock" | "vente" | "production") {
     const ValEnDevise = Object.entries(rowsByProvider).map(([provider, data]: [string, Array<any>]) => {
       let valDevise = 1;
-      const AF_Devise = devise_Fournisseur.filter((item: any) => item.Nom_Fournisseur === provider)[0]?.Devise;
+      const AF_Devise = ["ATTAR", "ATTAR PRO"].filter((item: any) => item.Nom_Fournisseur === provider)[0]?.Devise;
       if (AF_Devise == 2) valDevise = 5000;
       return calculateTotalMontDedouanForOneProvider(data, type) / valDevise;
     });

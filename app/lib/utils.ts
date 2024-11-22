@@ -34,7 +34,9 @@ export function lowerThan15(value: number) {
   else if (value > 50) return "+50";
 }
 
-export function calculateTotalQteForOneProvider(rows: Array<any>, type: "vente" | "report" | "achat" | "production" | "stock") {
+type MouvementType = "vente" | "report" | "achat" | "production" | "stock";
+
+export function calculateTotalQteForOneProvider(rows: Array<any>, type: MouvementType) {
   if (type === "stock") {
     const QteStocks = rows.map(
       (elt) => parseInt(elt.report?.Qte ?? 0) + parseInt(elt.production?.Qte ?? 0) + parseInt(elt.achat?.Qte ?? 0) - parseInt(elt.vente?.Qte ?? 0)
@@ -46,7 +48,7 @@ export function calculateTotalQteForOneProvider(rows: Array<any>, type: "vente" 
   return onlyQte.reduce((acc, cur) => parseInt(acc) + parseInt(cur), 0);
 }
 
-export function calculateTotalPoidsForOneProvider(rows: Array<any>, type: "vente" | "report" | "achat" | "production" | "stock") {
+export function calculateTotalPoidsForOneProvider(rows: Array<any>, type: MouvementType) {
   if (type === "stock") {
     const onlyPoids = rows.map((elt) => {
       const Stock_Qte = parseInt(elt.report?.Qte ?? 0) + parseInt(elt.production?.Qte ?? 0) + parseInt(elt.achat?.Qte ?? 0) - parseInt(elt.vente?.Qte ?? 0);
@@ -63,7 +65,7 @@ export function calculateTotalMontAchatForOneProvider(rows: Array<any>, type: "r
   return onlyMontAchat.reduce((acc, cur) => acc + cur, 0);
 }
 
-export function calculateTotalMontDedouanForOneProvider(rows: Array<any>, type: "vente" | "achat" | "report" | "stock" | "production") {
+export function calculateTotalMontDedouanForOneProvider(rows: Array<any>, type: MouvementType) {
   if (type === "stock") {
     const onlyMontDedouan = rows.map((elt) => {
       const Stock_Qte = parseInt(elt.report?.Qte ?? 0) + parseInt(elt.production?.Qte ?? 0) + parseInt(elt.achat?.Qte ?? 0) - parseInt(elt.vente?.Qte ?? 0);
@@ -81,8 +83,12 @@ export function calculateTotalVenteReelForOneProvider(rows: Array<any>, type: "v
   return onlyVentesReelles.reduce((acc, cur) => acc + cur, 0);
 }
 
-export function calculateVente_p100(Vente_Poids: number, Report_Poids: number, Achat_Poids: number, Prod_Poids: number) {
-  let Vente_p100 = Vente_Poids * 100;
+export function calculateVente_p100(row: Array<any>) {
+  const Report_Poids = calculatePoids(row, "report");
+  const Achat_Poids = calculatePoids(row, "achat");
+  const Prod_Poids = calculatePoids(row, "production");
+
+  let Vente_p100 = calculatePoids(row, "vente") * 100;
   if ((Report_Poids ?? 0) + (Achat_Poids ?? 0) + (Prod_Poids ?? 0) === 0) Vente_p100 = 0;
   else Vente_p100 /= (Report_Poids ?? 0) + (Achat_Poids ?? 0) + (Prod_Poids ?? 0);
   return Vente_p100;
@@ -116,4 +122,16 @@ export function calculateMarge_p100ForOneProvider(rows: Array<any>) {
     if (array.length - 1 === i) return (acc + cur) / array.length;
     return acc + cur;
   }, 0);
+}
+
+export function calculateQteStock(row) {
+  return parseFloat(row.report?.Qte ?? 0) + parseInt(row.production?.Qte ?? 0) + parseInt(row.achat?.Qte ?? 0) - parseInt(row.vente?.Qte ?? 0);
+}
+
+export function calculatePoidsStock(row) {
+  return parseFloat(row.article?.AR_PoidsNet) * calculateQteStock(row);
+}
+
+export function calculatePoids(row, type: MouvementType) {
+  return row.article?.AR_PoidsNet * (row[type]?.Qte ?? 0);
 }

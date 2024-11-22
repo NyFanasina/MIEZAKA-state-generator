@@ -1,8 +1,8 @@
 import { z } from "zod";
 
 export interface CategorieBalle {
-  "PETITE BALLE": Array<any>;
-  "GROSSE BALLE": Array<any>;
+  "PETITE BALLE"?: Array<any>;
+  "GROSSE BALLE"?: Array<any>;
 }
 
 export const SignInSchema = z.object({
