@@ -4,14 +4,14 @@ import { revalidatePath } from "next/cache";
 import { RegisterState, SignUpEditSchema } from "../definition";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { redirect } from "next/navigation";
+import { deleteFile, uploadFile } from "../uploadFileHandler";
 const bcrypt = require("bcrypt");
 
 export async function deleteUser(id: number) {
   try {
-    await prisma.user.delete({
-      where: { id },
+    prisma.user.delete({ where: { id } }).then((user) => {
+      if (user.photo) deleteFile(user.photo);
     });
-
     revalidatePath(`/users`);
   } catch (error) {
     console.log("Database error : ", error);
@@ -30,25 +30,30 @@ export async function updateUser(state: RegisterState, formData: FormData) {
   });
 
   if (!validatedFields.success) {
-    console.log(validatedFields.error.flatten());
     return {
       ok: false,
       error: validatedFields.error.flatten().fieldErrors,
     };
   }
 
-  const { id, password } = validatedFields.data;
+  const { id, password, photo } = validatedFields.data;
   const hashedPassword = await bcrypt.hash(password, 10);
 
   try {
-    const dd = await prisma.user.update({
-      where: {
-        id,
-      },
-      data: { ...validatedFields.data, password: hashedPassword, id: undefined },
-    });
+    const filename = photo.size ? await uploadFile(photo) : undefined;
+    const oldFilename = (await prisma.user.findUnique({ where: { id }, select: { photo: true } }))?.photo ?? "";
+
+    prisma.user
+      .update({
+        where: {
+          id,
+        },
+        data: { ...validatedFields.data, password: hashedPassword, id: undefined, photo: filename },
+      })
+      .then(() => {
+        if (filename) deleteFile(oldFilename);
+      });
   } catch (e) {
-    console.log(e);
     if (e instanceof PrismaClientKnownRequestError)
       return {
         ok: false,
