@@ -21,7 +21,7 @@ export default async function StateTable({ searchParams }: DateSearchParamsProps
       report: reports.filter((report) => report.AR_Ref == article.AR_Ref)[0],
     };
   });
-
+  // let rows = require("/home/fango/Bureau/Data.json");
   if (searchParams?.category) {
     rows = rows.filter((row) => row.article.Size.includes(searchParams?.category?.toUpperCase()));
   }

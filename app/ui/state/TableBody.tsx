@@ -143,7 +143,15 @@ export default function TableBody({ rows }: { rows: any[] }) {
                             <td className="text-sm px-1 py-0">
                               <sub>{Stock_Poids >= 5000 ? "*" : ""}</sub>
                             </td>
-                            <td className="text-start font-bold text-red-600">{row.article.AR_Ref}</td>
+                            <td
+                              className={clsx("text-start font-bold", {
+                                "text-[#222]": Marge_p100 > 0,
+                                "text-red-600": Marge_p100 < 0,
+                                "bg-pink-200": Stock_Poids >= 5000 && Marge_p100 < 0,
+                              })}
+                            >
+                              {row.article.AR_Ref}
+                            </td>
                             <td className="text-center">{parseDecimal(row.article.AR_PrixAch)}</td>
                             <td>{parseDecimal(row.article.AR_PoidsBrut)}</td>
                             <td>{parseDecimal(row.article.AC_PrixVen)}</td>

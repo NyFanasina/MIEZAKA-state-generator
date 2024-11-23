@@ -23,17 +23,15 @@ export default function Search() {
     router.replace(`${pathname}?${params.toString()}`);
   }
 
-  function handleRadio(event: ChangeEvent<HTMLInputElement>) {
+  function handleRadio(id: string) {
     const params = new URLSearchParams(searchParams);
-    if (!event.target.checked) {
-    }
-    params.set("category", event.target.value);
+    params.set("category", id);
     router.replace(`${pathname}?${params.toString()}`);
   }
 
-  function handleVente_p100(event: ChangeEvent<HTMLInputElement>) {
+  function handleVente_p100(id: string) {
     const params = new URLSearchParams(searchParams);
-    params.set("vente_p100", event.target.value);
+    params.set("vente_p100", id);
     router.replace(`${pathname}?${params.toString()}`);
   }
 
@@ -46,10 +44,10 @@ export default function Search() {
   return (
     <div className="flex justify-between mx-5">
       <div className="flex self-center gap-2">
-        <CategoryFilter handle={handleRadio} value={searchParams.get("category") ?? ""} />
-        <WeightFilter handle={handleWeight} value={searchParams.get("weight") ?? ""} />
-        <Vente_p100_Filter handle={handleVente_p100} value={searchParams.get("vente_p100") ?? ""} />
-        <EtatFilter handle={handleState} value={searchParams.get("state") ?? ""} />
+        <CategoryFilter handle={handleRadio} query={searchParams.get("category") ?? ""} />
+        <WeightFilter handle={handleWeight} query={searchParams.get("weight") ?? ""} />
+        <Vente_p100_Filter handle={handleVente_p100} query={searchParams.get("vente_p100") ?? ""} />
+        <EtatFilter handle={handleState} query={searchParams.get("state") ?? ""} />
       </div>
 
       <div className="flex items-center gap-1 bg-slate-100 px-4 py-2 rounded-lg mb-2">
@@ -57,6 +55,10 @@ export default function Search() {
         <TextInput type="date" onChange={handleDate} id="from" defaultValue={searchParams.get("from")?.toString()} />
         <TextInput type="date" onChange={handleDate} id="to" defaultValue={searchParams.get("to")?.toString()} />
         <Button type="button">FILTRER</Button>
+        <Dropdown label="EXPORTER">
+          <Dropdown.Item>Exporter en PDF</Dropdown.Item>
+          <Dropdown.Item>Exporter en CLSX</Dropdown.Item>
+        </Dropdown>
       </div>
     </div>
   );
@@ -64,89 +66,87 @@ export default function Search() {
 
 interface FilterProps {
   handle: any;
-  value: string;
+  query: string;
 }
 
-function CategoryFilter({ handle, value = "" }: FilterProps) {
+function CategoryFilter({ handle, query = "" }: FilterProps) {
+  const array = [
+    { name: "Tous", value: "" },
+    { name: "Petite Balle", value: "petite" },
+    { name: "Grosse Balle", value: "grosse" },
+  ];
+
   return (
-    <Dropdown color="gray" label={value ? `Catégorie (${value})` : "Catégorie"} dismissOnClick={false}>
-      <div className="flex flex-col items-start p-3">
-        <h6>Affiner les résultats par catégorie</h6>
-        <div className="*:py-2">
-          <div className="flex items-center gap-2">
-            <Radio id="all" name="countries" value="" onChange={handle} defaultChecked />
-            <Label htmlFor="all">Tous</Label>
-          </div>
-          <div className="flex items-center gap-2">
-            <Radio id="big" name="countries" value="grosse" onChange={handle} />
-            <Label htmlFor="big">Grosse Balle</Label>
-          </div>
-          <div className="flex items-center gap-2">
-            <Radio id="small" name="countries" value="petite" onChange={handle} />
-            <Label htmlFor="small">Petite Balle</Label>
-          </div>
-        </div>
-      </div>
+    <Dropdown color="gray" label={query ? `Catégorie (${query})` : "Catégorie"} dismissOnClick={false}>
+      {array.map(({ name, value }) => (
+        <Dropdown.Item className="flex items-center gap-2" as="button" key={name} onClick={() => handle(value)}>
+          <Radio id={name} name="category" value={value} checked={query == value} readOnly />
+          <Label htmlFor="small">{name}</Label>
+        </Dropdown.Item>
+      ))}
     </Dropdown>
   );
 }
 
-function WeightFilter({ handle, value }: FilterProps) {
+function WeightFilter({ handle, query }: FilterProps) {
+  const array = [
+    { name: "Tous", value: "" },
+    { name: "+ 5tonnes", value: "-5t" },
+    { name: "-  5tonnes", value: "+5t" },
+  ];
+
   return (
-    <Dropdown color="gray" label={value ? `Poids (${value})` : "Poids"}>
-      <Dropdown.Item onClick={() => handle("")}>Tous</Dropdown.Item>
-      <Dropdown.Item onClick={() => handle("-5t")}>-5t</Dropdown.Item>
-      <Dropdown.Item onClick={() => handle("+5t")}>+5t</Dropdown.Item>
+    <Dropdown color="gray" label={query ? `Poids (${query})` : "Poids"} dismissOnClick={false}>
+      {array.map(({ name, value }) => (
+        <Dropdown.Item className="flex items-center gap-2" key={name} onClick={() => handle(value)}>
+          <Radio value={name} name="weight" id={name} key={name} checked={query == value} readOnly />
+          <Label value={name} htmlFor={name} />
+        </Dropdown.Item>
+      ))}
     </Dropdown>
   );
 }
 
-function Vente_p100_Filter({ handle, value }: FilterProps) {
+function Vente_p100_Filter({ handle, query }: FilterProps) {
+  const array = [
+    { name: "Tous", value: "" },
+    { name: "-15", value: "-15" },
+    { name: "-30", value: "-30" },
+    { name: "-50", value: "-50" },
+    { name: "+50", value: "+50" },
+    { name: "+75", value: "+75" },
+  ];
+
   return (
-    <Dropdown color="gray" label={value ? `% vente (${value})` : "% vente"} dismissOnClick={false}>
-      <Dropdown.Item className="flex items-center gap-2">
-        <Radio id="all" name="vente_p100" onChange={handle} defaultChecked value={""} />
-        <Label htmlFor="all" className="flex" value="Tous" />
-      </Dropdown.Item>
-      <Dropdown.Item className="flex items-center gap-2">
-        <Radio id="-15" name="vente_p100" onChange={handle} value="-15" />
-        <Label htmlFor="-15" className="flex" value="- 15" />
-      </Dropdown.Item>
-      <Dropdown.Item className="flex items-center gap-2">
-        <Radio id="-30" name="vente_p100" onChange={handle} value="-30" />
-        <Label htmlFor="-30" className="flex" value="- 30" />
-      </Dropdown.Item>
-      <Dropdown.Item className="flex items-center gap-2">
-        <Radio id="-50" name="vente_p100" onChange={handle} value="-50" />
-        <Label htmlFor="-50" className="flex" value="- 50" />
-      </Dropdown.Item>
-      <Dropdown.Item className="flex items-center gap-2">
-        <Radio id="+50" name="vente_p100" onChange={handle} value="+50" />
-        <Label htmlFor="+50" className="flex" value="+50" />
-      </Dropdown.Item>
-      <Dropdown.Item className="flex items-center gap-2">
-        <Radio id="+75" name="vente_p100" onChange={handle} value="+75" />
-        <Label htmlFor="+75" className="flex" value="+75" />
-      </Dropdown.Item>
+    <Dropdown color="gray" label={query ? `% vente (${query})` : "% vente"} dismissOnClick={false}>
+      {array.map(({ name, value }) => (
+        <Dropdown.Item className="flex items-center gap-2" key={name} onClick={() => handle(value)}>
+          <Radio id={name} name="vente_p100" value={value} checked={value == query} readOnly />
+          <Label htmlFor={name} value={name} />
+        </Dropdown.Item>
+      ))}
     </Dropdown>
   );
 }
 
-function EtatFilter({ handle, value }: FilterProps) {
+function EtatFilter({ handle, query }: FilterProps) {
   const [etats, setEtats] = useState<[]>();
 
   useEffect(() => {
     (async () => fetchEtats().then((resp: any) => setEtats(resp.map((item: any) => item.Etat))))();
+    // (async () => fetchEtats().then((resp: any) => setEtats(resp)))();
   }, []);
 
   return (
-    <Dropdown color="gray" label={value ? `Etat (${value})` : "Etat"}>
-      <Dropdown.Item as="button" onClick={() => handle("")}>
-        Tous
+    <Dropdown color="gray" label={query ? `Etat (${query})` : "Etat"}>
+      <Dropdown.Item onClick={() => handle("")} className="flex items-center gap-2">
+        <Radio id="tous" name="vente_p100" value="" defaultChecked={true} />
+        <Label htmlFor="tous" value="Tous" />
       </Dropdown.Item>
-      {etats?.map((item) => (
-        <Dropdown.Item key={item} as="button" onClick={() => handle(item)}>
-          {item}
+      {etats?.map((etat) => (
+        <Dropdown.Item key={etat} className="flex items-center gap-2" onClick={() => handle(etat)}>
+          <Radio id={etat} name="vente_p100" value={etat} checked={etat == query} readOnly />
+          <Label htmlFor={etat} value={etat} />
         </Dropdown.Item>
       ))}
     </Dropdown>
