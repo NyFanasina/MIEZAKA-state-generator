@@ -21,8 +21,9 @@ export function capitalizeString(word: string) {
 }
 
 export function parseDecimal(value: any) {
+  const formatter = Intl.NumberFormat("fr-FR", { style: "decimal", minimumFractionDigits: 2, maximumFractionDigits: 2 });
   if (isNaN(value)) return parseFloat("0").toFixed(2);
-  return parseFloat(value).toFixed(2);
+  return formatter.format(value);
 }
 
 export function lowerThan15(value: number) {
@@ -33,7 +34,9 @@ export function lowerThan15(value: number) {
   else if (value > 50) return "+50";
 }
 
-export function calculateTotalQteForOneProvider(rows: Array<any>, type: "vente" | "report" | "achat" | "production" | "stock") {
+type MouvementType = "vente" | "report" | "achat" | "production" | "stock";
+
+export function calculateTotalQteForOneProvider(rows: Array<any>, type: MouvementType) {
   if (type === "stock") {
     const QteStocks = rows.map(
       (elt) => parseInt(elt.report?.Qte ?? 0) + parseInt(elt.production?.Qte ?? 0) + parseInt(elt.achat?.Qte ?? 0) - parseInt(elt.vente?.Qte ?? 0)
@@ -45,7 +48,7 @@ export function calculateTotalQteForOneProvider(rows: Array<any>, type: "vente" 
   return onlyQte.reduce((acc, cur) => parseInt(acc) + parseInt(cur), 0);
 }
 
-export function calculateTotalPoidsForOneProvider(rows: Array<any>, type: "vente" | "report" | "achat" | "production" | "stock") {
+export function calculateTotalPoidsForOneProvider(rows: Array<any>, type: MouvementType) {
   if (type === "stock") {
     const onlyPoids = rows.map((elt) => {
       const Stock_Qte = parseInt(elt.report?.Qte ?? 0) + parseInt(elt.production?.Qte ?? 0) + parseInt(elt.achat?.Qte ?? 0) - parseInt(elt.vente?.Qte ?? 0);
@@ -62,7 +65,7 @@ export function calculateTotalMontAchatForOneProvider(rows: Array<any>, type: "r
   return onlyMontAchat.reduce((acc, cur) => acc + cur, 0);
 }
 
-export function calculateTotalMontDedouanForOneProvider(rows: Array<any>, type: "vente" | "achat" | "report" | "stock") {
+export function calculateTotalMontDedouanForOneProvider(rows: Array<any>, type: MouvementType) {
   if (type === "stock") {
     const onlyMontDedouan = rows.map((elt) => {
       const Stock_Qte = parseInt(elt.report?.Qte ?? 0) + parseInt(elt.production?.Qte ?? 0) + parseInt(elt.achat?.Qte ?? 0) - parseInt(elt.vente?.Qte ?? 0);
@@ -78,4 +81,57 @@ export function calculateTotalMontDedouanForOneProvider(rows: Array<any>, type: 
 export function calculateTotalVenteReelForOneProvider(rows: Array<any>, type: "vente") {
   const onlyVentesReelles = rows.map((item: any) => parseFloat(item.vente?.Vente_Reelle ?? 0));
   return onlyVentesReelles.reduce((acc, cur) => acc + cur, 0);
+}
+
+export function calculateVente_p100(row: Array<any>) {
+  const Report_Poids = calculatePoids(row, "report");
+  const Achat_Poids = calculatePoids(row, "achat");
+  const Prod_Poids = calculatePoids(row, "production");
+
+  let Vente_p100 = calculatePoids(row, "vente") * 100;
+  if ((Report_Poids ?? 0) + (Achat_Poids ?? 0) + (Prod_Poids ?? 0) === 0) Vente_p100 = 0;
+  else Vente_p100 /= (Report_Poids ?? 0) + (Achat_Poids ?? 0) + (Prod_Poids ?? 0);
+  return Vente_p100;
+}
+
+export function calculateVente_p100ForOneProvider(rows: Array<any>) {
+  const onlyVente_p100 = rows.map((row) => {
+    const Stock_Qte = parseInt(row.report?.Qte ?? 0) + parseInt(row.production?.Qte ?? 0) + parseInt(row.achat?.Qte ?? 0) - parseInt(row.vente?.Qte ?? 0);
+
+    const Vente_Poids = row.article?.AR_PoidsNet * (row.vente?.Qte ?? 0);
+    const Stock_Poids = parseFloat(parseDecimal(row.article?.AR_PoidsNet * Stock_Qte));
+    const Report_Poids = row.article?.AR_PoidsNet * (row.report?.Qte ?? 0);
+    const Achat_Poids = row.article?.AR_PoidsNet * (row.achat?.Qte ?? 0);
+    const Prod_Poids = (row.production?.Qte ?? 0) * row.article.AR_PoidsNet;
+
+    // Calcul % vente
+    return calculateVente_p100(Vente_Poids, Report_Poids, Achat_Poids, Prod_Poids);
+  });
+  const vente_p100_Provider = onlyVente_p100.reduce((acc, cur, i, array) => {
+    if (array.length - 1 === i) return (acc + cur) / array.length;
+    return acc + cur;
+  }, 0);
+  return vente_p100_Provider;
+}
+
+export function calculateMarge_p100ForOneProvider(rows: Array<any>) {
+  const onlyMarge_p100 = rows.map(
+    (row) => ((parseFloat(row.article.AC_PrixVen ?? 0) - parseFloat(row.article.AR_PoidsBrut ?? 0)) / parseFloat(row.article.AR_PoidsBrut ?? 0)) * 100
+  );
+  return onlyMarge_p100.reduce((acc, cur, i, array) => {
+    if (array.length - 1 === i) return (acc + cur) / array.length;
+    return acc + cur;
+  }, 0);
+}
+
+export function calculateQteStock(row) {
+  return parseFloat(row.report?.Qte ?? 0) + parseInt(row.production?.Qte ?? 0) + parseInt(row.achat?.Qte ?? 0) - parseInt(row.vente?.Qte ?? 0);
+}
+
+export function calculatePoidsStock(row) {
+  return parseFloat(row.article?.AR_PoidsNet) * calculateQteStock(row);
+}
+
+export function calculatePoids(row, type: MouvementType) {
+  return row.article?.AR_PoidsNet * (row[type]?.Qte ?? 0);
 }

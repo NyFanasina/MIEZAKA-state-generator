@@ -1,5 +1,10 @@
 import { z } from "zod";
 
+export interface CategorieBalle {
+  "PETITE BALLE"?: Array<any>;
+  "GROSSE BALLE"?: Array<any>;
+}
+
 const StringBoolean = z.preprocess((val) => {
   if (typeof val === "string") {
     if (val === "1" || val === "true") return true;
@@ -7,6 +12,7 @@ const StringBoolean = z.preprocess((val) => {
   }
   return val;
 }, z.coerce.boolean());
+
 
 export const SignInSchema = z.object({
   email: z.coerce.string().email({ message: "Veuillez entrer un email valide" }),
