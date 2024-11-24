@@ -1,5 +1,6 @@
 "use client";
 import NavLink from "@/app/ui/users/NavLink";
+import { Sidebar } from "flowbite-react";
 
 export default function Sidenav() {
   return (
@@ -7,7 +8,9 @@ export default function Sidenav() {
       <ul className="flex flex-col  sticky top-5">
         <NavLink value="Tableau de board" href="/dashboard" />
         <NavLink value="Utilisateurs" href="/users" />
-        <NavLink value="Etats" href="/states" />
+        <NavLink value="Mouvement Complet" href="/states/full" />
+        <NavLink value="Ciblage Article" href="/states/targeting" />
+        <NavLink value="Suivi Fournisseur" href="/states/provider" />
       </ul>
     </nav>
   );

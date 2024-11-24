@@ -1,3 +1,5 @@
+import { Mouvement } from "./ste_definition";
+
 export function formatDateToFr(date: Date, format = "FR") {
   const options: Intl.DateTimeFormatOptions = {
     day: "2-digit",
@@ -32,6 +34,19 @@ export function lowerThan15(value: number) {
   else if (value < 50) return "-50";
   else if (value > 75) return "+75";
   else if (value > 50) return "+50";
+}
+
+export function GroupByProvider(rows: Mouvement[] = []) {
+  return (
+    rows.reduce((acc: any, curr) => {
+      const provider = curr.article.Nom_Fournisseur;
+
+      if (!acc[provider]) acc[provider] = [];
+
+      acc[provider].push(curr);
+      return acc;
+    }, {}) ?? []
+  );
 }
 
 type MouvementType = "vente" | "report" | "achat" | "production" | "stock";
@@ -83,7 +98,7 @@ export function calculateTotalVenteReelForOneProvider(rows: Array<any>, type: "v
   return onlyVentesReelles.reduce((acc, cur) => acc + cur, 0);
 }
 
-export function calculateVente_p100(row: Array<any>) {
+export function calculateVente_p100(row) {
   const Report_Poids = calculatePoids(row, "report");
   const Achat_Poids = calculatePoids(row, "achat");
   const Prod_Poids = calculatePoids(row, "production");

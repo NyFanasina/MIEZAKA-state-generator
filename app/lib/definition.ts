@@ -1,9 +1,5 @@
 import { z } from "zod";
-
-export interface CategorieBalle {
-  "PETITE BALLE"?: Array<any>;
-  "GROSSE BALLE"?: Array<any>;
-}
+import { Mouvement } from "./ste_definition";
 
 export const SignInSchema = z.object({
   email: z.coerce.string().email({ message: "Veuillez entrer un email valide" }),

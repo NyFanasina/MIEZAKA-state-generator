@@ -2,10 +2,11 @@
 import { STE_miezaka } from "@/prisma/clientSTE_Miezaka";
 import { calculateDayBefore } from "../utils";
 
-export async function fecthArticles(to: string) {
+export async function fecthArticles(to?: string) {
   return await STE_miezaka.$queryRaw`SELECT 
     DISTINCT
      dbo.[F_ARTICLE].[AR_Ref]
+    ,dbo.[F_ARTICLE].[AR_Design]           
     ,dbo.[F_ARTICLE].[Etat]                -- P+
     ,dbo.[F_ARTICLE].[AR_PrixAch]          -- Prix Unitaire achat
     ,dbo.[F_ARTCLIENT].[AC_PrixVen]        -- PU gros
@@ -62,7 +63,7 @@ export async function fecthAchats(from: string, to: string) {
         SELECT
         DISTINCT(dbo.[F_DOCLIGNE].[AR_Ref])
         ,SUM(dbo.[F_DOCLIGNE].[DL_Qte]) as Qte
-        ,SUM(dbo.[F_DOCLIGNE].DL_MontantHT)
+        ,SUM(dbo.[F_DOCLIGNE].[DL_MontantHT])
         FROM dbo.[F_DOCLIGNE] 
             JOIN dbo.[F_ARTICLE]
                 ON dbo.[F_ARTICLE].AR_Ref = dbo.[F_DOCLIGNE].AR_Ref
