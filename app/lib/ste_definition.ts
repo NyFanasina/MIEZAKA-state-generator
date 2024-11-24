@@ -11,6 +11,8 @@ export interface ByCategory {
   "GROSSE BALLE"?: Mouvement[];
 }
 
+export type SizeBalle = "PETITE BALLE" | "GROSSE BALLE";
+
 type Article = {
   AR_Ref: string;
   AR_Design: string;
@@ -22,7 +24,7 @@ type Article = {
   cbCreation: string;
   CT_Num: string;
   AF_Devise: number;
-  Size: string;
+  Size: SizeBalle;
   Nom_Fournisseur: string;
 };
 

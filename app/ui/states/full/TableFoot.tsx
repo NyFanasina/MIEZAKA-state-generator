@@ -5,6 +5,8 @@ import {
   calculateTotalPoidsForOneProvider,
   calculateTotalQteForOneProvider,
   calculateTotalVenteReelForOneProvider,
+  calculateValAchDevise,
+  calculateValDedouanAR,
   calculateVente_p100ForOneProvider,
   parseDecimal,
 } from "@/app/lib/utils";
@@ -69,7 +71,7 @@ export default async function TableFoot({ rows }: { rows: any[] }) {
   const PROD_VAL_DEDOUAN_DEV = calculateValDedouanDev(rowsByProvider, "production");
 
   return (
-    <tfoot className="text-end">
+    <tfoot className="text-center">
       <tr>
         <td colSpan={3} className="border-none"></td>
         <td className=" text-start">TOTAL GENERAL</td>
@@ -176,31 +178,4 @@ export default async function TableFoot({ rows }: { rows: any[] }) {
       </tr>
     </tfoot>
   );
-}
-
-function calculateValAchDevise(rows: any[], type: "production" | "report" | "vente" | "stock" | "achat") {
-  if (type === "stock") {
-    const onlyValDedouans = rows.map((row) => {
-      const Stock_Qte = parseInt(row.report?.Qte ?? 0) + parseInt(row.production?.Qte ?? 0) + parseInt(row.achat?.Qte ?? 0) - parseInt(row.vente?.Qte ?? 0);
-      const Stock_poids = row.article?.AR_PoidsNet * Stock_Qte;
-      return Stock_poids * row.article.AR_PrixAch;
-    }); //poids * Pu
-    return onlyValDedouans.reduce((acc, cur) => acc + cur, 0);
-  }
-
-  const onlyValDedouans = rows.map((row) => (row[type]?.Qte ?? 0) * row.article.AR_PoidsNet * row.article.AR_PrixAch); //poids * PU
-  return onlyValDedouans.reduce((acc, cur) => acc + cur, 0);
-}
-
-function calculateValDedouanAR(rows: any[], type: "production" | "report" | "vente" | "stock") {
-  if (type === "stock") {
-    const onlyValDedouans = rows.map((row) => {
-      const Stock_Qte = parseInt(row.report?.Qte ?? 0) + parseInt(row.production?.Qte ?? 0) + parseInt(row.achat?.Qte ?? 0) - parseInt(row.vente?.Qte ?? 0);
-      return Stock_Qte * row.article.AR_PoidsBrut;
-    });
-    return onlyValDedouans.reduce((acc, cur) => acc + cur, 0);
-  }
-
-  const onlyValDedouans = rows.map((row) => (row[type]?.Qte ?? 0) * row.article.AR_PoidsBrut);
-  return onlyValDedouans.reduce((acc, cur) => acc + cur, 0);
 }

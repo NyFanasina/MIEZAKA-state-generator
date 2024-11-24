@@ -1,5 +1,6 @@
 import { Mouvement } from "@/app/lib/ste_definition";
 import {
+  calculate_PU_Provider,
   calculateMarge_p100ForOneProvider,
   calculateTotalMontAchatForOneProvider,
   calculateTotalMontDedouanForOneProvider,
@@ -76,9 +77,4 @@ export default function TableBody({ rows }: { rows: Mouvement[] }) {
       })}
     </tbody>
   );
-}
-
-function calculate_PU_Provider(rows: Array<any>) {
-  const onlyPU = rows.map((row) => parseFloat(row.article.AR_PrixAch ?? 0));
-  return onlyPU.reduce((acc, cur) => acc + cur, 0) / onlyPU.length;
 }

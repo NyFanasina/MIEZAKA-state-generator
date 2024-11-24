@@ -1,12 +1,12 @@
-import { DateSearchParamsProps } from "@/app/(views)/states/full/page";
+import { SearchParamsStatesProps } from "@/app/(views)/states/full/page";
 import TableBody from "./TableBody";
 import { fecthAchats, fecthArticles, fetchProductions, fetchReports, fetchVentes } from "@/app/lib/data/ste";
 import { Suspense } from "react";
 import TableFoot from "./TableFoot";
-import { calculatePoidsStock, calculateVente_p100 } from "@/app/lib/utils";
 import { Mouvement } from "@/app/lib/ste_definition";
+import filterData from "@/app/lib/utils";
 
-export default async function StateTable({ searchParams }: DateSearchParamsProps) {
+export default async function StateTable({ searchParams }: SearchParamsStatesProps) {
   // const articles = await fecthArticles(searchParams?.to);
   // const reports = await fetchReports(searchParams?.from);
   // const achats = await fecthAchats(searchParams?.from, searchParams?.to);
@@ -23,33 +23,7 @@ export default async function StateTable({ searchParams }: DateSearchParamsProps
   //   };
   // });
   let rows: Array<Mouvement> = require("/home/fango/Bureau/Data.json");
-
-  if (searchParams?.category) {
-    rows = rows.filter((row) => row.article.Size.includes((searchParams.category ?? "").toUpperCase()));
-  }
-
-  if (searchParams?.weight) {
-    rows = rows.filter((row) => {
-      const Poids_Stock = calculatePoidsStock(row);
-      if (searchParams?.weight === "+5t") return Poids_Stock > 5000;
-      if (searchParams?.weight === "-5t") return Poids_Stock < 5000;
-    });
-  }
-
-  if (searchParams?.state) {
-    rows = rows.filter((row) => row.article?.Etat == searchParams?.state);
-  }
-
-  if (searchParams?.vente_p100) {
-    rows = rows.filter((row) => {
-      const Vente_p100 = calculateVente_p100(row);
-      if (searchParams.vente_p100 === "-15") return Vente_p100 < 15;
-      if (searchParams.vente_p100 === "-30") return Vente_p100 >= 15 && Vente_p100 < 30;
-      if (searchParams.vente_p100 === "-50") return Vente_p100 >= 30 && Vente_p100 < 50;
-      if (searchParams.vente_p100 === "+50") return Vente_p100 >= 50 && Vente_p100 < 75;
-      if (searchParams.vente_p100 === "+75") return Vente_p100 >= 75 && Vente_p100;
-    });
-  }
+  rows = filterData(searchParams, rows);
 
   rows = await JSON.parse(JSON.stringify(rows));
 

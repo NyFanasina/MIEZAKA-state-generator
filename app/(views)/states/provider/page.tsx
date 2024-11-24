@@ -1,13 +1,12 @@
-import { Mouvement } from "@/app/lib/ste_definition";
 import Search from "@/app/ui/states/Provider/Search";
 import Table from "@/app/ui/states/Provider/Table";
+import { SearchParamsStatesProps } from "../full/page";
 
-export default function page() {
-  let rows: Array<Mouvement> = require("/home/fango/Bureau/Data.json");
+export default function page({ searchParams }: SearchParamsStatesProps) {
   return (
     <div className="overflow-auto">
       <Search />
-      <Table rows={rows} />
+      <Table searchParams={searchParams} />
     </div>
   );
 }

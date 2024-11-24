@@ -1,7 +1,7 @@
 import Search from "@/app/ui/states/full/Search";
 import Table from "@/app/ui/states/full/Table";
 
-export type DateSearchParamsProps = {
+export type SearchParamsStatesProps = {
   searchParams?: {
     from?: string;
     to?: string;
@@ -9,10 +9,11 @@ export type DateSearchParamsProps = {
     weight?: string;
     vente_p100?: string;
     state?: string;
+    keyword?: string;
   };
 };
 
-export default function page({ searchParams }: DateSearchParamsProps) {
+export default function page({ searchParams }: SearchParamsStatesProps) {
   return (
     <div className="overflow-auto">
       <Search />

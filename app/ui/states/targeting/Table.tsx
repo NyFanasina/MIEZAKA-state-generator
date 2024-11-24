@@ -1,9 +1,15 @@
 import { Mouvement } from "@/app/lib/ste_definition";
 import TableBody from "./TableBody";
 import TableFoot from "./TableFoot";
+import filterData from "@/app/lib/utils";
+import { SearchParamsStatesProps } from "@/app/(views)/states/full/page";
 
-export default function Table() {
+export default function Table({ searchParams }: SearchParamsStatesProps) {
   let rows: Array<Mouvement> = require("/home/fango/Bureau/Data.json");
+  console.log(searchParams);
+  rows = filterData(searchParams, rows);
+
+  rows = JSON.parse(JSON.stringify(rows));
 
   return (
     <div className="flex justify-center">
@@ -33,7 +39,7 @@ export default function Table() {
               Référence Articles
             </th>
             <th className="bg-orange-200 text-orange-700 border-orange-300 border">Désignation</th>
-            <th className="bg-orange-200 text-orange-700 border-orange-300 border">Poid Net</th>
+            <th className="bg-orange-200 text-orange-700 border-orange-300 border">Poids U</th>
             <th className="bg-orange-200 text-orange-700 border-orange-300 border">PU Ach</th>
             <th className="bg-orange-200 text-orange-700 border-orange-300 border">PU Revient</th>
             <th className="bg-orange-200 text-orange-700 border-orange-300 border">PU Gros</th>

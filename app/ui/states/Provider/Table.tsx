@@ -1,17 +1,23 @@
 "use client";
-import { GroupByProvider } from "@/app/lib/utils";
+import filterData from "@/app/lib/utils";
 import { clsx } from "clsx";
 import { useState } from "react";
 import { Mouvement } from "@/app/lib/ste_definition";
 import TableBody from "./TableBody";
 import TableFoot from "./TableFoot";
+import { SearchParamsStatesProps } from "@/app/(views)/states/full/page";
 
-export default function Table({ rows }: { rows: Mouvement[] }) {
+export default function Table({ searchParams }: SearchParamsStatesProps) {
   const [isActive, setActive] = useState<number>();
 
   function handleRowClick(i: number) {
     setActive(i);
   }
+
+  let rows: Array<Mouvement> = require("/home/fango/Bureau/Data.json");
+  rows = filterData(searchParams, rows);
+
+  rows = JSON.parse(JSON.stringify(rows));
 
   return (
     <div className="flex justify-center">

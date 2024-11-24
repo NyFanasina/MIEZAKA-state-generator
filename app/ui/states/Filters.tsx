@@ -8,6 +8,7 @@ export function TextInputFilter(props: TextInputProps) {
 
   return (
     <TextInput
+      defaultValue={searchParams.get("keyword")?.toString()}
       onChange={(event) => {
         params.set("keyword", event.target.value);
         router.replace(`${pathname}?${params.toString()}`);

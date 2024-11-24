@@ -1,12 +1,12 @@
 import Search from "@/app/ui/states/targeting/Search";
 import Table from "@/app/ui/states/targeting/Table";
-import { TextInput } from "flowbite-react";
+import { SearchParamsStatesProps } from "../full/page";
 
-export default function page() {
+export default function page({ searchParams }: SearchParamsStatesProps) {
   return (
     <div>
       <Search />
-      <Table />
+      <Table searchParams={searchParams} />
     </div>
   );
 }
