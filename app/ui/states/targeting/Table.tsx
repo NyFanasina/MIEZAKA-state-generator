@@ -1,19 +1,13 @@
-import { Mouvement } from "@/app/lib/ste_definition";
 import TableBody from "./TableBody";
 import TableFoot from "./TableFoot";
-import filterData from "@/app/lib/utils";
-import { SearchParamsStatesProps } from "@/app/(views)/states/full/page";
+import { useContext } from "react";
+import { RowsContext } from "@/app/contexts/DataContext";
 
-export default function Table({ searchParams }: SearchParamsStatesProps) {
-  let rows: Array<Mouvement> = require("/home/fango/Bureau/Data.json");
-  console.log(searchParams);
-  rows = filterData(searchParams, rows);
-
-  rows = JSON.parse(JSON.stringify(rows));
-
+export default function Table() {
+  const rows = useContext(RowsContext);
   return (
     <div className="flex justify-center">
-      <table className="state-table text-[11px] table-auto mb-12">
+      <table className="state-table">
         <thead className="*:*:py-2 *:*:px-[2px]">
           <tr className="text-[12px]">
             <th colSpan={9}></th>

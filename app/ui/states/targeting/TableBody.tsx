@@ -110,12 +110,12 @@ export default function TableBody({ rows }: { rows: Mouvement[] }) {
                             >
                               {lowerThan15(Vente_p100)}
                             </td>
-                            <td className="text-center ">{row.article.Etat}</td>
+                            <td className="text-center">{row.article.Etat}</td>
                             <td className="text-sm px-1 py-0">
                               <sub>{Stock_Poids >= 5000 ? "*" : ""}</sub>
                             </td>
                             <td
-                              className={clsx("text-start font-bold", {
+                              className={clsx("text-start", {
                                 "text-gray-950": Marge_p100 > 0,
                                 "text-red-600": Marge_p100 < 0,
                                 "bg-pink-200": Stock_Poids >= 5000 && Marge_p100 < 0,
@@ -123,31 +123,31 @@ export default function TableBody({ rows }: { rows: Mouvement[] }) {
                             >
                               {row.article.AR_Ref}
                             </td>
-                            <td className="text-left font-semibold text-gray-950 text-wrap">{row.article.AR_Design}</td>
+                            <td className="text-left text-gray-950 text-wrap">{row.article.AR_Design}</td>
                             <td className="text-center">{row.article.AR_PoidsNet}</td>
                             <td className="text-center">{parseDecimal(row.article.AR_PrixAch)}</td>
                             <td>{parseDecimal(row.article.AR_PoidsBrut)}</td>
                             <td>{parseDecimal(row.article.AC_PrixVen)}</td>
                             {/* Report */}
-                            <td>{parseDecimal(row.report?.Qte)}</td>
-                            <td>{parseDecimal(Report_Poids)}</td>
+                            <td className="text-violet-950">{parseDecimal(row.report?.Qte)}</td>
+                            <td className="text-violet-950">{parseDecimal(Report_Poids)}</td>
                             {/* Achats */}
-                            <td>{parseDecimal(row.achat?.Qte)}</td>
-                            <td>{parseDecimal(Achat_Poids)}</td>
+                            <td className="text-emerald-900">{parseDecimal(row.achat?.Qte)}</td>
+                            <td className="text-emerald-900">{parseDecimal(Achat_Poids)}</td>
                             {/* Production */}
-                            <td>{parseDecimal(row.production?.Qte)}</td>
-                            <td>{parseDecimal(Prod_Poids)}</td>
+                            <td className="text-orange-800">{parseDecimal(row.production?.Qte)}</td>
+                            <td className="text-orange-800">{parseDecimal(Prod_Poids)}</td>
                             {/* Vente */}
-                            <td>{parseDecimal(row.vente?.Qte)}</td>
-                            <td>{parseDecimal(Vente_Poids)}</td>
+                            <td className="text-blue-800">{parseDecimal(row.vente?.Qte)}</td>
+                            <td className="text-blue-800">{parseDecimal(Vente_Poids)}</td>
                             {/* Stock */}
                             <td>{parseDecimal(Stock_Qte)}</td>
                             <td>{parseDecimal(Stock_Poids)}</td>
                             <td>{parseDecimal(row.article.AR_PoidsBrut * Stock_Qte)}</td>
                             {/* %vente et Marge % */}
-                            <td className="border-orange-400 border text-red">{Vente_p100.toFixed(2)}</td>
+                            <td className="border-orange-400 border text-blue-800">{Vente_p100.toFixed(2)}</td>
                             <td
-                              className={clsx("border-orange-400 border ", {
+                              className={clsx("border-orange-400 border", {
                                 "text-red-vif": Marge_p100 < 0,
                               })}
                             >
@@ -160,31 +160,38 @@ export default function TableBody({ rows }: { rows: Mouvement[] }) {
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td className="text-amber-700 text-start font-semibold">{provider}</td>
+                        <td className="text-amber-700 text-start">{provider}</td>
                         <td></td>
                         <td></td>
                         <td className="text-center">{parseDecimal(PU_Provider)}</td>
                         <td></td>
                         <td></td>
                         {/* Report */}
-                        <td>{parseDecimal(Report_Qte_Provider)}</td>
-                        <td>{parseDecimal(Report_Poids_Provider)}</td>
+                        <td className="text-violet-950">{parseDecimal(Report_Qte_Provider)}</td>
+                        <td className="text-violet-950">{parseDecimal(Report_Poids_Provider)}</td>
                         {/* Achat */}
-                        <td>{parseDecimal(Achat_Qte_Provider)}</td>
-                        <td>{parseDecimal(Achat_Poids_Provider)}</td>
+                        <td className="text-green-900">{parseDecimal(Achat_Qte_Provider)}</td>
+                        <td className="text-green-900">{parseDecimal(Achat_Poids_Provider)}</td>
                         {/* Production */}
-                        <td>{parseDecimal(Prod_Qte_Provider)}</td>
-                        <td>{parseDecimal(Prod_Poids_Provider)}</td>
+                        <td className="text-orange-800">{parseDecimal(Prod_Qte_Provider)}</td>
+                        <td className="text-orange-800">{parseDecimal(Prod_Poids_Provider)}</td>
                         {/* Vente */}
-                        <td>{parseDecimal(Vente_Qte_Provider)}</td>
-                        <td>{parseDecimal(Vente_Poids_Provider)}</td>
+                        <td className="text-blue-800">{parseDecimal(Vente_Qte_Provider)}</td>
+                        <td className="text-blue-800">{parseDecimal(Vente_Poids_Provider)}</td>
                         {/* Stock */}
                         <td>{parseDecimal(Stock_Qte_Provider)}</td>
                         <td>{parseDecimal(Stock_Poids_Provider)}</td>
                         <td>{parseDecimal(Stock_MontDedouan_Provider)}</td>
                         {/* % vente and % marge */}
-                        <td>{parseDecimal(Vente_p100_Provider)}</td>
-                        <td>{parseDecimal(Marge_p100_Provider)}</td>
+                        <td className="border-orange-400 border text-red text-blue-800">{parseDecimal(Vente_p100_Provider)}</td>
+                        <td
+                          className={clsx("border-orange-400 border ", {
+                            "text-red-vif": Marge_p100_Provider < 0,
+                            "text-blue-800": Marge_p100_Provider > 0,
+                          })}
+                        >
+                          {parseDecimal(Marge_p100_Provider)}
+                        </td>
                       </tr>
                     </Fragment>
                   );
@@ -196,31 +203,38 @@ export default function TableBody({ rows }: { rows: Mouvement[] }) {
                   <td></td>
                   <td></td>
                   <td></td>
-                  <td className="text-amber-700 text-start font-extrabold">{category}</td>
+                  <td className="text-amber-700 text-start">{category}</td>
                   <td></td>
                   <td></td>
                   <td className="text-center">{parseDecimal(PU_Category)}</td>
                   <td></td>
                   <td></td>
                   {/* Report */}
-                  <td>{parseDecimal(Report_Qte_Category)}</td>
-                  <td>{parseDecimal(Report_Poids_Category)}</td>
+                  <td className="text-violet-900">{parseDecimal(Report_Qte_Category)}</td>
+                  <td className="text-violet-900">{parseDecimal(Report_Poids_Category)}</td>
                   {/* Achat */}
-                  <td>{parseDecimal(Achat_Qte_Category)}</td>
-                  <td>{parseDecimal(Achat_Poids_Category)}</td>
+                  <td className="text-emerald-900">{parseDecimal(Achat_Qte_Category)}</td>
+                  <td className="text-emerald-900">{parseDecimal(Achat_Poids_Category)}</td>
                   {/* Production */}
-                  <td>{parseDecimal(Prod_Qte_Category)}</td>
-                  <td>{parseDecimal(Prod_Poids_Category)}</td>
+                  <td className="text-orange-800">{parseDecimal(Prod_Qte_Category)}</td>
+                  <td className="text-orange-800">{parseDecimal(Prod_Poids_Category)}</td>
                   {/* Vente */}
-                  <td>{parseDecimal(Vente_Qte_Category)}</td>
-                  <td>{parseDecimal(Vente_Poids_Category)}</td>
+                  <td className="text-blue-800">{parseDecimal(Vente_Qte_Category)}</td>
+                  <td className="text-blue-800">{parseDecimal(Vente_Poids_Category)}</td>
                   {/* Stock */}
                   <td>{parseDecimal(Stock_Qte_Category)}</td>
                   <td>{parseDecimal(Stock_Poids_Category)}</td>
                   <td>{parseDecimal(Stock_MontDedouan_Category)}</td>
                   {/* % vente and % marge */}
-                  <td>{parseDecimal(Vente_p100_Category)}</td>
-                  <td>{parseDecimal(Marge_p100_Category)}</td>
+                  <td className="text-blue-800">{parseDecimal(Vente_p100_Category)}</td>
+                  <td
+                    className={clsx("border-orange-400 border ", {
+                      "text-red-vif": Marge_p100_Category < 0,
+                      "text-blue-800": Marge_p100_Category > 0,
+                    })}
+                  >
+                    {parseDecimal(Marge_p100_Category)}
+                  </td>
                 </tr>
               )}
             </Fragment>

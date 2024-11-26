@@ -11,8 +11,9 @@ import {
   parseDecimal,
 } from "@/app/lib/utils";
 import { fetchDeviseFournisseur } from "@/app/lib/data/ste";
+import clsx from "clsx";
 
-export default async function TableFoot({ rows }: { rows: any[] }) {
+export default function TableFoot({ rows }: { rows: any[] }) {
   // const devise_Fournisseur: any = await fetchDeviseFournisseur();
   const rowsByProvider = rows.reduce((acc: any, cur: any) => {
     const providername = cur.article.Nom_Fournisseur;
@@ -77,48 +78,55 @@ export default async function TableFoot({ rows }: { rows: any[] }) {
         <td className=" text-start">TOTAL GENERAL</td>
         <td className=" text-center">{parseDecimal(PU_G)}</td>
         {/* Repport */}
-        <td>{parseDecimal(Report_Qte)}</td>
-        <td>{parseDecimal(Report_Poids)}</td>
-        <td>{parseDecimal(Report_MontAchat)}</td>
-        <td>{parseDecimal(Report_MontDedouan)}</td>
+        <td className="text-violet-950">{parseDecimal(Report_Qte)}</td>
+        <td className="text-violet-950">{parseDecimal(Report_Poids)}</td>
+        <td className="text-violet-950">{parseDecimal(Report_MontAchat)}</td>
+        <td className="text-violet-950">{parseDecimal(Report_MontDedouan)}</td>
         {/* Achat */}
-        <td>{parseDecimal(Achat_Qte)}</td>
-        <td>{parseDecimal(Achat_Poids)}</td>
-        <td>{parseDecimal(Achat_MontAchat)}</td>
-        <td>{parseDecimal(Achat_MontDedouan)}</td>
+        <td className="text-green-900">{parseDecimal(Achat_Qte)}</td>
+        <td className="text-green-900">{parseDecimal(Achat_Poids)}</td>
+        <td className="text-green-900">{parseDecimal(Achat_MontAchat)}</td>
+        <td className="text-green-900">{parseDecimal(Achat_MontDedouan)}</td>
         {/* Production */}
-        <td>{parseDecimal(Prod_Qte)}</td>
-        <td>{parseDecimal(Prod_Poids)}</td>
+        <td className="text-orange-800">{parseDecimal(Prod_Qte)}</td>
+        <td className="text-orange-800">{parseDecimal(Prod_Poids)}</td>
         {/* Vente */}
-        <td>{parseDecimal(Vente_Qte)}</td>
-        <td>{parseDecimal(Vente_Poids)}</td>
-        <td>{parseDecimal(Vente_MontDedouan)}</td>
-        <td>{parseDecimal(Vente_VenteReelle)}</td>
+        <td className="text-blue-800">{parseDecimal(Vente_Qte)}</td>
+        <td className="text-blue-800">{parseDecimal(Vente_Poids)}</td>
+        <td className="text-blue-800">{parseDecimal(Vente_MontDedouan)}</td>
+        <td className="text-blue-800">{parseDecimal(Vente_VenteReelle)}</td>
         {/* Stock */}
         <td>{parseDecimal(Stock_Qte)}</td>
         <td>{parseDecimal(Stock_Poids)}</td>
         <td>{parseDecimal(Stock_MontDedouan)}</td>
         {/* vente % and marge % */}
-        <td>{parseDecimal(Vente_p100)}</td>
-        <td>{parseDecimal(Marge_p100)}</td>
+        <td className="text-blue-800">{parseDecimal(Vente_p100)}</td>
+        <td
+          className={clsx("border-orange-400 border ", {
+            "text-red-vif": Marge_p100 < 0,
+            "text-blue-800": Marge_p100 > 0,
+          })}
+        >
+          {parseDecimal(Marge_p100)}
+        </td>
       </tr>
       <tr>
         <td colSpan={3} className="border-none"></td>
-        <td className=" text-start">TOTAL VAL ACH DEVISE</td>
-        <td className=" text-center"></td>
-        <td colSpan={4} className="pe-1">
+        <td className="text-start">TOTAL VAL ACH DEVISE</td>
+        <td></td>
+        <td colSpan={4} className="pe-1 text-violet-950">
           {parseDecimal(REPORT_TOTAL_VAL_ACH_DEVISE)}
         </td>
-        <td colSpan={4} className="pe-1">
+        <td colSpan={4} className="pe-1  text-green-900">
           {parseDecimal(ACHAT_TOTAL_VAL_ACH_DEVISE)}
         </td>
-        <td colSpan={2} className="pe-1">
+        <td colSpan={2} className="pe-1 text-orange-800">
           {parseDecimal(PROD_TOTAL_VAL_ACH_DEVISE)}
         </td>
-        <td colSpan={4} className="pe-1">
+        <td colSpan={4} className="pe-1 text-blue-800">
           {parseDecimal(VENTE_TOTAL_VAL_ACH_DEVISE)}
         </td>
-        <td colSpan={3} className="pe-1">
+        <td colSpan={3} className="pe-1 ">
           {parseDecimal(STOCK_TOTAL_VAL_ACH_DEVISE)}
         </td>
         <td></td>
@@ -126,18 +134,18 @@ export default async function TableFoot({ rows }: { rows: any[] }) {
       </tr>
       <tr>
         <td colSpan={3} className="border-none"></td>
-        <td className=" text-start">TOTAL VAL DEDOUANE DEV</td>
-        <td className=" text-center"></td>
-        <td colSpan={4} className="pe-1">
+        <td className="text-start">TOTAL VAL DEDOUANE DEV</td>
+        <td className="text-center"></td>
+        <td colSpan={4} className="pe-1 text-violet-950">
           {parseDecimal(REPORT_VAL_DEDOUAN_DEV)}
         </td>
-        <td colSpan={4} className="pe-1">
+        <td colSpan={4} className="pe-1 text-green-900 ">
           {ACHAT_VAL_DEDOUAN_DEV}
         </td>
-        <td colSpan={2} className="pe-1">
+        <td colSpan={2} className="pe-1 text-orange-800">
           {parseDecimal(PROD_VAL_DEDOUAN_DEV)}
         </td>
-        <td colSpan={4} className="pe-1">
+        <td colSpan={4} className="pe-1 text-blue-800">
           {parseDecimal(VENTE_VAL_DEDOUAN_DEV)}
         </td>
         <td colSpan={3} className="pe-1">
@@ -146,27 +154,34 @@ export default async function TableFoot({ rows }: { rows: any[] }) {
         <td></td>
         <td></td>
       </tr>
-      <tr className="bg-green-300">
+      <tr className="bg-green-300 text-center">
         <td colSpan={3} className="border-none"></td>
         <td className=" text-start">VALEUR DEDOUANEÉ AR</td>
         <td className=" text-center">{parseDecimal(PU_G)}</td>
-        <td colSpan={4} className="pe-1">
+        <td colSpan={4} className="pe-1 text-violet-950 ">
           {parseDecimal(REPORT_VAL_DEDOUAN_AR)}
         </td>
-        <td colSpan={4} className="pe-1">
+        <td colSpan={4} className="pe-1 text-green-900">
           {parseDecimal(Achat_MontDedouan)}
         </td>
-        <td colSpan={2} className="pe-1">
+        <td colSpan={2} className="pe-1 text-orange-800">
           {parseDecimal(PROD_VAL_DEDOUAN_AR)}
         </td>
-        <td colSpan={4} className="pe-1">
+        <td colSpan={4} className="pe-1 text-blue-800">
           {parseDecimal(Vente_MontDedouan)}
         </td>
         <td colSpan={3} className="pe-1">
           {parseDecimal(STOCK_VAL_DEDOUAN_AR)}
         </td>
-        <td className="text-center">{parseDecimal(Vente_p100)}</td>
-        <td className="text-center">{parseDecimal(Marge_p100)}</td>
+        <td className="text-blue-800">{parseDecimal(Vente_p100)}</td>
+        <td
+          className={clsx("border-orange-400 border ", {
+            "text-red-vif": Marge_p100 < 0,
+            "text-blue-800": Marge_p100 > 0,
+          })}
+        >
+          {parseDecimal(Marge_p100)}
+        </td>
       </tr>
     </tfoot>
   );

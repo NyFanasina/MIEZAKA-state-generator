@@ -1,12 +1,11 @@
-import Search from "@/app/ui/states/targeting/Search";
-import Table from "@/app/ui/states/targeting/Table";
+import filterData from "@/app/lib/utils";
 import { SearchParamsStatesProps } from "../full/page";
+import WrapperClient from "./WrapperContext";
+import { Mouvement } from "@/app/lib/ste_definition";
 
 export default function page({ searchParams }: SearchParamsStatesProps) {
-  return (
-    <div>
-      <Search />
-      <Table searchParams={searchParams} />
-    </div>
-  );
+  let rows: Array<Mouvement> = require("/home/fango/Bureau/Data.json");
+  const nextRows = filterData(searchParams, rows);
+
+  return <WrapperClient rows={nextRows}></WrapperClient>;
 }

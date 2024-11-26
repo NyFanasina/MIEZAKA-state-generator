@@ -11,9 +11,20 @@ import {
   GroupByProvider,
   parseDecimal,
 } from "@/app/lib/utils";
-import { Fragment } from "react";
+import clsx from "clsx";
+import { Fragment, useState } from "react";
 
 export default function TableBody({ rows }: { rows: Mouvement[] }) {
+  const [isActive, setActive] = useState("");
+
+  function handleRowClick(id: string) {
+    if (isActive == id) {
+      setActive("");
+      console.log("remove", isActive);
+    }
+    setActive(id);
+  }
+
   const rowsByProvider = GroupByProvider(rows);
   return (
     <tbody className="text-end">
@@ -41,36 +52,49 @@ export default function TableBody({ rows }: { rows: Mouvement[] }) {
 
         return (
           <Fragment key={i}>
-            <tr className="active:bg-amber-400 hover:bg-slate-100 hover:border hover:border-amber-500">
-              <td colSpan={4} className="text-amber-700 text-start font-semibold">
+            <tr
+              className={clsx("active:bg-amber-400 hover:border hover:border-amber-200 ", {
+                "bg-amber-300": isActive === provider,
+                " hover:bg-slate-100": isActive != provider,
+              })}
+              onClick={() => handleRowClick(provider)}
+            >
+              <td colSpan={4} className="text-amber-700 text-start">
                 {provider}
               </td>
-              <td>{parseDecimal(PU_Provider)}</td>
+              <td className="text-center">{parseDecimal(PU_Provider)}</td>
               {/* Report */}
-              <td>{parseDecimal(Report_Qte_Provider)}</td>
-              <td>{parseDecimal(Report_Poids_Provider)}</td>
-              <td>{parseDecimal(Report_MontAchat_Provider)}</td>
-              <td>{parseDecimal(Report_MontDedouan_Provider)}</td>
+              <td className="text-violet-950">{parseDecimal(Report_Qte_Provider)}</td>
+              <td className="text-violet-950">{parseDecimal(Report_Poids_Provider)}</td>
+              <td className="text-violet-950">{parseDecimal(Report_MontAchat_Provider)}</td>
+              <td className="text-violet-950">{parseDecimal(Report_MontDedouan_Provider)}</td>
               {/* Achat */}
-              <td>{parseDecimal(Achat_Qte_Provider)}</td>
-              <td>{parseDecimal(Achat_Poids_Provider)}</td>
-              <td>{parseDecimal(Achat_MontAchat_Provider)}</td>
-              <td>{parseDecimal(Achat_MontDedouan_Provider)}</td>
+              <td className="text-green-900">{parseDecimal(Achat_Qte_Provider)}</td>
+              <td className="text-green-900">{parseDecimal(Achat_Poids_Provider)}</td>
+              <td className="text-green-900">{parseDecimal(Achat_MontAchat_Provider)}</td>
+              <td className="text-green-900">{parseDecimal(Achat_MontDedouan_Provider)}</td>
               {/* Production */}
-              <td>{parseDecimal(Prod_Qte_Provider)}</td>
-              <td>{parseDecimal(Prod_Poids_Provider)}</td>
+              <td className="text-orange-800">{parseDecimal(Prod_Qte_Provider)}</td>
+              <td className="text-orange-800">{parseDecimal(Prod_Poids_Provider)}</td>
               {/* Vente */}
-              <td>{parseDecimal(Vente_Qte_Provider)}</td>
-              <td>{parseDecimal(Vente_Poids_Provider)}</td>
-              <td>{parseDecimal(Vente_MontDedouan_Provider)}</td>
-              <td>{parseDecimal(Vente_VenteReelle_Provider)}</td>
+              <td className="text-blue-800">{parseDecimal(Vente_Qte_Provider)}</td>
+              <td className="text-blue-800">{parseDecimal(Vente_Poids_Provider)}</td>
+              <td className="text-blue-800">{parseDecimal(Vente_MontDedouan_Provider)}</td>
+              <td className="text-blue-800">{parseDecimal(Vente_VenteReelle_Provider)}</td>
               {/* Stock */}
               <td>{parseDecimal(Stock_Qte_Provider)}</td>
               <td>{parseDecimal(Stock_Poids_Provider)}</td>
               <td>{parseDecimal(Stock_MontDedouan_Provider)}</td>
               {/* % vente and % marge */}
-              <td>{parseDecimal(Vente_p100_Provider)}</td>
-              <td>{parseDecimal(Marge_p100_Provider)}</td>
+              <td className="text-blue-800">{parseDecimal(Vente_p100_Provider)}</td>
+              <td
+                className={clsx("border-orange-400 border ", {
+                  "text-red-vif": Marge_p100_Provider < 0,
+                  "text-blue-800": Marge_p100_Provider > 0,
+                })}
+              >
+                {parseDecimal(Marge_p100_Provider)}
+              </td>
             </tr>
           </Fragment>
         );

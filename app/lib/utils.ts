@@ -208,8 +208,12 @@ export default function filterData(searchParams: SearchParamsStatesProps["search
     });
   }
 
-  if (searchParams?.keyword) {
-    data = data.filter((row) => row.article.AR_Design.toLocaleLowerCase().includes((searchParams.keyword ?? "").toLocaleLowerCase()));
+  if (searchParams?.design) {
+    data = data.filter((row) => row.article.AR_Design.toLocaleLowerCase().includes((searchParams.design ?? "").toLocaleLowerCase()));
+  }
+
+  if (searchParams?.ar_ref) {
+    data = data.filter((row) => row.article.AR_Ref.toLocaleLowerCase().includes((searchParams.ar_ref ?? "").toLocaleLowerCase()));
   }
 
   return data;

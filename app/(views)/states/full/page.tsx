@@ -1,5 +1,8 @@
-import Search from "@/app/ui/states/full/Search";
-import Table from "@/app/ui/states/full/Table";
+import fetchRows, { fecthAchats, fecthArticles, fetchProductions, fetchReports, fetchVentes } from "@/app/lib/data/ste";
+import { Mouvement } from "@/app/lib/ste_definition";
+import filterData from "@/app/lib/utils";
+import WrapperClient from "./WrapperContext";
+// import useSWR from "swr";
 
 export type SearchParamsStatesProps = {
   searchParams?: {
@@ -9,15 +12,15 @@ export type SearchParamsStatesProps = {
     weight?: string;
     vente_p100?: string;
     state?: string;
-    keyword?: string;
+    ar_ref?: string;
+    design?: string;
   };
 };
 
-export default function page({ searchParams }: SearchParamsStatesProps) {
-  return (
-    <div className="overflow-auto">
-      <Search />
-      <Table searchParams={searchParams} />
-    </div>
-  );
+export default async function page({ searchParams }: SearchParamsStatesProps) {
+  // const rows = await fetchRows(searchParams);
+  let rows: Array<Mouvement> = require("/home/fango/Bureau/Data.json");
+  const nextRows = filterData(searchParams, rows);
+
+  return <WrapperClient rows={nextRows}></WrapperClient>;
 }

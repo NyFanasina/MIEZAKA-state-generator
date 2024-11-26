@@ -15,6 +15,9 @@ body {
 .navLink-active {
   @apply border-s-4 border-s-rose-600 bg-slate-900;
 }
+.state-table {
+  @apply text-[11px] mb-12 w-full text-gray-950 font-semibold;
+}
 
 .state-table tbody td,
 .state-table tfoot td {
@@ -27,8 +30,19 @@ body {
 .state-table tfoot {
   @apply font-semibold;
 }
-td {
-  white-space: nowrap;
+td,
+th {
+  /* white-space: nowrap; */
   padding: 2px 0px;
-  padding-left: 1px;
+}
+/* printStyles.css */
+@media print {
+  @page {
+    size: A4 landscape; /* Définit le format A4 en mode paysage */
+  }
+
+  .print-container {
+    width: 297mm; /* Largeur A4 paysage */
+    height: 210mm; /* Hauteur A4 paysage */
+  }
 }

@@ -1,16 +1,16 @@
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, PropsWithChildren, useEffect, useState } from "react";
 import { Button, Dropdown, Label, Radio, TextInput, TextInputProps } from "flowbite-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { FaFilter } from "react-icons/fa";
 
-export function TextInputFilter(props: TextInputProps) {
+export function TextInputFilter(props: PropsWithChildren<TextInputProps & { name: string }>) {
   const { router, pathname, params, searchParams } = initializeParamsTools();
 
   return (
     <TextInput
-      defaultValue={searchParams.get("keyword")?.toString()}
+      defaultValue={searchParams.get(props.name)?.toString()}
       onChange={(event) => {
-        params.set("keyword", event.target.value);
+        params.set(props.name, event.target.value);
         router.replace(`${pathname}?${params.toString()}`);
       }}
       {...props}
@@ -18,7 +18,7 @@ export function TextInputFilter(props: TextInputProps) {
   );
 }
 
-export function DateFilter() {
+export function DateFilter({ children }: PropsWithChildren) {
   const { router, pathname, params, searchParams } = initializeParamsTools();
 
   function handleDateFilter(e: ChangeEvent<HTMLInputElement>) {
@@ -32,10 +32,7 @@ export function DateFilter() {
       <TextInput type="date" onChange={handleDateFilter} id="from" defaultValue={searchParams.get("from")?.toString()} />
       <TextInput type="date" onChange={handleDateFilter} id="to" defaultValue={searchParams.get("to")?.toString()} />
       <Button type="button">FILTRER</Button>
-      <Dropdown label="EXPORTER">
-        <Dropdown.Item>Exporter en PDF</Dropdown.Item>
-        <Dropdown.Item>Exporter en CLSX</Dropdown.Item>
-      </Dropdown>
+      {children}
     </div>
   );
 }

@@ -1,9 +1,11 @@
 "use server";
 import { STE_miezaka } from "@/prisma/clientSTE_Miezaka";
 import { calculateDayBefore } from "../utils";
+import { Mouvement } from "../ste_definition";
+import { SearchParamsStatesProps } from "@/app/(views)/states/full/page";
 
 export async function fecthArticles(to?: string) {
-  return await STE_miezaka.$queryRaw`SELECT 
+  const article = await STE_miezaka.$queryRaw`SELECT 
     DISTINCT
      dbo.[F_ARTICLE].[AR_Ref]
     ,dbo.[F_ARTICLE].[AR_Design]           
@@ -50,12 +52,13 @@ export async function fecthArticles(to?: string) {
         dbo.[F_DOCLIGNE].[DO_Type] in (6,7,16,17,26) --AND dbo.[F_DOCLIGNE].[DL_Qte] >= 0 
             AND 
         dbo.[F_DOCLIGNE].[DE_No] NOT IN (18,29,31,38,39,47,50)
-            AND
-        dbo.[F_COMPTET].[CT_Intitule] = 'ATTAR'
+        --     AND
+        -- dbo.[F_COMPTET].[CT_Intitule] = 'ATTAR'
             AND
             dbo.[F_ARTICLE].[cbCreation] <= CAST(${to} as date)
         ORDER BY Nom_Fournisseur ASC;
     `;
+  return JSON.parse(JSON.stringify(article));
 }
 
 export async function fecthAchats(from: string, to: string) {
@@ -201,4 +204,24 @@ export async function fetchDeviseFournisseur() {
         dbo.[F_COMPTET].[CT_Intitule] = 'ATTAR'
         ORDER BY Nom_Fournisseur ASC;
     `;
+}
+
+export default async function fetchRows(searchParams: SearchParamsStatesProps["searchParams"]) {
+  const articles = await fecthArticles(searchParams?.to);
+  const reports = await fetchReports(searchParams?.from);
+  const achats = await fecthAchats(searchParams?.from, searchParams?.to);
+  const ventes = await fetchVentes(searchParams?.from, searchParams?.to);
+  const productions = await fetchProductions(searchParams?.from, searchParams?.to);
+
+  const data: Array<Mouvement> = await articles.map((article: any) => {
+    return {
+      article,
+      achat: achats.filter((achat) => achat.AR_Ref == article.AR_Ref)[0],
+      vente: ventes.filter((vente) => vente.AR_Ref == article.AR_Ref)[0],
+      production: productions.filter((prod) => prod.AR_Ref == article.AR_Ref)[0],
+      report: reports.filter((report) => report.AR_Ref == article.AR_Ref)[0],
+    };
+  });
+
+  return JSON.parse(JSON.stringify(data));
 }

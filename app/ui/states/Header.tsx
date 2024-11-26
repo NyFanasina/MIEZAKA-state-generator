@@ -1,9 +1,13 @@
-export default function Header() {
+import { useSearchParams } from "next/navigation";
+
+export default function Header({ children }: { children: string }) {
+  const searchParams = useSearchParams();
   return (
-    <header>
-      <div className="text-amber-900 text-center font-bold text-lg">
-        <p>MOUVEMENT ARTICLES DU dd-dd-dd AU dd-dd-dd</p>
-      </div>
+    <header className="text-amber-900 text-center font-bold text-lg mb-3 hidden print:block">
+      <p>
+        {children} {searchParams.get("from")} AU {searchParams.get("to")}
+      </p>
+      <p></p>
     </header>
   );
 }
