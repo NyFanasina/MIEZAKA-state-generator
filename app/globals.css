@@ -27,9 +27,7 @@ body {
   border: none;
   background-color: white;
 }
-.state-table tfoot {
-  @apply font-semibold;
-}
+
 td,
 th {
   /* white-space: nowrap; */
@@ -39,10 +37,10 @@ th {
 @media print {
   @page {
     size: A4 landscape; /* Définit le format A4 en mode paysage */
+    margin: 5mm;
   }
 
-  .print-container {
-    width: 297mm; /* Largeur A4 paysage */
-    height: 210mm; /* Hauteur A4 paysage */
+  .state-table tfoot {
+    display: table-row-group;
   }
 }

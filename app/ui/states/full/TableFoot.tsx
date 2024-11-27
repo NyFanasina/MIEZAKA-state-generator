@@ -20,6 +20,7 @@ export default function TableFoot({ rows = [] }: { rows: any[] }) {
     (async () => {
       const devise_Fournisseur: any = await fetchDeviseFournisseur();
       setDevise_Fournisseur(devise_Fournisseur);
+      console.log(devise_Fournisseur);
     })();
   }, []);
   const rowsByProvider = rows.reduce((acc: any, cur: any) => {
@@ -153,7 +154,7 @@ export default function TableFoot({ rows = [] }: { rows: any[] }) {
           {parseDecimal(REPORT_VAL_DEDOUAN_DEV)}
         </td>
         <td colSpan={4} className="pe-1 text-emerald-900">
-          {ACHAT_VAL_DEDOUAN_DEV}
+          {parseDecimal(ACHAT_VAL_DEDOUAN_DEV)}
         </td>
         <td colSpan={2} className="pe-1 text-orange-800">
           {parseDecimal(PROD_VAL_DEDOUAN_DEV)}

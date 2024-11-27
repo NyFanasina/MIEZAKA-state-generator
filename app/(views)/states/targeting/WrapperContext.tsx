@@ -10,7 +10,7 @@ export default function WrapperClient({ rows }: { rows: Array<Mouvement> }) {
   const pdfRef = useRef(null);
   return (
     <div ref={pdfRef}>
-      <Header>MOUVEMENT ARTICLE COMPLET</Header>
+      <Header>CIBLAGE ARTICLES</Header>
       <RowsContext.Provider value={rows}>
         <Search pdfRef={pdfRef} />
         <Table />

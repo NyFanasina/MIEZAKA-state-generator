@@ -2,6 +2,7 @@ import { ChangeEvent, PropsWithChildren, useEffect, useState } from "react";
 import { Button, Dropdown, Label, Radio, TextInput, TextInputProps } from "flowbite-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { FaFilter } from "react-icons/fa";
+import { fetchEtats } from "@/app/lib/data/ste_utils";
 
 export function TextInputFilter(props: PropsWithChildren<TextInputProps & { name: string }>) {
   const { router, pathname, params, searchParams } = initializeParamsTools();
@@ -118,10 +119,47 @@ export function Vente_p100_Filter() {
   );
 }
 
+interface EtatFilter {
+  Etat: string;
+}
 export function EtatFilter() {
   const { router, pathname, params, searchParams } = initializeParamsTools();
 
-  const [etats, setEtats] = useState<any[]>(["A+", "PP"]);
+  const [etats, setEtats] = useState<EtatFilter[]>([
+    {
+      Etat: "A",
+    },
+    {
+      Etat: "A+",
+    },
+    {
+      Etat: "A24",
+    },
+    {
+      Etat: "AA+",
+    },
+    {
+      Etat: "CR",
+    },
+    {
+      Etat: "P+",
+    },
+    {
+      Etat: "P++",
+    },
+    {
+      Etat: "P23",
+    },
+    {
+      Etat: "P24",
+    },
+    {
+      Etat: "PP",
+    },
+    {
+      Etat: "PP+",
+    },
+  ]);
 
   useEffect(() => {
     // (async () => fetchEtats().then((resp: any) => setEtats(resp.map((item: any) => item.Etat))))();
@@ -139,10 +177,10 @@ export function EtatFilter() {
         <Radio id="tous" name="vente_p100" value="" defaultChecked={true} />
         <Label htmlFor="tous" value="Tous" />
       </Dropdown.Item>
-      {etats?.map((etat) => (
-        <Dropdown.Item key={etat} className="flex items-center gap-2" onClick={() => handle(etat)}>
-          <Radio id={etat} name="vente_p100" value={etat} checked={etat == searchParams.get("state")} readOnly />
-          <Label htmlFor={etat} value={etat} />
+      {etats?.map(({ Etat }) => (
+        <Dropdown.Item key={Etat} className="flex items-center gap-2" onClick={() => handle(Etat)}>
+          <Radio id={Etat} name="vente_p100" value={Etat} checked={Etat == searchParams.get("state")} readOnly />
+          <Label htmlFor={Etat} value={Etat} />
         </Dropdown.Item>
       ))}
     </Dropdown>

@@ -1,5 +1,4 @@
 import TableBody from "./TableBody";
-import { fecthAchats, fecthArticles, fetchProductions, fetchReports, fetchVentes } from "@/app/lib/data/ste";
 import { Suspense, useContext } from "react";
 import TableFoot from "./TableFoot";
 import useSWR from "swr";

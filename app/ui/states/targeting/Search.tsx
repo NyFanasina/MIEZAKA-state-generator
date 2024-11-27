@@ -1,10 +1,13 @@
 "use client";
 import { MutableRefObject } from "react";
 import { CategoryFilter, DateFilter, EtatFilter, TextInputFilter, Vente_p100_Filter, WeightFilter } from "../Filters";
+import { Button } from "flowbite-react";
+import { useReactToPrint } from "react-to-print";
 
 export default function Search({ pdfRef }: { pdfRef: MutableRefObject<any> }) {
+  const printPdf = useReactToPrint({ contentRef: pdfRef });
   return (
-    <div className="flex justify-between items-start">
+    <div className="flex justify-between items-start print:hidden">
       <div className="*:p-[2px]">
         <div className="flex gap-1">
           <CategoryFilter />
@@ -17,7 +20,9 @@ export default function Search({ pdfRef }: { pdfRef: MutableRefObject<any> }) {
           <TextInputFilter name="design" placeholder="Recherche par désignation.." />
         </div>
       </div>
-      <DateFilter />
+      <DateFilter>
+        <Button onClick={() => printPdf()}>EXPORT</Button>
+      </DateFilter>
     </div>
   );
 }

@@ -111,7 +111,7 @@ export default function TableBody({ rows }: { rows: Mouvement[] }) {
                               {lowerThan15(Vente_p100)}
                             </td>
                             <td className="text-center">{row.article.Etat}</td>
-                            <td className="text-sm px-1 py-0">
+                            <td className="text-sm px-px py-0">
                               <sub>{Stock_Poids >= 5000 ? "*" : ""}</sub>
                             </td>
                             <td

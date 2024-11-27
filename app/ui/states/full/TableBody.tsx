@@ -163,11 +163,11 @@ export default function TableBody({ rows = [] }: { rows: Mouvement[] }) {
                             <td>{parseDecimal(Stock_Poids)}</td>
                             <td>{parseDecimal(row.article.AR_PoidsBrut * Stock_Qte)}</td>
                             {/* %vente et Marge % */}
-                            <td className="border-orange-400 border text-blue-900">{Vente_p100.toFixed(2)}</td>
+                            <td className="border-orange-400 border text-blue-800">{Vente_p100.toFixed(2)}</td>
                             <td
                               className={clsx("border-orange-400 border", {
                                 "text-red-vif": Marge_p100 < 0,
-                                "text-blue-900": Marge_p100 > 0,
+                                "text-blue-800": Marge_p100 > 0,
                               })}
                             >
                               {Marge_p100.toFixed(2)}

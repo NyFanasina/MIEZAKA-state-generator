@@ -11,9 +11,9 @@ export default function Table({ searchParams }: SearchParamsStatesProps) {
   rows = JSON.parse(JSON.stringify(rows));
 
   return (
-    <table className="state-table">
+    <table className="state-table print:text-[8px]">
       <thead>
-        <tr className="text-[12px]">
+        <tr className="text-[11px]">
           <th colSpan={5}></th>
           <th colSpan={4} className="bg-violet-300 text-violet-950 border-violet-400 border py-1">
             REPORT
