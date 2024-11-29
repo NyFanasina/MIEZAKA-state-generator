@@ -14,7 +14,7 @@ import {
 import clsx from "clsx";
 import { Fragment, useState } from "react";
 
-export default function TableBody({ rows }: { rows: Mouvement[] }) {
+export default async function TableBody({ rows }: { rows: Mouvement[] }) {
   const [isActive, setActive] = useState("");
 
   function handleRowClick(id: string) {

@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { Mouvement } from "./ste_definition";
 
 export const SignInSchema = z.object({
   email: z.coerce.string().email({ message: "Veuillez entrer un email valide" }),

@@ -185,6 +185,11 @@ export default function filterData(searchParams: SearchParamsStatesProps["search
     data = data.filter((row) => row.article.Size.includes((searchParams.category ?? "").toUpperCase()));
   }
 
+  if (searchParams?.providers) {
+    const decoded = searchParams.providers?.split("+");
+    data = data.filter((row) => decoded.includes(row.article.Nom_Fournisseur));
+  }
+
   if (searchParams?.weight) {
     data = data.filter((row) => {
       const Poids_Stock = calculatePoidsStock(row);

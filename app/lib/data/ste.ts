@@ -1,11 +1,11 @@
 "use server";
 import { STE_miezaka } from "@/prisma/clientSTE_Miezaka";
 import { calculateDayBefore } from "../utils";
-import { Mouvement } from "../ste_definition";
+import { Mouvement, Article, Report_, Vente, Achat, Production } from "../ste_definition";
 import { SearchParamsStatesProps } from "@/app/(views)/states/full/page";
 
 export async function fecthArticles(to?: string) {
-  const article = await STE_miezaka.$queryRaw`SELECT 
+  return await STE_miezaka.$queryRaw<Article[]>`SELECT 
     DISTINCT
      dbo.[F_ARTICLE].[AR_Ref]
     ,dbo.[F_ARTICLE].[AR_Design]           
@@ -58,11 +58,10 @@ export async function fecthArticles(to?: string) {
             dbo.[F_ARTICLE].[cbCreation] <= CAST(${to} as date)
         ORDER BY Nom_Fournisseur ASC;
     `;
-  return JSON.parse(JSON.stringify(article));
 }
 
 export async function fecthAchats(from: string, to: string) {
-  return await STE_miezaka.$queryRaw`
+  return await STE_miezaka.$queryRaw<Achat[]>`
         SELECT
         DISTINCT(dbo.[F_DOCLIGNE].[AR_Ref])
         ,SUM(dbo.[F_DOCLIGNE].[DL_Qte]) as Qte
@@ -84,7 +83,7 @@ export async function fecthAchats(from: string, to: string) {
 }
 
 export async function fetchVentes(from?: string, to?: string) {
-  return await STE_miezaka.$queryRaw`
+  return await STE_miezaka.$queryRaw<Vente[]>`
     SELECT
     DISTINCT(dbo.[F_DOCLIGNE].[AR_Ref])
     ,SUM(dbo.[F_DOCLIGNE].[DL_Qte]) as Qte
@@ -106,7 +105,7 @@ export async function fetchVentes(from?: string, to?: string) {
 }
 
 export async function fetchProductions(from?: string, to?: string) {
-  return await STE_miezaka.$queryRaw`SELECT 
+  return await STE_miezaka.$queryRaw<Production[]>`SELECT 
         dbo.[F_DOCLIGNE].[AR_Ref],
         sum(dbo.[F_DOCLIGNE].[DL_Qte]) AS Qte
         FROM dbo.[F_DOCLIGNE] 
@@ -130,7 +129,7 @@ export async function fetchProductions(from?: string, to?: string) {
 export async function fetchReports(from: string) {
   const dayBefore = calculateDayBefore(from);
 
-  return await STE_miezaka.$queryRaw`SELECT
+  return await STE_miezaka.$queryRaw<Report_[]>`SELECT
   AR_Ref
 ,Qte_Prod + Qte_Achat + MouvEntree -MouveSortie - Qte_Vente AS Qte
   FROM
@@ -173,39 +172,6 @@ DISTINCT
   ) AS Fango`;
 }
 
-export async function fetchDeviseFournisseur() {
-  return await STE_miezaka.$queryRaw`
-        SELECT 
-    DISTINCT
-    dbo.[F_ARTFOURNISS].[AF_Devise] AS Devise
-    ,CASE 
-      WHEN dbo.[F_ARTICLE].[AR_Ref] LIKE '%PRO%' THEN  CONCAT(dbo.[F_COMPTET].[CT_Intitule], ' ' ,'PRO')
-      WHEN dbo.[F_ARTICLE].[AR_Ref] LIKE '%TTR% O' THEN CONCAT(dbo.[F_COMPTET].[CT_Intitule], ' ', '//O')
-      WHEN dbo.[F_ARTICLE].[AR_Ref] LIKE '%TTR% T' THEN CONCAT(dbo.[F_COMPTET].[CT_Intitule], ' ', '//T')
-      WHEN dbo.[F_ARTICLE].[AR_Ref] LIKE '%TTR% N' THEN CONCAT(dbo.[F_COMPTET].[CT_Intitule], ' ', '//N')
-      WHEN dbo.[F_ARTICLE].[AR_Ref] = 'TTR' THEN CONCAT('Ancien',' ',dbo.[F_COMPTET].[CT_Intitule])
-        ELSE dbo.[F_COMPTET].[CT_Intitule]
-    END  AS Nom_Fournisseur                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
-    FROM dbo.F_ARTICLE 
-    JOIN dbo.[F_DOCLIGNE] 
-        ON dbo.[F_ARTICLE].AR_Ref = dbo.[F_DOCLIGNE].[AR_Ref]
-    JOIN dbo.[F_ARTCLIENT] 
-        ON dbo.[F_DOCLIGNE].AR_Ref = dbo.[F_ARTCLIENT].[AR_Ref] AND dbo.[F_ARTCLIENT].[AC_Categorie] = 3
-    JOIN dbo.[F_ARTFOURNISS] 
-        ON dbo.[F_ARTFOURNISS].[AR_Ref] = dbo.[F_ARTICLE].[AR_Ref]
-    JOIN dbo.[F_COMPTET] ON dbo.[F_ARTFOURNISS].[CT_Num] = dbo.[F_COMPTET].[CT_Num]
-    WHERE 
-        dbo.[F_ARTICLE].[FA_CodeFamille] IN  ('BALLE', 'FRIPPE')
-            AND
-        dbo.[F_DOCLIGNE].[DO_Domaine] in (0,1,2)
-            AND 
-        dbo.[F_DOCLIGNE].[DO_Type] in (6,7,16,17,26) 
-        --     AND 
-        -- dbo.[F_COMPTET].[CT_Intitule] = 'ATTAR'
-        ORDER BY Nom_Fournisseur ASC;
-    `;
-}
-
 export default async function fetchRows(searchParams: SearchParamsStatesProps["searchParams"]) {
   const articles = await fecthArticles(searchParams?.to);
   const reports = await fetchReports(searchParams?.from);
@@ -213,7 +179,7 @@ export default async function fetchRows(searchParams: SearchParamsStatesProps["s
   const ventes = await fetchVentes(searchParams?.from, searchParams?.to);
   const productions = await fetchProductions(searchParams?.from, searchParams?.to);
 
-  const data: Array<Mouvement> = await articles.map((article: any) => {
+  let data: Array<Mouvement> = await articles.map((article: any) => {
     return {
       article,
       achat: achats.filter((achat) => achat.AR_Ref == article.AR_Ref)[0],
@@ -223,5 +189,5 @@ export default async function fetchRows(searchParams: SearchParamsStatesProps["s
     };
   });
 
-  return JSON.parse(JSON.stringify(data));
+  return (data = JSON.parse(JSON.stringify(data)));
 }

@@ -10,19 +10,20 @@ import {
   calculateVente_p100ForOneProvider,
   parseDecimal,
 } from "@/app/lib/utils";
-import { fetchDeviseFournisseur } from "@/app/lib/data/ste";
+import { fetchFournisseurs } from "@/app/lib/data/ste_utils";
 import clsx from "clsx";
 import { useEffect, useState } from "react";
 
 export default function TableFoot({ rows = [] }: { rows: any[] }) {
   const [devise_Fournisseur, setDevise_Fournisseur] = useState([]);
+
   useEffect(() => {
     (async () => {
-      const devise_Fournisseur: any = await fetchDeviseFournisseur();
+      const devise_Fournisseur: any = await fetchFournisseurs();
       setDevise_Fournisseur(devise_Fournisseur);
-      console.log(devise_Fournisseur);
     })();
   }, []);
+
   const rowsByProvider = rows.reduce((acc: any, cur: any) => {
     const providername = cur.article.Nom_Fournisseur;
 
@@ -33,9 +34,10 @@ export default function TableFoot({ rows = [] }: { rows: any[] }) {
 
   function calculateValDedouanDev(rowsByProvider: any[], type: "report" | "achat" | "stock" | "vente" | "production") {
     const ValEnDevise = Object.entries(rowsByProvider).map(([provider, data]: [string, Array<any>]) => {
-      let valDevise = 1;
+      let valDevise = 0;
       const AF_Devise = devise_Fournisseur.filter((item: any) => item.Nom_Fournisseur === provider)[0]?.Devise;
       if (AF_Devise == 2) valDevise = 5000;
+      if (AF_Devise == 3) valDevise = 4500;
       return calculateTotalMontDedouanForOneProvider(data, type) / valDevise;
     });
 

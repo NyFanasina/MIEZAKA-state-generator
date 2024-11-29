@@ -14,12 +14,13 @@ export type SearchParamsStatesProps = {
     state?: string;
     ar_ref?: string;
     design?: string;
+    providers?: string;
   };
 };
 
 export default async function page({ searchParams }: SearchParamsStatesProps) {
-  // const rows = await fetchRows(searchParams);
-  let rows: Array<Mouvement> = require("/home/fango/Bureau/Data.json");
+  const rows: Array<Mouvement> = await fetchRows(searchParams);
+  // let rows: Array<Mouvement> = require("/home/fango/Bureau/Data.json");
   const nextRows = filterData(searchParams, rows);
 
   return <WrapperClient rows={nextRows}></WrapperClient>;
