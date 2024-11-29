@@ -1,4 +1,3 @@
-"use client";
 import { SearchParamsStatesProps } from "../full/page";
 import { Mouvement } from "@/app/lib/ste_definition";
 import filterData from "@/app/lib/utils";

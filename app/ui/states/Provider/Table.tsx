@@ -2,13 +2,11 @@ import filterData from "@/app/lib/utils";
 import { Mouvement } from "@/app/lib/ste_definition";
 import TableBody from "./TableBody";
 import TableFoot from "./TableFoot";
-import { SearchParamsStatesProps } from "@/app/(views)/states/full/page";
+import { useContext } from "react";
+import { RowsContext } from "@/app/contexts/DataContext";
 
-export default function Table({ searchParams }: SearchParamsStatesProps) {
-  let rows: Array<Mouvement> = require("/home/fango/Bureau/Data.json");
-  rows = filterData(searchParams, rows);
-
-  rows = JSON.parse(JSON.stringify(rows));
+export default function Table() {
+  const rows = useContext(RowsContext);
 
   return (
     <table className="state-table print:text-[8px]">
