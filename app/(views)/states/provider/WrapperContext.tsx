@@ -1,8 +1,8 @@
 "use client";
 import { Mouvement } from "@/app/lib/ste_definition";
 import { RowsContext } from "@/app/contexts/DataContext";
-import Search from "@/app/ui/states/Provider/Search";
-import Table from "@/app/ui/states/Provider/Table";
+import Search from "@/app/ui/states/provider/Search";
+import Table from "@/app/ui/states/provider/Table";
 import Header from "@/app/ui/states/Header";
 import { useRef } from "react";
 

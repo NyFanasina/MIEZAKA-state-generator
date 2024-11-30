@@ -1,6 +1,6 @@
 "use client";
 import { useRef } from "react";
-import Search from "@/app/ui/states/Provider/Search";
+import Search from "@/app/ui/states/provider/Search";
 import Table from "@/app/ui/states/full/Table";
 import Header from "@/app/ui/states/Header";
 import { Mouvement } from "@/app/lib/ste_definition";
