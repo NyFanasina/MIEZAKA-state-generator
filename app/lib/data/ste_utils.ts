@@ -2,6 +2,8 @@
 
 import { prisma } from "@/prisma/client";
 import { STE_miezaka } from "@/prisma/clientSTE_Miezaka";
+import { BestSellerSchema, GlobalStaticChartSchema } from "../ste_definition";
+import { z } from "zod";
 
 export async function fetchEtats() {
   return await STE_miezaka.$queryRaw`SELECT DISTINCT dbo.[F_ARTICLE].[Etat] FROM [F_ARTICLE] WHERE [F_ARTICLE].[FA_CodeFamille] IN ('BALLE', 'FRIPPE') AND [Etat] NOT IN ('C', '')`;
@@ -48,37 +50,36 @@ export async function fetchStatistiquesGlobales() {
   };
 }
 
-export async function fetchTopVente(by: "Qte_Vente" | "Montant_Dedouan", year: string) {
-  if (by === "Qte_Vente")
-    return await STE_miezaka.$queryRaw<BestSeller[]>`SELECT 
-    Top(10)
-        dbo.[F_DOCLIGNE].[AR_Ref],
-        dbo.[F_ARTICLE].[AR_Design],
-        dbo.[F_ARTICLE].[AR_PoidsBrut] * SUM([F_DOCLIGNE].[DL_Qte]) as Montant_Dedouan,
-        SUM([F_DOCLIGNE].[DL_Qte]) AS Qte_Vente
-    FROM dbo.[F_DOCLIGNE]
-    JOIN dbo.[F_ARTICLE] 
-    ON dbo.[F_DOCLIGNE].[AR_Ref] = dbo.[F_ARTICLE].[AR_Ref]
-    WHERE
-        dbo.[F_DOCLIGNE].[DO_Domaine] IN (0)
-    AND dbo.F_DOCLIGNE.DO_Type IN (6,7)
-    AND dbo.[F_DOCLIGNE].AR_Ref IS NOT NULL
-    AND dbo.[F_ARTICLE].AR_PoidsNet > 0
-    AND dbo.[F_DOCLIGNE].[DO_Type] IN (6,7,16,17,20,21,26)
-    AND dbo.[F_DOCLIGNE].[DE_No] NOT IN (18,29,31,38,39,47,50)
-    AND YEAR(dbo.[F_DOCLIGNE].[DO_Date]) = '2024' 
-    GROUP BY
-        dbo.[F_DOCLIGNE].AR_Ref,
-        dbo.[F_ARTICLE].[AR_Design],
-        dbo.[F_ARTICLE].[AR_PoidsBrut]
-    ORDER BY
-    Qte_Vente DESC`;
-  else if (by === "Montant_Dedouan")
-    return await STE_miezaka.$queryRaw<BestSeller[]>`SELECT 
+export async function fetchVenteQteByMonth() {
+  const res = await STE_miezaka.$queryRaw`SELECT 
+        Top(10)
+            SUM([F_DOCLIGNE].[DL_Qte]) AS Qte_Vente,
+            MONTH(dbo.[F_DOCLIGNE].[DO_Date]) as Mois
+        FROM dbo.[F_DOCLIGNE]
+        JOIN dbo.[F_ARTICLE] 
+        ON dbo.[F_DOCLIGNE].[AR_Ref] = dbo.[F_ARTICLE].[AR_Ref]
+        WHERE
+            dbo.[F_DOCLIGNE].[DO_Domaine] IN (0)
+        AND dbo.F_DOCLIGNE.DO_Type IN (6,7)
+        AND dbo.[F_DOCLIGNE].AR_Ref IS NOT NULL
+        AND dbo.[F_ARTICLE].AR_PoidsNet > 0
+        AND dbo.[F_DOCLIGNE].[DO_Type] IN (6,7,16,17,20,21,26)
+        AND dbo.[F_DOCLIGNE].[DE_No] NOT IN (18,29,31,38,39,47,50)
+        AND YEAR(dbo.[F_DOCLIGNE].[DO_Date]) = '2024' 
+        GROUP BY
+            MONTH(dbo.[F_DOCLIGNE].[DO_Date])
+        ORDER BY
+        Qte_Vente DESC`;
+
+  return BestSellerSchema.array().parse(res);
+}
+
+export async function fetchBestSellerByQte(year: string = "2024") {
+  const res = await STE_miezaka.$queryRaw`SELECT 
         Top(10)
             dbo.[F_DOCLIGNE].[AR_Ref],
             dbo.[F_ARTICLE].[AR_Design],
-            dbo.[F_ARTICLE].[AR_PoidsBrut] * SUM([F_DOCLIGNE].[DL_Qte]) as Montant_Dedouan,
+            SUM(dbo.[F_DOCLIGNE].[DL_MontantTTC]) as Vente_Reelle,
             SUM([F_DOCLIGNE].[DL_Qte]) AS Qte_Vente
         FROM dbo.[F_DOCLIGNE]
         JOIN dbo.[F_ARTICLE] 
@@ -96,6 +97,65 @@ export async function fetchTopVente(by: "Qte_Vente" | "Montant_Dedouan", year: s
             dbo.[F_ARTICLE].[AR_Design],
             dbo.[F_ARTICLE].[AR_PoidsBrut]
         ORDER BY
-        Montant_Dedouan DESC`;
-  else return [];
+        Qte_Vente DESC`;
+
+  return res;
+}
+
+export async function fetcthBestSellerByVente_Reel() {
+  const res = await STE_miezaka.$queryRaw`SELECT 
+    Top(10)
+        dbo.[F_DOCLIGNE].[AR_Ref],
+        dbo.[F_ARTICLE].[AR_Design],
+        SUM(dbo.[F_DOCLIGNE].[DL_MontantTTC]) as Vente_Reelle,
+        SUM([F_DOCLIGNE].[DL_Qte]) AS Qte_Vente
+    FROM dbo.[F_DOCLIGNE]
+    JOIN dbo.[F_ARTICLE] 
+    ON dbo.[F_DOCLIGNE].[AR_Ref] = dbo.[F_ARTICLE].[AR_Ref]
+    WHERE
+        dbo.[F_DOCLIGNE].[DO_Domaine] IN (0)
+    AND dbo.F_DOCLIGNE.DO_Type IN (6,7)
+    AND F_ARTICLE.Etat != 'C'
+    AND dbo.[F_DOCLIGNE].AR_Ref IS NOT NULL
+    AND dbo.[F_ARTICLE].AR_PoidsNet > 0
+    AND dbo.[F_ARTICLE].AR_PoidsBrut > 0
+    AND dbo.[F_DOCLIGNE].[DO_Type] IN (6,7,16,17,20,21,26)
+    AND dbo.[F_DOCLIGNE].[DE_No] NOT IN (18,29,31,38,39,47,50)
+    AND YEAR(dbo.[F_DOCLIGNE].[DO_Date]) = '2024' 
+    AND dbo.[F_ARTICLE].[FA_CodeFamille] IN  ('BALLE', 'FRIPPE')
+    GROUP BY
+        dbo.[F_DOCLIGNE].AR_Ref,
+        dbo.[F_ARTICLE].[AR_Design],
+        dbo.[F_ARTICLE].[AR_PoidsBrut]
+    ORDER BY
+    Vente_Reelle DESC`;
+
+  return res;
+}
+
+export async function fetchGlobalStaticChart() {
+  const res = await STE_miezaka.$queryRaw`SELECT 
+        SUM([F_DOCLIGNE].[DL_Qte]) AS Qte_Vente,
+        FORMAT(dbo.[F_DOCLIGNE].[DO_Date], 'yyyy-MM') as Mois
+    FROM dbo.[F_DOCLIGNE]
+    JOIN dbo.[F_ARTICLE] 
+        ON dbo.[F_DOCLIGNE].[AR_Ref] = dbo.[F_ARTICLE].[AR_Ref]
+    WHERE
+        dbo.[F_DOCLIGNE].[DO_Domaine] IN (0)
+        AND dbo.F_DOCLIGNE.DO_Type IN (6,7)
+        AND dbo.[F_ARTICLE].[FA_CodeFamille] IN  ('FRIPPE', 'BALLE')
+        AND dbo.[F_DOCLIGNE].AR_Ref IS NOT NULL
+        AND dbo.[F_ARTICLE].AR_PoidsNet > 0
+        AND dbo.[F_ARTICLE].AR_PoidsBrut > 0
+        AND dbo.[F_ARTICLE].Etat != 'C'
+        AND dbo.[F_DOCLIGNE].[DO_Type] IN (6,7,16,17,20,21,26)
+        AND dbo.[F_DOCLIGNE].[DE_No] NOT IN (18,29,31,38,39,47,50)
+        AND dbo.[F_DOCLIGNE].[DO_Date] >= DATEADD(MONTH, -11, DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1)) 
+        AND dbo.[F_DOCLIGNE].[DO_Date] <= EOMONTH(GETDATE())
+    GROUP BY
+        FORMAT(dbo.[F_DOCLIGNE].[DO_Date], 'yyyy-MM')
+    ORDER BY
+    Mois ASC`;
+
+  return GlobalStaticChartSchema.array().parse(res);
 }

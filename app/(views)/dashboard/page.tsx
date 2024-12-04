@@ -1,13 +1,7 @@
 import { MdSell } from "react-icons/md";
 import { HiPresentationChartLine } from "react-icons/hi";
-// import { Card } from "@/app/ui/dashboard/Card";
-// import { fetchStatistiquesGlobales, fetchTopVentes } from "@/app/lib/data/ste_utils";
-// import { GlobalStatistics } from "@/app/lib/ste_definition";
-// import BestSaleTable from "@/app/ui/dashboard/BestSaleTable";
-// import BestSaleChart from "@/app/ui/dashboard/BestSaleChart";
-import { Select } from "flowbite-react";
-import Cards from "@/app/ui/dashboard/Cards";
 import { Card } from "@/app/ui/dashboard/Card";
+import GlobalStaticChart from "@/app/ui/dashboard/GlobalStaticChart";
 import BestSellerQteTable from "@/app/ui/dashboard/BestSellerQteTable";
 import BestSellerAmountTable from "@/app/ui/dashboard/BestSellerAmountTable";
 
@@ -20,7 +14,7 @@ export default async function Page() {
   ];
 
   return (
-    <div className="px-2">
+    <div className="flex flex-col px-2">
       <div>
         <h1 className="flex items-center  gap-x-2 text-lg font-bold">
           <HiPresentationChartLine size={21} className="mb-[2px]" />
@@ -39,6 +33,7 @@ export default async function Page() {
           <Card name="Vente" value={45700} className="border-blue-500" unity="Ar" />
           <Card name="Stock" value={284500} className="border-gray-500" unity="Ar" />
         </div>
+        <GlobalStaticChart />
       </div>
 
       <div>
