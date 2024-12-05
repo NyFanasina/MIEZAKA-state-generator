@@ -44,3 +44,7 @@ th {
     display: table-row-group;
   }
 }
+
+.sorted {
+  color: red;
+}

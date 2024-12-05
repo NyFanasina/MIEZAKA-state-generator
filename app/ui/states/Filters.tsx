@@ -52,12 +52,13 @@ export function CategoryFilter() {
     params.set("category", id);
     router.replace(`${pathname}?${params.toString()}`);
   }
+  console.log("==> ", searchParams.get("category"));
 
   return (
     <Dropdown color="gray" label={searchParams.get("category") ? `Catégorie (${searchParams.get("category")})` : "Catégorie"} dismissOnClick={false}>
       {array.map(({ name, value }) => (
         <Dropdown.Item className="flex items-center gap-2" as="button" key={name} onClick={() => handle(value)}>
-          <Radio id={name} name="category" value={value} checked={searchParams.get("category") == value} readOnly />
+          <Radio id={name} name="category" value={value} checked={(searchParams.get("category") ?? "") == value} readOnly />
           <Label htmlFor="small">{name}</Label>
         </Dropdown.Item>
       ))}
@@ -83,7 +84,7 @@ export function WeightFilter() {
     <Dropdown color="gray" label={searchParams.get("weight") ? `Poids (${searchParams.get("weight")})` : "Poids"} dismissOnClick={false}>
       {array.map(({ name, value }) => (
         <Dropdown.Item className="flex items-center gap-2" key={name} onClick={() => handle(value)}>
-          <Radio value={name} name="weight" id={name} key={name} checked={searchParams.get("weight") == value} readOnly />
+          <Radio value={name} name="weight" id={name} key={name} checked={(searchParams.get("weight") ?? "") == value} readOnly />
           <Label value={name} htmlFor={name} />
         </Dropdown.Item>
       ))}
@@ -112,7 +113,7 @@ export function Vente_p100_Filter() {
     <Dropdown color="gray" label={searchParams.get("vente_p100") ? `% vente (${searchParams.get("vente_p100")})` : "% vente"} dismissOnClick={false}>
       {array.map(({ name, value }) => (
         <Dropdown.Item className="flex items-center gap-2" key={name} onClick={() => handle(value)}>
-          <Radio id={name} name="vente_p100" value={value} checked={value == searchParams.get("vente_p100")} readOnly />
+          <Radio id={name} name="vente_p100" value={value} checked={value == (searchParams.get("vente_p100") ?? "")} readOnly />
           <Label htmlFor={name} value={name} />
         </Dropdown.Item>
       ))}

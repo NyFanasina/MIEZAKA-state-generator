@@ -25,7 +25,7 @@ export function capitalizeString(word: string) {
 
 export function parseDecimal(value: any) {
   const formatter = Intl.NumberFormat("fr-FR", { style: "decimal", minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  if (isNaN(value)) return parseFloat("0").toFixed(2);
+  if (!value) return formatter.format(0);
   return formatter.format(value);
 }
 
@@ -180,6 +180,19 @@ export function calculate_PU_Provider(rows: Array<Mouvement> = []) {
   return onlyPU.reduce((acc, cur) => acc + cur, 0) / onlyPU.length;
 }
 
+export function calculateMontDedouan(row: Mouvement, type: "report" | "vente" | "achat" | "stock") {
+  if (type === "stock") return row.article.AR_PoidsBrut * calculateQteStock(row);
+  return Number(row.article?.AR_PoidsBrut) * Number(row[type]?.Qte ?? 0);
+}
+
+export function calculateMontAchat(row: Mouvement, type: "report" | "achat") {
+  return calculatePoids(row, type) * Number(row.article.AR_PrixAch);
+}
+
+export function calculateMarge_p100(row: Mouvement) {
+  return ((Number(row.article.AC_PrixVen ?? 0) - Number(row.article.AR_PoidsBrut ?? 0)) / Number(row.article.AR_PoidsBrut ?? 0)) * 100;
+}
+
 export default function filterData(searchParams: SearchParamsStatesProps["searchParams"], data: Mouvement[]) {
   if (searchParams?.category) {
     data = data.filter((row) => row.article.Size.includes((searchParams.category ?? "").toUpperCase()));
@@ -222,4 +235,67 @@ export default function filterData(searchParams: SearchParamsStatesProps["search
   }
 
   return data;
+}
+
+export function sortData(searchParams: SearchParamsStatesProps["searchParams"], data: Mouvement[]) {
+  if (!searchParams?.sortBy) {
+    return data;
+  }
+  const col = searchParams.sortBy.split("@")[0];
+  const direction = searchParams.sortBy.split("@")[1] === "asc" ? 1 : -1;
+
+  switch (col) {
+    case "vente_p100":
+      return data.toSorted((b, a) => calculateVente_p100(a) - calculateVente_p100(b) * direction);
+    case "state":
+      return data.toSorted((a, b) => a.article.Etat.localeCompare(b.article.Etat) * direction);
+    case "+5t":
+      return data.toSorted((a, b) => (calculatePoidsStock(a) - calculatePoidsStock(b)) * direction);
+    case "ar_ref":
+      return data.toSorted((a, b) => a.article.AR_Ref.localeCompare(b.article.AR_Ref) * direction);
+    case "pu_achat":
+      return data.toSorted((a, b) => (Number(a.article.AR_PrixAch) - Number(b.article.AR_PrixAch)) * direction);
+    case "pu_revient":
+      return data.toSorted((a, b) => (Number(a.article.AR_PoidsBrut) - Number(b.article.AR_PoidsBrut)) * direction);
+    case "pu_gros":
+      return data.toSorted((a, b) => (Number(a.article.AC_PrixVen) - Number(b.article.AC_PrixVen)) * direction);
+    case "report_qte":
+      return data.toSorted((a, b) => (Number(a.report.Qte) - Number(b.report.Qte)) * direction);
+    case "report_poids":
+      return data.toSorted((a, b) => (calculatePoids(a, "report") - calculatePoids(b, "report")) * direction);
+    case "report_mont_achat":
+      return data.toSorted((a, b) => (calculateMontAchat(a, "report") - calculateMontAchat(b, "report")) * direction);
+    case "report_mont_dedouan":
+      return data.toSorted((a, b) => (calculateMontDedouan(a, "report") - calculateMontDedouan(b, "report")) * direction);
+    case "achat_qte":
+      return data.toSorted((a, b) => (Number(a.achat?.Qte ?? 0) - Number(b.achat?.Qte ?? 0)) * direction);
+    case "achat_poids":
+      return data.toSorted((a, b) => (calculatePoids(a, "achat") - calculatePoids(b, "achat")) * direction);
+    case "achat_mont_achat":
+      return data.toSorted((a, b) => (calculateMontAchat(a, "achat") - calculateMontAchat(b, "achat")) * direction);
+    case "achat_mont_dedouan":
+      return data.toSorted((a, b) => (calculateMontDedouan(a, "achat") - calculateMontDedouan(b, "achat")) * direction);
+    case "prod_qte":
+      return data.toSorted((a, b) => (Number(a.production?.Qte ?? 0) - Number(b.production?.Qte ?? 0)) * direction);
+    case "prod_poids":
+      return data.toSorted((a, b) => (calculatePoids(a, "production") - calculatePoids(b, "production")) * direction);
+    case "vente_qte":
+      return data.toSorted((a, b) => (Number(a.vente.Qte ?? 0) - Number(b.vente.Qte ?? 0)) * direction);
+    case "vente_poids":
+      return data.toSorted((a, b) => (calculatePoids(a, "vente") - calculatePoids(b, "vente")) * direction);
+    case "vente_mont_dedouan":
+      return data.toSorted((a, b) => (calculateMontDedouan(a, "vente") - calculateMontDedouan(b, "vente")) * direction);
+    case "vente_reelle":
+      return data.toSorted((a, b) => (Number(a.vente.Vente_Reelle ?? 0) - Number(b.vente.Vente_Reelle ?? 0)) * direction);
+    case "stock_qte":
+      return data.toSorted((a, b) => (calculateQteStock(a) - calculateQteStock(b)) * direction);
+    case "stock_poids":
+      return data.toSorted((a, b) => (calculatePoidsStock(a) - calculatePoidsStock(b)) * direction);
+    case "stock_mont_dedouan":
+      return data.toSorted((a, b) => (calculateMontDedouan(a, "stock") - calculateMontDedouan(b, "stock")) * direction);
+    case "marge_p100":
+      return data.toSorted((a, b) => (calculateMarge_p100(a) - calculateMarge_p100(b)) * direction);
+    default:
+      return data;
+  }
 }

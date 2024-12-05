@@ -1,7 +1,10 @@
 "use client";
 import {
   calculate_PU_Provider,
+  calculateMarge_p100,
   calculateMarge_p100ForOneProvider,
+  calculateMontAchat,
+  calculateMontDedouan,
   calculatePoids,
   calculatePoidsStock,
   calculateQteStock,
@@ -101,12 +104,14 @@ export default function TableBody({ rows = [] }: { rows: Mouvement[] }) {
                         const Report_Poids = calculatePoids(row, "report");
                         const Achat_Poids = calculatePoids(row, "achat");
                         const Prod_Poids = calculatePoids(row, "production");
+                        const Report_MontDedouan = calculateMontDedouan(row, "report");
+                        const Report_MontAchat = calculateMontAchat(row, "report");
 
                         // Calcul % vente
                         const Vente_p100 = calculateVente_p100(row);
 
                         // Calcul % marge
-                        const Marge_p100 = ((Number(row.article.AC_PrixVen ?? 0) - Number(row.article.AR_PoidsBrut ?? 0)) / Number(row.article.AR_PoidsBrut ?? 0)) * 100;
+                        const Marge_p100 = calculateMarge_p100(row);
 
                         return (
                           <tr
@@ -143,10 +148,10 @@ export default function TableBody({ rows = [] }: { rows: Mouvement[] }) {
                             {/* Report */}
                             <td className="text-violet-950">{parseDecimal(row.report?.Qte)}</td>
                             <td className="text-violet-950">{parseDecimal(Report_Poids)}</td>
-                            <td className="text-violet-950">{parseDecimal(Report_Poids * row.article.AR_PrixAch)}</td>
-                            <td className="text-violet-950">{parseDecimal(row.article?.AR_PoidsBrut * row.report?.Qte)}</td>
+                            <td className="text-violet-950">{parseDecimal(Report_MontAchat)}</td>
+                            <td className="text-violet-950">{parseDecimal(Report_MontDedouan)}</td>
                             {/* Achats */}
-                            <td className="text-green-900">{parseDecimal(row.achat?.Qte)}</td>
+                            <td className="text-green-900">{parseDecimal(row.achat?.Qte)}</td> {/* misy vide */}
                             <td className="text-emerald-900">{parseDecimal(Achat_Poids)}</td>
                             <td className="text-emerald-900">{parseDecimal(row.article?.AR_PrixAch * Achat_Poids)}</td>
                             <td className="text-emerald-900">{parseDecimal(row.achat?.Qte * row.article?.AR_PoidsBrut)}</td>
@@ -163,14 +168,14 @@ export default function TableBody({ rows = [] }: { rows: Mouvement[] }) {
                             <td>{parseDecimal(Stock_Poids)}</td>
                             <td>{parseDecimal(row.article.AR_PoidsBrut * Stock_Qte)}</td>
                             {/* %vente et Marge % */}
-                            <td className="border-orange-400 border text-blue-800">{Vente_p100.toFixed(2)}</td>
+                            <td className="border-orange-400 border text-blue-800">{parseDecimal(Vente_p100)}</td>
                             <td
                               className={clsx("border-orange-400 border", {
                                 "text-red-vif": Marge_p100 < 0,
                                 "text-blue-800": Marge_p100 > 0,
                               })}
                             >
-                              {Marge_p100.toFixed(2)}
+                              {parseDecimal(Marge_p100)}
                             </td>
                           </tr>
                         );

@@ -1,6 +1,5 @@
 "use server";
 import { STE_miezaka } from "@/prisma/clientSTE_Miezaka";
-import { calculateDayBefore } from "../utils";
 import { Mouvement, Article, Report_, Vente, Achat, Production } from "../ste_definition";
 import { SearchParamsStatesProps } from "@/app/(views)/states/full/page";
 
@@ -127,47 +126,44 @@ export async function fetchProductions(from?: string, to?: string) {
 }
 
 export async function fetchReports(from: string) {
-  const dayBefore = calculateDayBefore(from);
-
   return await STE_miezaka.$queryRaw<Report_[]>`SELECT
-  AR_Ref
-,Qte_Prod + Qte_Achat + MouvEntree -MouveSortie - Qte_Vente AS Qte
-  FROM
-  (
-  SELECT
-DISTINCT
-  dbo.[F_DOCLIGNE].AR_Ref,
-  SUM(CASE
-      WHEN dbo.F_DOCLIGNE.DO_Type = 26 AND dbo.[F_DOCLIGNE].DL_TNomencl = 0 THEN dbo.[F_DOCLIGNE].[DL_Qte]
-      WHEN dbo.F_DOCLIGNE.DO_Type = 26 AND dbo.[F_DOCLIGNE].DL_TNomencl = 1 THEN -dbo.[F_DOCLIGNE].[DL_Qte]
-      ELSE 0
-      END) AS Qte_Prod,
-  SUM(CASE
-      WHEN dbo.F_DOCLIGNE.DO_Type IN (6,7) THEN dbo.[F_DOCLIGNE].[DL_Qte]
-          ELSE 0
-      END) AS Qte_Vente,
-  SUM(CASE
-          WHEN dbo.F_DOCLIGNE.DO_Type IN (16,17) THEN dbo.[F_DOCLIGNE].[DL_Qte]
-          ELSE 0
-      END) AS Qte_Achat,
-  SUM(CASE
-          WHEN dbo.F_DOCLIGNE.DO_Type IN (20) THEN dbo.[F_DOCLIGNE].[DL_Qte]
-          ELSE 0
-      END) AS MouvEntree,
-  SUM(CASE
-          WHEN dbo.F_DOCLIGNE.DO_Type IN (21) THEN dbo.[F_DOCLIGNE].[DL_Qte]
-          ELSE 0
-      END) AS MouveSortie
-  FROM dbo.[F_DOCLIGNE]
-  WHERE
-          dbo.[F_DOCLIGNE].[DO_Domaine] IN (0,2,1)
-          AND dbo.[F_DOCLIGNE].AR_Ref IS NOT NULL
-          --AND dbo.[F_DOCLIGNE].[DL_Qte] >= 0
-          AND dbo.[F_DOCLIGNE].[DO_Type] IN (6,7,16,17,20,21,26)
-          AND dbo.[F_DOCLIGNE].[Do_Date] < CAST(${from} AS date) 
-          AND dbo.[F_DOCLIGNE].[DE_No] NOT IN (18,29,31,38,39,47,50)
-  GROUP BY
-  dbo.[F_DOCLIGNE].AR_Ref
+    AR_Ref
+    ,Qte_Prod + Qte_Achat + MouvEntree -MouveSortie - Qte_Vente AS Qte
+    FROM
+    (
+    SELECT
+    DISTINCT
+    dbo.[F_DOCLIGNE].AR_Ref,
+    SUM(CASE
+        WHEN dbo.F_DOCLIGNE.DO_Type = 26 AND dbo.[F_DOCLIGNE].DL_TNomencl = 0 THEN dbo.[F_DOCLIGNE].[DL_Qte]
+        WHEN dbo.F_DOCLIGNE.DO_Type = 26 AND dbo.[F_DOCLIGNE].DL_TNomencl = 1 THEN -dbo.[F_DOCLIGNE].[DL_Qte]
+        ELSE 0
+        END) AS Qte_Prod,
+    SUM(CASE
+        WHEN dbo.F_DOCLIGNE.DO_Type IN (6,7) THEN dbo.[F_DOCLIGNE].[DL_Qte]
+            ELSE 0
+        END) AS Qte_Vente,
+    SUM(CASE
+            WHEN dbo.F_DOCLIGNE.DO_Type IN (16,17) THEN dbo.[F_DOCLIGNE].[DL_Qte]
+            ELSE 0
+        END) AS Qte_Achat,
+    SUM(CASE
+            WHEN dbo.F_DOCLIGNE.DO_Type IN (20) THEN dbo.[F_DOCLIGNE].[DL_Qte]
+            ELSE 0
+        END) AS MouvEntree,
+    SUM(CASE
+            WHEN dbo.F_DOCLIGNE.DO_Type IN (21) THEN dbo.[F_DOCLIGNE].[DL_Qte]
+            ELSE 0
+        END) AS MouveSortie
+    FROM dbo.[F_DOCLIGNE]
+    WHERE
+            dbo.[F_DOCLIGNE].[DO_Domaine] IN (0,2,1)
+            AND dbo.[F_DOCLIGNE].AR_Ref IS NOT NULL
+            AND dbo.[F_DOCLIGNE].[DO_Type] IN (6,7,16,17,20,21,26)
+            AND dbo.[F_DOCLIGNE].[Do_Date] < CAST(${from} AS date) 
+            AND dbo.[F_DOCLIGNE].[DE_No] NOT IN (18,29,31,38,39,47,50)
+    GROUP BY
+    dbo.[F_DOCLIGNE].AR_Ref
 
   ) AS Fango`;
 }
@@ -179,7 +175,7 @@ export default async function fetchRows(searchParams: SearchParamsStatesProps["s
   const ventes = await fetchVentes(searchParams?.from, searchParams?.to);
   const productions = await fetchProductions(searchParams?.from, searchParams?.to);
 
-  let data: Array<Mouvement> = await articles.map((article: any) => {
+  const data = await articles.map((article) => {
     return {
       article,
       achat: achats.filter((achat) => achat.AR_Ref == article.AR_Ref)[0],
@@ -189,5 +185,5 @@ export default async function fetchRows(searchParams: SearchParamsStatesProps["s
     };
   });
 
-  return (data = JSON.parse(JSON.stringify(data)));
+  return JSON.parse(JSON.stringify(data));
 }
