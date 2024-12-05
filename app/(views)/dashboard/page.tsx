@@ -6,7 +6,6 @@ import BestSellerQteTable from "@/app/ui/dashboard/BestSellerQteTable";
 import BestSellerAmountTable from "@/app/ui/dashboard/BestSellerAmountTable";
 
 export default async function Page() {
-  // const globalStatistics: GlobalStatistics = await fetchStatistiquesGlobales();
   const selectOptions = [
     { name: "Les 30 dernier jours ", value: 30 },
     { name: "Les 60 dernier jours ", value: 60 },

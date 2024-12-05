@@ -3,7 +3,6 @@ import localFont from "next/font/local";
 import Sidenav from "@/app/ui/users/Sidenav";
 import { PropsWithChildren } from "react";
 import BreadCrumbItemProvider from "@/app/ui/BreadcrumbItemProvider";
-import "@/app/globals.css";
 import AccountSetting from "../ui/AccountSetting";
 
 const geistSans = localFont({
@@ -24,16 +23,16 @@ export const metadata: Metadata = {
 
 export default function layout({ children }: PropsWithChildren) {
   return (
-    <div className="flex flex-col h-full flex-shrink">
+    <div className={`flex flex-col h-full`}>
       <div className="flex justify-between items-center bg-slate-900 text-white">
         <h1 className="text-3xl p-3">Miezaka EURL</h1>
         <AccountSetting />
       </div>
       <div className="flex h-full">
         <Sidenav />
-        <main className="flex-1">
+        <main className="flex-1 w-5/6">
           <BreadCrumbItemProvider />
-          <div className="px-1 pt-5">{children}</div>
+          <div className="px-3 pt-5">{children}</div>
         </main>
       </div>
     </div>

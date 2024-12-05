@@ -13,7 +13,6 @@ const StringBoolean = z.preprocess((val) => {
   return val;
 }, z.coerce.boolean());
 
-
 export const SignInSchema = z.object({
   email: z.coerce.string().email({ message: "Veuillez entrer un email valide" }),
   password: z.coerce.string().min(6, "Le mot de passe devrait être au moins à 6 caractères"),
