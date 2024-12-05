@@ -10,7 +10,7 @@ export default function Table() {
       <thead>
         <tr className="text-[12px]">
           <th colSpan={9}></th>
-          <th colSpan={2} className="bg-violet-300 text-violet-950 border-violet-400 border ">
+          <th colSpan={2} className="bg-violet-300 text-violet-950 border-violet-400 border p-[6px]">
             REPORT
           </th>
           <th colSpan={2} className="bg-green-200 text-emerald-900 border-green-400 border">
@@ -28,7 +28,7 @@ export default function Table() {
           <th colSpan={2}></th>
         </tr>
         <tr>
-          <th colSpan={4} className="bg-orange-200 text-orange-700 border-orange-300 border">
+          <th colSpan={4} className="bg-orange-200 text-orange-700 border-orange-300 border py-2">
             Référence Articles
           </th>
           <th className="bg-orange-200 text-orange-700 border-orange-300 border">Désignation</th>

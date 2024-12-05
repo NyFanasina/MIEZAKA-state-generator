@@ -1,5 +1,5 @@
 import { SearchParamsStatesProps } from "../(views)/states/full/page";
-import { Mouvement } from "./ste_definition";
+import { ByCategory, Mouvement } from "./ste_definition";
 
 export function formatDateToFr(date: Date, format = "FR") {
   const options: Intl.DateTimeFormatOptions = {
@@ -48,6 +48,25 @@ export function GroupByProvider(rows: Mouvement[] = []) {
       return acc;
     }, {}) ?? []
   );
+}
+
+export function groupBySizeByProvider(rowsBySize: ByCategory) {
+  return {
+    "GROSSE BALLE": GroupByProvider(rowsBySize["GROSSE BALLE"]),
+    "PETITE BALLE": GroupByProvider(rowsBySize["PETITE BALLE"]),
+  };
+}
+
+export function groupByCategory(rows: Mouvement[]) {
+  return rows.reduce((acc: any, curr: Mouvement) => {
+    const { Size } = curr.article;
+
+    if (!acc[Size]) acc[Size] = [];
+
+    acc[Size].push(curr);
+
+    return acc;
+  }, {});
 }
 
 type MouvementType = "vente" | "report" | "achat" | "production" | "stock";
@@ -280,13 +299,13 @@ export function sortData(searchParams: SearchParamsStatesProps["searchParams"], 
     case "prod_poids":
       return data.toSorted((a, b) => (calculatePoids(a, "production") - calculatePoids(b, "production")) * direction);
     case "vente_qte":
-      return data.toSorted((a, b) => (Number(a.vente.Qte ?? 0) - Number(b.vente.Qte ?? 0)) * direction);
+      return data.toSorted((a, b) => (Number(a.vente?.Qte ?? 0) - Number(b.vente?.Qte ?? 0)) * direction);
     case "vente_poids":
       return data.toSorted((a, b) => (calculatePoids(a, "vente") - calculatePoids(b, "vente")) * direction);
     case "vente_mont_dedouan":
       return data.toSorted((a, b) => (calculateMontDedouan(a, "vente") - calculateMontDedouan(b, "vente")) * direction);
     case "vente_reelle":
-      return data.toSorted((a, b) => (Number(a.vente.Vente_Reelle ?? 0) - Number(b.vente.Vente_Reelle ?? 0)) * direction);
+      return data.toSorted((a, b) => (Number(a.vente?.Vente_Reelle ?? 0) - Number(b.vente?.Vente_Reelle ?? 0)) * direction);
     case "stock_qte":
       return data.toSorted((a, b) => (calculateQteStock(a) - calculateQteStock(b)) * direction);
     case "stock_poids":

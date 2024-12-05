@@ -31,8 +31,8 @@ export function DateFilter({ children }: PropsWithChildren) {
   return (
     <div className="flex items-center gap-1 bg-slate-100 px-4 py-2 rounded-lg mb-2">
       <FaFilter className="me-3 text-cyan-700" size={26} />
-      <TextInput type="date" onChange={handleDateFilter} id="from" defaultValue={searchParams.get("from")?.toString() ?? new Date().toDateString()} />
-      <TextInput type="date" onChange={handleDateFilter} id="to" defaultValue={searchParams.get("to")?.toString() ?? new Date().toISOString()} />
+      <TextInput type="date" id="from" onChange={handleDateFilter} defaultValue={searchParams.get("from")?.toString() ?? new Date().toDateString()} />
+      <TextInput type="date" id="to" onChange={handleDateFilter} defaultValue={searchParams.get("to")?.toString() ?? new Date().toISOString()} />
       <Button type="button">FILTRER</Button>
       {children}
     </div>
@@ -52,7 +52,6 @@ export function CategoryFilter() {
     params.set("category", id);
     router.replace(`${pathname}?${params.toString()}`);
   }
-  console.log("==> ", searchParams.get("category"));
 
   return (
     <Dropdown color="gray" label={searchParams.get("category") ? `Catégorie (${searchParams.get("category")})` : "Catégorie"} dismissOnClick={false}>
@@ -168,7 +167,6 @@ export function ProviderFilter() {
 
   function handleClick() {
     const valuesStringified = selected.join("+");
-    console.log(valuesStringified);
     params.set("providers", valuesStringified);
     router.replace(`${pathname}?${params.toString()}`);
   }

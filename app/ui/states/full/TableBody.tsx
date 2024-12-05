@@ -15,30 +15,20 @@ import {
   calculateTotalVenteReelForOneProvider,
   calculateVente_p100,
   calculateVente_p100ForOneProvider,
+  groupByCategory,
   GroupByProvider,
+  groupBySizeByProvider,
   lowerThan15,
   parseDecimal,
 } from "@/app/lib/utils";
 import { clsx } from "clsx";
-import { Fragment, useState } from "react";
+import { Fragment, memo, useEffect, useMemo, useState } from "react";
 import { ByCategory, Mouvement, SizeBalle } from "@/app/lib/ste_definition";
 
 export default function TableBody({ rows = [] }: { rows: Mouvement[] }) {
   const [isActive, setActive] = useState<string>();
-  const rowsBySize: ByCategory | any = rows.reduce((acc: any, curr: Mouvement, i) => {
-    const { Size } = curr.article;
-
-    if (!acc[Size]) acc[Size] = [];
-
-    acc[Size].push(curr);
-
-    return acc;
-  }, {});
-
-  const rowsBySizeByProvider: ByCategory = {
-    "GROSSE BALLE": GroupByProvider(rowsBySize["GROSSE BALLE"]),
-    "PETITE BALLE": GroupByProvider(rowsBySize["PETITE BALLE"]),
-  };
+  const rowsBySize: ByCategory | any = useMemo(() => groupByCategory(rows), [rows]);
+  const rowsBySizeByProvider = useMemo(() => groupBySizeByProvider(rowsBySize), [rows]);
 
   function handleRowClick(id: string) {
     setActive(id);
@@ -140,7 +130,7 @@ export default function TableBody({ rows = [] }: { rows: Mouvement[] }) {
                                 "bg-pink-200": Stock_Poids >= 5000 && Marge_p100 < 0,
                               })}
                             >
-                              {row.article.AR_Ref}
+                              <span title={row.article.AR_Design}>{row.article.AR_Ref}</span>
                             </td>
                             <td className="text-center">{parseDecimal(row.article.AR_PrixAch)}</td>
                             <td>{parseDecimal(row.article.AR_PoidsBrut)}</td>
@@ -154,14 +144,14 @@ export default function TableBody({ rows = [] }: { rows: Mouvement[] }) {
                             <td className="text-green-900">{parseDecimal(row.achat?.Qte)}</td> {/* misy vide */}
                             <td className="text-emerald-900">{parseDecimal(Achat_Poids)}</td>
                             <td className="text-emerald-900">{parseDecimal(row.article?.AR_PrixAch * Achat_Poids)}</td>
-                            <td className="text-emerald-900">{parseDecimal(row.achat?.Qte * row.article?.AR_PoidsBrut)}</td>
+                            <td className="text-emerald-900">{parseDecimal(calculateMontDedouan(row, "achat"))}</td>
                             {/* Production */}
                             <td className="text-orange-800">{parseDecimal(row.production?.Qte)}</td>
                             <td className="text-orange-800">{parseDecimal(Prod_Poids)}</td>
                             {/* Vente */}
                             <td className="text-blue-800">{parseDecimal(row.vente?.Qte)}</td>
                             <td className="text-blue-800">{parseDecimal(Vente_Poids)}</td>
-                            <td className="text-blue-800">{parseDecimal(row.article?.AR_PoidsBrut * row.vente?.Qte)}</td>
+                            <td className="text-blue-800">{parseDecimal(calculateMontDedouan(row, "vente"))}</td>
                             <td className="text-blue-800">{parseDecimal(row.vente?.Vente_Reelle)}</td>
                             {/* Stock */}
                             <td>{parseDecimal(Stock_Qte)}</td>

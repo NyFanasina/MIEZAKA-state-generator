@@ -38,7 +38,6 @@ export default function TableFoot({ rows = [] }: { rows: any[] }) {
       const AF_Devise = devise_Fournisseur.filter((item: any) => item.Nom_Fournisseur === provider)[0]?.Devise;
       if (AF_Devise == 2) valDevise = 5000;
       if (AF_Devise == 3) valDevise = 4500;
-      console.log(calculateTotalMontDedouanForOneProvider(data, type) / valDevise);
       return calculateTotalMontDedouanForOneProvider(data, type) / valDevise;
     });
 

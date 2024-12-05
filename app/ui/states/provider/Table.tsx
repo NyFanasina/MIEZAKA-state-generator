@@ -1,5 +1,3 @@
-import filterData from "@/app/lib/utils";
-import { Mouvement } from "@/app/lib/ste_definition";
 import TableBody from "./TableBody";
 import TableFoot from "./TableFoot";
 import { useContext } from "react";
@@ -13,7 +11,7 @@ export default function Table() {
       <thead>
         <tr className="text-[11px]">
           <th colSpan={5}></th>
-          <th colSpan={4} className="bg-violet-300 text-violet-950 border-violet-400 border py-1">
+          <th colSpan={4} className="bg-violet-300 text-violet-950 border-violet-400 border py-[5px]">
             REPORT
           </th>
           <th colSpan={4} className="bg-green-200 text-emerald-900 border-green-400 border">
@@ -31,7 +29,7 @@ export default function Table() {
           <th colSpan={2}></th>
         </tr>
         <tr>
-          <th colSpan={4} className="bg-orange-200 text-orange-700 border-orange-300 border px-2">
+          <th colSpan={4} className="bg-orange-200 text-orange-700 border-orange-300 border p-2">
             FOURNISSEURS
           </th>
           <th className="bg-orange-200 text-orange-700 border-orange-300 border">PU Ach</th>
@@ -42,7 +40,7 @@ export default function Table() {
           <th className="bg-green-200 text-emerald-900 border-green-400 border">Qte</th>
           <th className="bg-green-200 text-emerald-900 border-green-400 border">Poids</th>
           <th className="bg-green-200 text-emerald-900 border-green-400 border">Mont Ach</th>
-          <th className="bg-green-200 text-emerald-900 border-green-400 border">Mont Dédouancé</th>
+          <th className="bg-green-200 text-emerald-900 border-green-400 border">Mont Dédouané</th>
           <th className="bg-rose-200 text-orange-800 border-rose-300 border">Qte</th>
           <th className="bg-rose-200 text-orange-800 border-rose-300 border">Poids</th>
           <th className="bg-blue-200 text-blue-950 border-blue-400 border">Qte</th>

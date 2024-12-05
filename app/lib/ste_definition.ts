@@ -1,9 +1,9 @@
 export interface Mouvement {
   article: Article;
   report: Report_;
-  achat: Achat;
-  vente: Vente;
-  production: Production;
+  achat?: Achat;
+  vente?: Vente;
+  production?: Production;
 }
 
 export interface Provider {
@@ -34,22 +34,22 @@ export type Article = {
 
 export type Report_ = {
   AR_Ref: string;
-  Qte: number;
+  Qte?: number;
 };
 
 export type Achat = {
   AR_Ref: string;
   DL_MontantHT: number;
-  Qte: number;
+  Qte?: number;
 };
 
 export type Vente = {
   AR_Ref: string;
-  Qte: number;
+  Qte?: number;
   Vente_Reelle: number;
 };
 
 export type Production = {
   AR_Ref: string;
-  Qte: string;
+  Qte?: string;
 };

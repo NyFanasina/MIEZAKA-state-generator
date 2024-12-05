@@ -6,8 +6,8 @@ import WrapperClient from "./WrapperContext";
 
 export type SearchParamsStatesProps = {
   searchParams?: {
-    from?: string;
-    to?: string;
+    from: string;
+    to: string;
     category?: string;
     weight?: string;
     vente_p100?: string;

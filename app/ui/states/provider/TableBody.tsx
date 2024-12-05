@@ -14,14 +14,10 @@ import {
 import clsx from "clsx";
 import { Fragment, useState } from "react";
 
-export default async function TableBody({ rows }: { rows: Mouvement[] }) {
-  const [isActive, setActive] = useState("");
+export default function TableBody({ rows }: { rows: Mouvement[] }) {
+  const [isActive, setActive] = useState(-1);
 
-  function handleRowClick(id: string) {
-    if (isActive == id) {
-      setActive("");
-      console.log("remove", isActive);
-    }
+  function handleRowClick(id: number) {
     setActive(id);
   }
 
@@ -54,10 +50,9 @@ export default async function TableBody({ rows }: { rows: Mouvement[] }) {
           <Fragment key={i}>
             <tr
               className={clsx("active:bg-amber-400 hover:border hover:border-amber-200 ", {
-                "bg-amber-300": isActive === provider,
-                " hover:bg-slate-100": isActive != provider,
+                "bg-amber-300": isActive === i,
               })}
-              onClick={() => handleRowClick(provider)}
+              onClick={() => handleRowClick(i)}
             >
               <td colSpan={4} className="text-amber-700 text-start">
                 {provider}

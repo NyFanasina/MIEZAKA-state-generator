@@ -17,7 +17,7 @@ export default function Search({ pdfRef }: { pdfRef: MutableRefObject<any> }) {
           <EtatFilter />
         </div>
         <div className="flex *:flex-1 gap-x-1">
-          <TextInputFilter name="ar_ref" placeholder="Recherche par réfénce.." />
+          <TextInputFilter name="ar_ref" placeholder="Recherche par reférence.." />
           <TextInputFilter name="design" placeholder="Recherche par désignation.." />
         </div>
       </div>

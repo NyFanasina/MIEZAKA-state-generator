@@ -3,7 +3,7 @@ import { STE_miezaka } from "@/prisma/clientSTE_Miezaka";
 import { Mouvement, Article, Report_, Vente, Achat, Production } from "../ste_definition";
 import { SearchParamsStatesProps } from "@/app/(views)/states/full/page";
 
-export async function fecthArticles(to?: string) {
+export async function fecthArticles(to: string = new Date().toISOString().split("T")[0]) {
   return await STE_miezaka.$queryRaw<Article[]>`SELECT 
     DISTINCT
      dbo.[F_ARTICLE].[AR_Ref]
@@ -38,8 +38,6 @@ export async function fecthArticles(to?: string) {
         ON dbo.[F_ARTFOURNISS].[AR_Ref] = dbo.[F_ARTICLE].[AR_Ref]
     JOIN dbo.[F_COMPTET] ON dbo.[F_ARTFOURNISS].[CT_Num] = dbo.[F_COMPTET].[CT_Num]
     WHERE 
-      --   dbo.[F_ARTICLE].[Ref_Art] = 'PRO'
-      --       AND 
         dbo.[F_ARTICLE].[FA_CodeFamille] IN  ('BALLE', 'FRIPPE')
             AND
         dbo.[F_ARTICLE].[Etat] != 'C'
@@ -48,18 +46,16 @@ export async function fecthArticles(to?: string) {
             AND
         dbo.[F_DOCLIGNE].[DO_Domaine] in (0,1,2)
             AND 
-        dbo.[F_DOCLIGNE].[DO_Type] in (6,7,16,17,26) --AND dbo.[F_DOCLIGNE].[DL_Qte] >= 0 
+        dbo.[F_DOCLIGNE].[DO_Type] in (6,7,16,17,26)
             AND 
         dbo.[F_DOCLIGNE].[DE_No] NOT IN (18,29,31,38,39,47,50)
-        --     AND
-        -- dbo.[F_COMPTET].[CT_Intitule] = 'ATTAR'
             AND
             dbo.[F_ARTICLE].[cbCreation] <= CAST(${to} as date)
         ORDER BY Nom_Fournisseur ASC;
     `;
 }
 
-export async function fecthAchats(from: string, to: string) {
+export async function fecthAchats(from?: string, to?: string) {
   return await STE_miezaka.$queryRaw<Achat[]>`
         SELECT
         DISTINCT(dbo.[F_DOCLIGNE].[AR_Ref])
@@ -125,7 +121,7 @@ export async function fetchProductions(from?: string, to?: string) {
         ASC;`;
 }
 
-export async function fetchReports(from: string) {
+export async function fetchReports(from?: string) {
   return await STE_miezaka.$queryRaw<Report_[]>`SELECT
     AR_Ref
     ,Qte_Prod + Qte_Achat + MouvEntree -MouveSortie - Qte_Vente AS Qte

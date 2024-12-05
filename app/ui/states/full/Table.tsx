@@ -15,9 +15,6 @@ export default function StateTable() {
       <Suspense fallback={<p>lll</p>}>
         <TableBody rows={rows} />
       </Suspense>
-      <colgroup>
-        <col className="hover:bg-orange-100" />
-      </colgroup>
       <TableFoot rows={rows} />
     </table>
   );
