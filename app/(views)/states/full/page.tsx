@@ -20,8 +20,8 @@ export type SearchParamsStatesProps = {
 };
 
 export default async function page({ searchParams }: SearchParamsStatesProps) {
-  // const rows: Array<Mouvement> = await fetchRows(searchParams);
-  const rows: Array<Mouvement> = require("/home/fango/Bureau/Data.json");
+  const rows: Array<Mouvement> = await fetchRows(searchParams);
+  // const rows: Array<Mouvement> = require("/home/fango/Bureau/Data.json");
   let nextRows = filterData(searchParams, rows);
   nextRows = sortData(searchParams, nextRows);
 

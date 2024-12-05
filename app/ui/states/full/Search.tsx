@@ -24,7 +24,9 @@ export default function Search({ pdfRef }: { pdfRef: MutableRefObject<any> }) {
           onClick={() => {
             handlePrint();
           }}
-        ></Button>
+        >
+          EXPORTER
+        </Button>
       </DateFilter>
     </div>
   );
