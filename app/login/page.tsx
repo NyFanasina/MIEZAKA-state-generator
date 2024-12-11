@@ -3,6 +3,7 @@ import { RiUser3Line } from "react-icons/ri";
 import { Button, FloatingLabel } from "flowbite-react";
 import { authenticate } from "@/app/lib/actions/auth";
 import { useFormState, useFormStatus } from "react-dom";
+import { inter } from "../ui/font";
 
 export default function Page() {
   const [state, action] = useFormState(authenticate, undefined);
@@ -10,12 +11,12 @@ export default function Page() {
 
   return (
     <div className="h-full flex flex-col justify-center items-center bg-gray-50">
-      <form action={action} className="flex flex-col gap-4 max-w-md m-5 bg-white shadow p-5 rounded-2xl border">
+      <form action={action} className={`flex flex-col gap-4 max-w-md m-5 bg-white shadow p-5 rounded-2xl border w-[420px] ${inter.className}`}>
         <div className="flex justify-center p-2">
           <RiUser3Line size={100} className="border rounded-full w-40 h-40 p-5" />
         </div>
-        <h1 className="text-center text-4xl">Bienvenue</h1>
-        <h3 className="text-center text-red-500">{state?.message ?? "Lorem ipsum dolor sit amet consectetur, adipisicing elit."}</h3>
+        <h1 className="text-center text-4xl">Bienvenue !</h1>
+        <h3 className="text-center text-red-500"></h3>
         <div className="flex flex-col gap-y-2">
           <FloatingLabel
             color={!state?.error?.email?.[0] ? "default" : "error"}
@@ -35,7 +36,7 @@ export default function Page() {
           />
         </div>
         <div className="flex flex-col gap-y-2">
-          <Button type="submit">se connecter</Button>
+          <Button type="submit">Se connecter</Button>
           <Button type="button" color="light">
             Mot de passe oublié
           </Button>

@@ -1,6 +1,7 @@
 "use client";
 import {
   calculate_PU_Provider,
+  calculateMarge_p100,
   calculateMarge_p100ForOneProvider,
   calculatePoids,
   calculatePoidsStock,
@@ -15,11 +16,11 @@ import {
   parseDecimal,
 } from "@/app/lib/utils";
 import { clsx } from "clsx";
-import { Fragment, useState } from "react";
+import { Fragment } from "react";
 import { ByCategory, Mouvement } from "@/app/lib/ste_definition";
+import { handleRowClick } from "../full/TableBody";
 
 export default function TableBody({ rows }: { rows: Mouvement[] }) {
-  const [isActive, setActive] = useState<number>();
   const rowsBySize: ByCategory | any = rows.reduce((acc: any, curr, i) => {
     const { Size } = curr.article;
 
@@ -34,10 +35,6 @@ export default function TableBody({ rows }: { rows: Mouvement[] }) {
     "GROSSE BALLE": GroupByProvider(rowsBySize["GROSSE BALLE"]),
     "PETITE BALLE": GroupByProvider(rowsBySize["PETITE BALLE"]),
   };
-
-  function handleRowClick(i: number) {
-    setActive(i);
-  }
 
   return (
     <>
@@ -92,16 +89,10 @@ export default function TableBody({ rows }: { rows: Mouvement[] }) {
                         const Vente_p100 = calculateVente_p100(row);
 
                         // Calcul % marge
-                        const Marge_p100 = ((Number(row.article.AC_PrixVen ?? 0) - Number(row.article.AR_PoidsBrut ?? 0)) / Number(row.article.AR_PoidsBrut ?? 0)) * 100;
+                        const Marge_p100 = calculateMarge_p100(row);
 
                         return (
-                          <tr
-                            key={i}
-                            onClick={() => handleRowClick(i)}
-                            className={clsx("active:bg-amber-500 hover:bg-amber-200 hover:border hover:border-amber-200", {
-                              "bg-amber-400": isActive == i,
-                            })}
-                          >
+                          <tr key={i} onClick={handleRowClick} className="active:bg-amber-500 hover:bg-amber-200 hover:border hover:border-amber-200">
                             {/* Article */}
                             <td
                               className={clsx("border-orange-400 border text-center", {

@@ -16,23 +16,17 @@ import {
   calculateVente_p100,
   calculateVente_p100ForOneProvider,
   groupByCategory,
-  GroupByProvider,
   groupBySizeByProvider,
   lowerThan15,
   parseDecimal,
 } from "@/app/lib/utils";
 import { clsx } from "clsx";
-import { Fragment, memo, useEffect, useMemo, useState } from "react";
-import { ByCategory, Mouvement, SizeBalle } from "@/app/lib/ste_definition";
+import { Fragment, MouseEvent, useEffect, useMemo } from "react";
+import { ByCategory, Mouvement } from "@/app/lib/ste_definition";
 
 export default function TableBody({ rows = [] }: { rows: Mouvement[] }) {
-  const [isActive, setActive] = useState<string>();
   const rowsBySize: ByCategory | any = useMemo(() => groupByCategory(rows), [rows]);
   const rowsBySizeByProvider = useMemo(() => groupBySizeByProvider(rowsBySize), [rows]);
-
-  function handleRowClick(id: string) {
-    setActive(id);
-  }
 
   return (
     <>
@@ -104,14 +98,7 @@ export default function TableBody({ rows = [] }: { rows: Mouvement[] }) {
                         const Marge_p100 = calculateMarge_p100(row);
 
                         return (
-                          <tr
-                            key={i}
-                            onClick={() => handleRowClick(row.article.AR_Ref)}
-                            className={clsx("active:bg-amber-500 hover:bg-amber-200 hover:border", {
-                              "bg-amber-400": isActive == row.article.AR_Ref,
-                              "hover:border-amber-200": isActive != row.article.AR_Ref,
-                            })}
-                          >
+                          <tr key={i} onClick={handleRowClick} className={clsx("active:bg-amber-500 hover:bg-amber-200 hover:border")}>
                             {/* Article */}
                             <td
                               className={clsx("border-orange-400 border text-center", {
@@ -265,4 +252,16 @@ export default function TableBody({ rows = [] }: { rows: Mouvement[] }) {
       </tbody>
     </>
   );
+}
+
+export function handleRowClick(event: MouseEvent<HTMLTableRowElement>) {
+  const target = event.currentTarget;
+  const parentTarget = target.parentElement;
+  const className = target.className.split("");
+
+  if (!className.includes("active")) {
+    const actived = parentTarget?.getElementsByClassName("active")[0];
+    actived?.classList.remove("active");
+    target.classList.add("active");
+  }
 }

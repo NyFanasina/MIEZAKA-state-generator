@@ -48,3 +48,7 @@ th {
 .sorted {
   color: red;
 }
+
+tr.active {
+  @apply bg-amber-400;
+}

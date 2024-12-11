@@ -3,8 +3,7 @@ import { Button } from "flowbite-react";
 import { CategoryFilter, DateFilter, EtatFilter, ProviderFilter, Vente_p100_Filter, WeightFilter } from "../Filters";
 import { useReactToPrint } from "react-to-print";
 import { MutableRefObject } from "react";
-import jsPDF from "jspdf";
-import { useParams, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
 export default function Search({ pdfRef }: { pdfRef: MutableRefObject<any> }) {
   const searchParams = useSearchParams();
