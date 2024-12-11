@@ -184,6 +184,7 @@ export default function TableBody({ rows }: { rows: Mouvement[] }) {
                           {parseDecimal(Marge_p100_Provider)}
                         </td>
                       </tr>
+                      {Object.entries(dataInCategories).length - 1 !== i2 && <tr className="h-4" />}
                     </Fragment>
                   );
                 })}
