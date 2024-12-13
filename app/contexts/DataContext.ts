@@ -1,4 +1,4 @@
 import { createContext } from "react";
 import { Mouvement } from "../lib/ste_definition";
 
-export const RowsContext = createContext<Mouvement[]>([]);
+export const RowsContext = createContext<[Mouvement[], number]>([[], 0]);

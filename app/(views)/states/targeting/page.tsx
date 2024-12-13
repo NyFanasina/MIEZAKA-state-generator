@@ -8,7 +8,6 @@ export default async function page({ searchParams }: SearchParamsStatesProps) {
   let rows: Array<Mouvement> = require("/home/fango/Bureau/Data.json");
   // let rows = await fetchRows(searchParams);
   let nextRows = filterData(searchParams, rows);
-  nextRows = sortData(searchParams, nextRows);
 
   return <WrapperClient rows={nextRows}></WrapperClient>;
 }

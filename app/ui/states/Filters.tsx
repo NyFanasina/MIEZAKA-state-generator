@@ -393,7 +393,7 @@ export function ProviderFilter() {
   );
 }
 
-function initializeParamsTools() {
+export function initializeParamsTools() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();

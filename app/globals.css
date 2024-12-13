@@ -16,7 +16,7 @@ body {
   @apply border-s-4 border-s-rose-600 bg-slate-900;
 }
 .state-table {
-  @apply text-[11px] mb-12 w-full text-gray-950 font-semibold;
+  @apply text-[11px] w-full text-gray-950 font-semibold;
 }
 
 .state-table tbody td,

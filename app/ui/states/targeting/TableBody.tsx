@@ -11,30 +11,43 @@ import {
   calculateTotalQteForOneProvider,
   calculateVente_p100,
   calculateVente_p100ForOneProvider,
+  groupByCategory,
   GroupByProvider,
   lowerThan15,
   parseDecimal,
+  sortData,
 } from "@/app/lib/utils";
 import { clsx } from "clsx";
-import { Fragment } from "react";
+import { Fragment, useContext, useEffect, useMemo, useState } from "react";
 import { ByCategory, Mouvement } from "@/app/lib/ste_definition";
 import { handleRowClick } from "../full/TableBody";
+import { RowsContext } from "@/app/contexts/DataContext";
+import { initializeParamsTools } from "../Filters";
 
-export default function TableBody({ rows }: { rows: Mouvement[] }) {
-  const rowsBySize: ByCategory | any = rows.reduce((acc: any, curr, i) => {
-    const { Size } = curr.article;
+export default function TableBody() {
+  const [rows, rowsCountPerPage] = useContext(RowsContext);
+  const { params, searchParams } = initializeParamsTools();
 
-    if (!acc[Size]) acc[Size] = [];
+  const [currentRows, setCurrentRows] = useState<Mouvement[]>(() => {
+    const page = parseInt(params.get("page") || "1");
+    const [start, end] = [page * rowsCountPerPage - rowsCountPerPage, page * rowsCountPerPage];
+    return sortData(searchParams.get("sortBy"), rows.slice(start, end));
+  });
 
-    acc[Size].push(curr);
-
-    return acc;
-  }, {});
+  const rowsBySize: ByCategory | any = useMemo(() => groupByCategory(currentRows), [currentRows]);
 
   const rowsBySizeByProvider: ByCategory = {
     "GROSSE BALLE": GroupByProvider(rowsBySize["GROSSE BALLE"]),
     "PETITE BALLE": GroupByProvider(rowsBySize["PETITE BALLE"]),
   };
+
+  useEffect(() => {
+    setCurrentRows(() => {
+      const page = parseInt(params.get("page") || "1");
+      const [start, end] = [page * rowsCountPerPage - rowsCountPerPage, page * rowsCountPerPage];
+      return sortData(searchParams.get("sortBy"), rows.slice(start, end));
+    });
+  }, [params.get("page"), searchParams.get("sortBy"), rows]);
 
   return (
     <>

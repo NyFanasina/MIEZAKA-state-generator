@@ -19,14 +19,35 @@ import {
   groupBySizeByProvider,
   lowerThan15,
   parseDecimal,
+  sortData,
 } from "@/app/lib/utils";
 import { clsx } from "clsx";
-import { Fragment, MouseEvent, useEffect, useMemo } from "react";
+import { Fragment, MouseEvent, useContext, useEffect, useMemo, useState } from "react";
 import { ByCategory, Mouvement } from "@/app/lib/ste_definition";
+import { RowsContext } from "@/app/contexts/DataContext";
+import { initializeParamsTools } from "../Filters";
+import { ReadonlyURLSearchParams } from "next/navigation";
 
-export default function TableBody({ rows = [] }: { rows: Mouvement[] }) {
-  const rowsBySize: ByCategory | any = useMemo(() => groupByCategory(rows), [rows]);
-  const rowsBySizeByProvider = useMemo(() => groupBySizeByProvider(rowsBySize), [rows]);
+export default function TableBody() {
+  const [rows, rowsCountPerPage] = useContext(RowsContext);
+  const { params, searchParams } = initializeParamsTools();
+
+  const [currentRows, setCurrentRows] = useState<Mouvement[]>(() => {
+    const page = parseInt(params.get("page") || "1");
+    const [start, end] = [page * rowsCountPerPage - rowsCountPerPage, page * rowsCountPerPage];
+    return sortData(searchParams.get("sortBy"), rows.slice(start, end));
+  });
+
+  const rowsBySize: ByCategory | any = useMemo(() => groupByCategory(currentRows), [currentRows]);
+  const rowsBySizeByProvider = useMemo(() => groupBySizeByProvider(rowsBySize), [currentRows]);
+
+  useEffect(() => {
+    setCurrentRows(() => {
+      const page = parseInt(params.get("page") || "1");
+      const [start, end] = [page * rowsCountPerPage - rowsCountPerPage, page * rowsCountPerPage];
+      return sortData(searchParams.get("sortBy"), rows.slice(start, end));
+    });
+  }, [params.get("page"), searchParams.get("sortBy"), rows]);
 
   return (
     <>

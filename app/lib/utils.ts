@@ -257,12 +257,14 @@ export default function filterData(searchParams: SearchParamsStatesProps["search
   return data;
 }
 
-export function sortData(searchParams: SearchParamsStatesProps["searchParams"], data: Mouvement[]) {
-  if (!searchParams?.sortBy) {
+export function sortData(by: string | null, data: Mouvement[]) {
+  by = by ?? "";
+  console.log("by === ", by);
+  if (!by) {
     return data;
   }
-  const col = searchParams.sortBy.split("@")[0];
-  const direction = searchParams.sortBy.split("@")[1] === "asc" ? 1 : -1;
+  const col = by.split("@")[0];
+  const direction = by.split("@")[1] === "asc" ? 1 : -1;
 
   switch (col) {
     case "vente_p100":
@@ -324,13 +326,14 @@ export function sortData(searchParams: SearchParamsStatesProps["searchParams"], 
   }
 }
 
-export function sortDataSupplier(searchParams: SearchParamsStatesProps["searchParams"], data: [string, any][]) {
-  if (!searchParams?.sortBy) {
+export function sortDataSupplier(by?: string, data: [string, any][]) {
+  by = by ?? "";
+  if (by) {
     return data;
   }
 
-  const col = searchParams.sortBy.split("@")[0];
-  const direction = searchParams.sortBy.split("@")[1] === "asc" ? 1 : -1;
+  const col = by.split("@")[0];
+  const direction = by.split("@")[1] === "asc" ? 1 : -1;
 
   switch (col) {
     case "supplier":
