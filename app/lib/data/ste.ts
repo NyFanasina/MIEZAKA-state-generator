@@ -164,7 +164,7 @@ export async function fetchReports(from?: string) {
   ) AS Fango`;
 }
 
-export default async function fetchRows(searchParams: SearchParamsStatesProps["searchParams"]) {
+export default async function fetchRows(searchParams?: SearchParamsStatesProps["searchParams"]) {
   const articles = await fecthArticles(searchParams?.to);
   const reports = await fetchReports(searchParams?.from);
   const achats = await fecthAchats(searchParams?.from, searchParams?.to);

@@ -10,11 +10,14 @@ import {
   calculateVente_p100ForOneProvider,
   GroupByProvider,
   parseDecimal,
+  sortDataSupplier,
 } from "@/app/lib/utils";
 import clsx from "clsx";
+import { useSearchParams } from "next/navigation";
 import { Fragment, useState } from "react";
 
-export default function TableBody({ rows }: { rows: Mouvement[] }) {
+export default function TableBody({ rows }: { rows: any }) {
+  const searchParams = useSearchParams();
   const [isActive, setActive] = useState(-1);
 
   console.log("rendre");
@@ -22,10 +25,9 @@ export default function TableBody({ rows }: { rows: Mouvement[] }) {
     setActive(id);
   }
 
-  const rowsByProvider = GroupByProvider(rows);
   return (
     <tbody className="text-end">
-      {Object.entries(rowsByProvider).map(([provider, rowsGrouped]: [string, any], i) => {
+      {rows.map(([provider, rowsGrouped]: [string, any], i) => {
         const Vente_Qte_Provider = calculateTotalQteForOneProvider(rowsGrouped, "vente");
         const Achat_Qte_Provider = calculateTotalQteForOneProvider(rowsGrouped, "achat");
         const Stock_Qte_Provider = calculateTotalQteForOneProvider(rowsGrouped, "stock");
@@ -55,9 +57,7 @@ export default function TableBody({ rows }: { rows: Mouvement[] }) {
               })}
               onClick={() => handleRowClick(i)}
             >
-              <td colSpan={4} className="text-amber-700 text-start">
-                {provider}
-              </td>
+              <td className="text-amber-700 text-start">{provider}</td>
               <td className="text-center">{parseDecimal(PU_Provider)}</td>
               {/* Report */}
               <td className="text-violet-950">{parseDecimal(Report_Qte_Provider)}</td>

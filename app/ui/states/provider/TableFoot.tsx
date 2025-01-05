@@ -8,20 +8,14 @@ import {
   calculateValAchDevise,
   calculateValDedouanAR,
   calculateVente_p100ForOneProvider,
+  GroupByProvider,
   parseDecimal,
 } from "@/app/lib/utils";
 import { fetchDeviseFournisseur } from "@/app/lib/data/ste";
 import clsx from "clsx";
 
-export default function TableFoot({ rows }: { rows: any[] }) {
+export default function TableFoot({ GroupedRows }) {
   // const devise_Fournisseur: any = await fetchDeviseFournisseur();
-  const rowsByProvider = rows.reduce((acc: any, cur: any) => {
-    const providername = cur.article.Nom_Fournisseur;
-
-    if (!acc[providername]) acc[providername] = [];
-    acc[providername].push(cur);
-    return acc;
-  }, {});
 
   function calculateValDedouanDev(rowsByProvider: any[], type: "report" | "achat" | "stock" | "vente" | "production") {
     const ValEnDevise = Object.entries(rowsByProvider).map(([provider, data]: [string, Array<any>]) => {
@@ -33,6 +27,9 @@ export default function TableFoot({ rows }: { rows: any[] }) {
 
     return ValEnDevise.reduce((acc, cur) => acc + cur, 0);
   }
+
+  let rows = GroupedRows.map(([provider, rowSet]: [string, any]) => rowSet);
+  rows = rows.flat();
 
   // TOTAL_GENERAL
   const Vente_Qte = calculateTotalQteForOneProvider(rows, "vente");
@@ -65,16 +62,15 @@ export default function TableFoot({ rows }: { rows: any[] }) {
   const VENTE_TOTAL_VAL_ACH_DEVISE = calculateValAchDevise(rows, "vente");
   const ACHAT_TOTAL_VAL_ACH_DEVISE = calculateValAchDevise(rows, "achat");
   const REPORT_TOTAL_VAL_ACH_DEVISE = calculateValAchDevise(rows, "report");
-  const REPORT_VAL_DEDOUAN_DEV = calculateValDedouanDev(rowsByProvider, "report");
-  const ACHAT_VAL_DEDOUAN_DEV = calculateValDedouanDev(rowsByProvider, "achat");
-  const VENTE_VAL_DEDOUAN_DEV = calculateValDedouanDev(rowsByProvider, "vente");
-  const STOCK_VAL_DEDOUAN_DEV = calculateValDedouanDev(rowsByProvider, "stock");
-  const PROD_VAL_DEDOUAN_DEV = calculateValDedouanDev(rowsByProvider, "production");
+  const REPORT_VAL_DEDOUAN_DEV = calculateValDedouanDev(GroupedRows, "report");
+  const ACHAT_VAL_DEDOUAN_DEV = calculateValDedouanDev(GroupedRows, "achat");
+  const VENTE_VAL_DEDOUAN_DEV = calculateValDedouanDev(GroupedRows, "vente");
+  const STOCK_VAL_DEDOUAN_DEV = calculateValDedouanDev(GroupedRows, "stock");
+  const PROD_VAL_DEDOUAN_DEV = calculateValDedouanDev(GroupedRows, "production");
 
   return (
     <tfoot className="text-center">
       <tr>
-        <td colSpan={3} className="border-none"></td>
         <td className=" text-start">TOTAL GENERAL</td>
         <td className=" text-center">{parseDecimal(PU_G)}</td>
         {/* Repport */}
@@ -111,7 +107,6 @@ export default function TableFoot({ rows }: { rows: any[] }) {
         </td>
       </tr>
       <tr>
-        <td colSpan={3} className="border-none"></td>
         <td className="text-start">TOTAL VAL ACH DEVISE</td>
         <td></td>
         <td colSpan={4} className="pe-1 text-violet-950">
@@ -133,7 +128,6 @@ export default function TableFoot({ rows }: { rows: any[] }) {
         <td></td>
       </tr>
       <tr>
-        <td colSpan={3} className="border-none"></td>
         <td className="text-start">TOTAL VAL DEDOUANE DEV</td>
         <td className="text-center"></td>
         <td colSpan={4} className="pe-1 text-violet-950">
@@ -155,7 +149,6 @@ export default function TableFoot({ rows }: { rows: any[] }) {
         <td></td>
       </tr>
       <tr className="bg-green-300 text-center">
-        <td colSpan={3} className="border-none"></td>
         <td className=" text-start">VALEUR DEDOUANEÉ AR</td>
         <td className=" text-center">{parseDecimal(PU_G)}</td>
         <td colSpan={4} className="pe-1 text-violet-950 ">

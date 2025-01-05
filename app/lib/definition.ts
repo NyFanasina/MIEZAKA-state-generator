@@ -26,6 +26,20 @@ export const SignUpSchema = z.object({
   photo: z.instanceof(File),
 });
 
+export const FilterSchema = z.object({
+  id: z.coerce.number(),
+  filter_name: z.coerce.string(),
+  filter_category: z.coerce.string(),
+  filter_type: z.coerce.number(),
+  filter_etat: z.coerce.string(),
+  filter_marge: z.coerce.string(),
+  filter_stock_weight: z.coerce.string(),
+  filter_supplier: z.coerce.string(),
+  user_id: z.coerce.number(),
+  created_at: z.coerce.date(),
+  updated_at: z.coerce.date(),
+});
+
 export const SignUpEditSchema = SignUpSchema.merge(z.object({ id: z.coerce.number() }));
 
 export type AuthState =

@@ -1,29 +1,10 @@
-import { FaSort } from "react-icons/fa";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { HTMLProps, useState } from "react";
+import { useState } from "react";
 import clsx from "clsx";
+import { SortingLogo } from "../SortingLogo";
 
 export default function TableHead() {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
   const [isHovered, setHovered] = useState(false);
 
-  function handleUrl(value: string) {
-    const col = searchParams.get("sortBy")?.split("@")[0] ?? "ar_ref";
-    const direction = searchParams.get("sortBy")?.split("@")[1] ?? "asc";
-    let nextValue = value;
-
-    if (col === value && direction === "asc") {
-      nextValue = `${value}@desc`;
-    } else {
-      nextValue = `${value}@asc`;
-    }
-
-    const params = new URLSearchParams(searchParams);
-    params.set("sortBy", nextValue);
-    router.replace(`${pathname}?${params.toString()}`);
-  }
   return (
     <thead onMouseLeave={() => setHovered(false)}>
       <tr className="text-[12px]">
@@ -78,63 +59,45 @@ export default function TableHead() {
         })}
       >
         {/* -15 +75 */}
-        <SortingLogo onClick={(e) => handleUrl("vente_p100")} />
+        <SortingLogo term="vente_p100" />
         {/* P, P+ */}
-        <SortingLogo onClick={(e) => handleUrl("state")} />
+        <SortingLogo term="state" />
         {/* ---*--- */}
-        <SortingLogo onClick={(e) => handleUrl("+5t")} />
+        <SortingLogo term="+5t" />
         {/* AR_Ref */}
-        <SortingLogo onClick={() => handleUrl("ar_ref")} />
+        <SortingLogo term="ar_ref" />
         {/* PU Acaht */}
-        <SortingLogo onClick={() => handleUrl("pu_achat")} />
+        <SortingLogo term="pu_achat" />
         {/* PU Revient */}
-        <SortingLogo onClick={() => handleUrl("pu_revient")} />
+        <SortingLogo term="pu_revient" />
         {/* PU Gros */}
-        <SortingLogo onClick={() => handleUrl("pu_gros")} />
+        <SortingLogo term="pu_gros" />
         {/* Report */}
-        <SortingLogo onClick={() => handleUrl("report_qte")} />
-        <SortingLogo onClick={() => handleUrl("report_poids")} />
-        <SortingLogo onClick={() => handleUrl("report_mont_achat")} />
-        <SortingLogo onClick={() => handleUrl("report_mont_dedouan")} />
+        <SortingLogo term="report_qte" />
+        <SortingLogo term="report_poids" />
+        <SortingLogo term="report_mont_achat" />
+        <SortingLogo term="report_mont_dedouan" />
         {/* Achat */}
-        <SortingLogo onClick={() => handleUrl("achat_qte")} />
-        <SortingLogo onClick={() => handleUrl("achat_poids")} />
-        <SortingLogo onClick={() => handleUrl("achat_mont_achat")} />
-        <SortingLogo onClick={() => handleUrl("achat_mont_dedouan")} />
+        <SortingLogo term="achat_qte" />
+        <SortingLogo term="achat_poids" />
+        <SortingLogo term="achat_mont_achat" />
+        <SortingLogo term="achat_mont_dedouan" />
         {/* Prod */}
-        <SortingLogo onClick={() => handleUrl("prod_qte")} />
-        <SortingLogo onClick={() => handleUrl("prod_poids")} />
+        <SortingLogo term="prod_qte" />
+        <SortingLogo term="prod_poids" />
         {/* Vente */}
-        <SortingLogo onClick={() => handleUrl("vente_qte")} />
-        <SortingLogo onClick={() => handleUrl("vente_poids")} />
-        <SortingLogo onClick={() => handleUrl("vente_mont_dedouan")} />
-        <SortingLogo onClick={() => handleUrl("vente_reelle")} />
+        <SortingLogo term="vente_qte" />
+        <SortingLogo term="vente_poids" />
+        <SortingLogo term="vente_mont_dedouan" />
+        <SortingLogo term="vente_reelle" />
         {/* Stock */}
-        <SortingLogo onClick={() => handleUrl("stock_qte")} />
-        <SortingLogo onClick={() => handleUrl("stock_poids")} />
-        <SortingLogo onClick={() => handleUrl("stock_mont_dedouan")} />
+        <SortingLogo term="stock_qte" />
+        <SortingLogo term="stock_poids" />
+        <SortingLogo term="stock_mont_dedouan" />
         {/* vente_p100 et marge_p100 */}
-        <SortingLogo onClick={() => handleUrl("vente_p100")} />
-        <SortingLogo onClick={() => handleUrl("marge_p100")} />
+        <SortingLogo term="vente_p100" />
+        <SortingLogo term="marge_p100" />
       </tr>
     </thead>
-  );
-}
-
-function SortingLogo(props: HTMLProps<any>) {
-  const sortingBy = useSearchParams().get("sortBy")?.split("@")[0];
-
-  const value = (props.onClick?.toString().match(/handleUrl\(["']([^"']+)["']\)/) ?? [])[1];
-  const isColored = sortingBy === value;
-  return (
-    <td {...props}>
-      <i>
-        <FaSort
-          className={clsx("mx-auto", {
-            "text-red-vif": isColored,
-          })}
-        />
-      </i>
-    </td>
   );
 }

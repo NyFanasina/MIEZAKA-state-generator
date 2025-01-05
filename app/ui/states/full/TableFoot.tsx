@@ -12,9 +12,11 @@ import {
 } from "@/app/lib/utils";
 import { fetchFournisseursAvecDevise } from "@/app/lib/data/ste_utils";
 import clsx from "clsx";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { RowsContext } from "@/app/contexts/DataContext";
 
-export default function TableFoot({ rows = [] }: { rows: any[] }) {
+export default function TableFoot() {
+  const [rows] = useContext(RowsContext);
   const [devise_Fournisseur, setDevise_Fournisseur] = useState([]);
 
   useEffect(() => {

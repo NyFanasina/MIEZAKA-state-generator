@@ -11,8 +11,11 @@ import {
 } from "@/app/lib/utils";
 import { fetchDeviseFournisseur } from "@/app/lib/data/ste";
 import clsx from "clsx";
+import { useContext } from "react";
+import { RowsContext } from "@/app/contexts/DataContext";
 
-export default function TableFoot({ rows }: { rows: any[] }) {
+export default function TableFoot() {
+  const [rows] = useContext(RowsContext);
   // const devise_Fournisseur: any = await fetchDeviseFournisseur();
   const rowsByProvider = rows.reduce((acc: any, cur: any) => {
     const providername = cur.article.Nom_Fournisseur;

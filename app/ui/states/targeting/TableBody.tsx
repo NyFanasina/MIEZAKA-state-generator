@@ -1,5 +1,6 @@
 import {
   calculate_PU_Provider,
+  calculateMarge_p100,
   calculateMarge_p100ForOneProvider,
   calculatePoids,
   calculatePoidsStock,
@@ -10,18 +11,42 @@ import {
   calculateVente_p100,
   calculateVente_p100ForOneProvider,
   groupByCategory,
-  groupBySizeByProvider,
+  GroupByProvider,
   lowerThan15,
   parseDecimal,
+  sortData,
 } from "@/app/lib/utils";
 import { clsx } from "clsx";
-import { Fragment } from "react";
+import { Fragment, useContext, useEffect, useMemo, useState } from "react";
 import { ByCategory, Mouvement } from "@/app/lib/ste_definition";
-import { handleRowTableClick } from "../full/TableBody";
+import { handleRowClick } from "../full/TableBody";
+import { RowsContext } from "@/app/contexts/DataContext";
+import { initializeParamsTools } from "../Filters";
 
-export default function TableBody({ rows }: { rows: Mouvement[] }) {
-  const rowsBySize: ByCategory | any = groupByCategory(rows);
-  const rowsBySizeByProvider: ByCategory = groupBySizeByProvider(rowsBySize);
+export default function TableBody() {
+  const [rows, rowsCountPerPage] = useContext(RowsContext);
+  const { params, searchParams } = initializeParamsTools();
+
+  const [currentRows, setCurrentRows] = useState<Mouvement[]>(() => {
+    const page = parseInt(params.get("page") || "1");
+    const [start, end] = [page * rowsCountPerPage - rowsCountPerPage, page * rowsCountPerPage];
+    return sortData(searchParams.get("sortBy"), rows.slice(start, end));
+  });
+
+  const rowsBySize: ByCategory | any = useMemo(() => groupByCategory(currentRows), [currentRows]);
+
+  const rowsBySizeByProvider: ByCategory = {
+    "GROSSE BALLE": GroupByProvider(rowsBySize["GROSSE BALLE"]),
+    "PETITE BALLE": GroupByProvider(rowsBySize["PETITE BALLE"]),
+  };
+
+  useEffect(() => {
+    setCurrentRows(() => {
+      const page = parseInt(params.get("page") || "1");
+      const [start, end] = [page * rowsCountPerPage - rowsCountPerPage, page * rowsCountPerPage];
+      return sortData(searchParams.get("sortBy"), rows.slice(start, end));
+    });
+  }, [params.get("page"), searchParams.get("sortBy"), rows]);
 
   return (
     <>
@@ -76,10 +101,10 @@ export default function TableBody({ rows }: { rows: Mouvement[] }) {
                         const Vente_p100 = calculateVente_p100(row);
 
                         // Calcul % marge
-                        const Marge_p100 = ((Number(row.article.AC_PrixVen ?? 0) - Number(row.article.AR_PoidsBrut ?? 0)) / Number(row.article.AR_PoidsBrut ?? 0)) * 100;
+                        const Marge_p100 = calculateMarge_p100(row);
 
                         return (
-                          <tr key={i} onClick={handleRowTableClick} className={clsx("active:bg-amber-500 hover:bg-amber-200 hover:border hover:border-amber-200")}>
+                          <tr key={i} onClick={handleRowClick} className="active:bg-amber-500 hover:bg-amber-200 hover:border hover:border-amber-200">
                             {/* Article */}
                             <td
                               className={clsx("border-orange-400 border text-center", {
@@ -171,7 +196,7 @@ export default function TableBody({ rows }: { rows: Mouvement[] }) {
                           {parseDecimal(Marge_p100_Provider)}
                         </td>
                       </tr>
-                      {Object.entries(dataInCategories).length - 1 != i2 && <tr className={clsx("h-3")} />}
+                      {Object.entries(dataInCategories).length - 1 !== i2 && <tr className="h-4" />}
                     </Fragment>
                   );
                 })}
