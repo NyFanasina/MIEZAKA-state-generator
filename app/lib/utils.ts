@@ -1,4 +1,3 @@
-import { any, string } from "zod";
 import { SearchParamsStatesProps } from "../(views)/states/full/page";
 import { ByCategory, Mouvement } from "./ste_definition";
 
@@ -259,7 +258,6 @@ export default function filterData(searchParams: SearchParamsStatesProps["search
 
 export function sortData(by: string | null, data: Mouvement[]) {
   by = by ?? "";
-  console.log("by === ", by);
   if (!by) {
     return data;
   }

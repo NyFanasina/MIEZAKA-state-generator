@@ -8,8 +8,17 @@ const secretKey = process.env.SESSION_SECRET ?? "";
 const cookiesName = process.env.COOKIES_NAME ?? "";
 const encodedSecretKey = new TextEncoder().encode(secretKey);
 
+export type Session =
+  | {
+      id: number;
+      admin: boolean;
+      iat?: number;
+      exp?: number;
+    }
+  | undefined;
+
 export async function createSession(user: User) {
-  const payload = { id: user.id, admin: user.admin };
+  const payload: Session = { id: user.id, admin: user.admin };
   const session = await generateJWT(payload);
 
   cookies().set(cookiesName, session, {

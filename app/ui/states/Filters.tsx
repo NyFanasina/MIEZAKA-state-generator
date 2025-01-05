@@ -1,5 +1,5 @@
 import { ChangeEvent, PropsWithChildren, useEffect, useState } from "react";
-import { Button, Dropdown, Label, Radio, Select, TextInput, TextInputProps } from "flowbite-react";
+import { Button, Dropdown, Label, Radio, TextInput, TextInputProps } from "flowbite-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { FaFilter } from "react-icons/fa";
 import { fetchEtats, fetchFournisseurs } from "@/app/lib/data/ste_utils";
@@ -12,7 +12,11 @@ export function TextInputFilter(props: PropsWithChildren<TextInputProps & { name
     <TextInput
       defaultValue={searchParams.get(props.name)?.toString()}
       onChange={(event) => {
-        params.set(props.name, event.target.value);
+        const value = event.target.value;
+        if (!value) {
+          return router.replace(`${pathname}`);
+        }
+        params.set(props.name, value);
         router.replace(`${pathname}?${params.toString()}`);
       }}
       {...props}

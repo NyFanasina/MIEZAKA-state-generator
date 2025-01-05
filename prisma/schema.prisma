@@ -8,6 +8,22 @@ model User {
   password String 
   photo String? 
   admin Boolean
+  custum_filters Filters[]
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model Filters {
+  id Int @id() @default(autoincrement())
+  filter_name String @unique
+  filter_type Int
+  filter_category String?
+  filter_stock_weight String?
+  filter_marge String?
+  filter_etat String?
+  filter_supplier String?
+  filter_author User @relation(fields: [user_id], references: [id])
+  user_id Int
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 }
