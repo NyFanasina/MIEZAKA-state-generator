@@ -18,7 +18,7 @@ export async function fetchFilterByid(id: number) {
   });
 }
 
-async function fetchFilterByName(name: string) {
+export async function fetchFilterByName(name: string) {
   const filter_name = decodeURI(name);
   return await prisma.filters.findFirst({
     where: { filter_name },

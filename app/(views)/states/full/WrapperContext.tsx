@@ -8,7 +8,7 @@ import { RowsContext } from "@/app/contexts/DataContext";
 import Pagination from "@/app/ui/Pagination";
 
 export default function WrapperClient({ rows }: { rows: Array<Mouvement> }) {
-  const countPerPage = 100;
+  const countPerPage = 14;
   const totalPages = Math.round(rows.length / countPerPage);
   const pdfRef = useRef(null);
 

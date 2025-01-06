@@ -1,19 +1,19 @@
 "use server";
 import { Mouvement } from "./ste_definition";
 
-export default function facker(data: Mouvement[]) {
+export async function facker(data: Mouvement[]) {
   return data.map((item) => {
-    const random = Math.round(Number(Math.random().toFixed(1)) - 0.5);
-    return {
+    const random = parseFloat((Math.random() * (0.8 - 0.4) + 0.4).toFixed(1));
+    const re: Mouvement = {
+      ...item,
+
       article: {
-        ...item,
+        ...item.article,
         AR_PrixAch: Number(item.article) * random,
-        AC_PrixVen: Number(item.article.AC_PrixVen) * random,
+        AC_PrixVen: (Number(item.article.AC_PrixVen) * random).toString(),
         AR_PoidsBrut: Number(item.article.AR_PoidsBrut) * random,
       },
-      achat: { AR_Ref: "BRIBRACENKGBAD", Qte: 1348 * random },
-      vente: { AR_Ref: "A-MELE145KATT", Qte: 2, Vente_Reelle: 580000 * random },
-      report: { AR_Ref: "A-MELE145KATT", Qte: 508 * random },
     };
+    return re;
   });
 }

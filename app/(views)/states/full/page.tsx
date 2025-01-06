@@ -2,7 +2,6 @@ import fetchRows from "@/app/lib/data/ste";
 import { Mouvement } from "@/app/lib/ste_definition";
 import filterData, { sortData } from "@/app/lib/utils";
 import WrapperClient from "./WrapperContext";
-import facker from "@/app/lib/facker";
 // import useSWR from "swr";
 
 export type SearchParamsStatesProps = {
@@ -24,6 +23,5 @@ export default async function page({ searchParams }: SearchParamsStatesProps) {
   // const rows: Array<Mouvement> = await fetchRows(searchParams);
   let rows: Array<Mouvement> = require("/home/fango/Bureau/Data.json");
   let nextRows = filterData(searchParams, rows);
-
   return <WrapperClient rows={nextRows} />;
 }

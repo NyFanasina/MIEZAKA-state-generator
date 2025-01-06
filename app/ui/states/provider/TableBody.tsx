@@ -20,7 +20,6 @@ export default function TableBody({ rows }: { rows: any }) {
   const searchParams = useSearchParams();
   const [isActive, setActive] = useState(-1);
 
-  console.log("rendre");
   function handleRowClick(id: number) {
     setActive(id);
   }

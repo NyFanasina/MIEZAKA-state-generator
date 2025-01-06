@@ -9,7 +9,7 @@ import Pagination from "@/app/ui/Pagination";
 
 export default function WrapperClient({ rows }: { rows: Array<Mouvement> }) {
   const pdfRef = useRef(null);
-  const countPerPage = 100;
+  const countPerPage = 13;
   const totalPages = Math.round(rows.length / countPerPage);
   return (
     <div ref={pdfRef}>

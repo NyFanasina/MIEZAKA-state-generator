@@ -1,4 +1,4 @@
-import filterData, { sortData } from "@/app/lib/utils";
+import filterData from "@/app/lib/utils";
 import { SearchParamsStatesProps } from "../full/page";
 import WrapperClient from "./WrapperContext";
 import { Mouvement } from "@/app/lib/ste_definition";

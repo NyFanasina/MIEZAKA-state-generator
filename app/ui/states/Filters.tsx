@@ -127,11 +127,11 @@ export function Vente_p100_Filter() {
 export function EtatFilter() {
   const { router, pathname, params, searchParams } = initializeParamsTools();
 
-  const [etats, setEtats] = useState<string[]>();
+  const [etats, setEtats] = useState<string[]>(["PP", "P23", "P++", "P+", "P24", "PP+", "A24", "A+", "AA+", "A", "CR"]);
 
-  useEffect(() => {
-    (async () => fetchEtats().then((resp: any) => setEtats(resp)))();
-  }, []);
+  // useEffect(() => {
+  //   (async () => fetchEtats().then((resp: any) => setEtats(resp)))();
+  // }, []);
 
   function handle(state: string) {
     params.set("state", state);
@@ -158,7 +158,203 @@ export function EtatFilter() {
 
 // BUG on defaultvalue of select tag
 export function ProviderFilter() {
-  const [providers, setProviders] = useState<Provider[]>([]);
+  const [providers, setProviders] = useState<Provider[]>([
+    {
+      Devise: 2,
+      Nom_Fournisseur: "A - (ATTAR REMBALLE)",
+      CT_Num: "40T172",
+    },
+    {
+      Devise: 2,
+      Nom_Fournisseur: "AFRETEX",
+      CT_Num: "40A003",
+    },
+    {
+      Devise: 2,
+      Nom_Fournisseur: "AH- ATTAR",
+      CT_Num: "40T175",
+    },
+    {
+      Devise: 2,
+      Nom_Fournisseur: "ATTAR",
+      CT_Num: "40B014",
+    },
+    {
+      Devise: 2,
+      Nom_Fournisseur: "ATTAR AOR (TRIAGE OR)",
+      CT_Num: "40T174",
+    },
+    {
+      Devise: 2,
+      Nom_Fournisseur: "ATTAR PRO",
+      CT_Num: "40B014",
+    },
+    {
+      Devise: 2,
+      Nom_Fournisseur: "ATTAR REMBALLE",
+      CT_Num: "40T176",
+    },
+    {
+      Devise: 2,
+      Nom_Fournisseur: "ATTAR REMBALLE PRO",
+      CT_Num: "40T176",
+    },
+    {
+      Devise: 3,
+      Nom_Fournisseur: "EUROTEX GLOBAL FZC",
+      CT_Num: "40E225",
+    },
+    {
+      Devise: 3,
+      Nom_Fournisseur: "EUROTEX GLOBAL FZC PRO",
+      CT_Num: "40E225",
+    },
+    // {
+    //   Devise: 2,
+    //   Nom_Fournisseur: "EUROTEX GLOBAL FZC PRO",
+    //   CT_Num: "40E225",
+    // },
+    {
+      Devise: 2,
+      Nom_Fournisseur: "GENERAL-TEX",
+      CT_Num: "40G243",
+    },
+    {
+      Devise: 2,
+      Nom_Fournisseur: "GENERAL-TEX PRO",
+      CT_Num: "40G243",
+    },
+    {
+      Devise: 3,
+      Nom_Fournisseur: "LE RELAIS FRANCE $",
+      CT_Num: "40L068",
+    },
+    // {
+    //   Devise: 2,
+    //   Nom_Fournisseur: "LE RELAIS FRANCE $",
+    //   CT_Num: "40L068",
+    // },
+    // {
+    //   Devise: 2,
+    //   Nom_Fournisseur: "LE RELAIS FRANCE €",
+    //   CT_Num: "40L069",
+    // },
+    {
+      Devise: 2,
+      Nom_Fournisseur: "LE RELAIS FRANCE € PRO",
+      CT_Num: "40L069",
+    },
+    {
+      Devise: 2,
+      Nom_Fournisseur: "LE RELAIS MADA ABR",
+      CT_Num: "40L177",
+    },
+    {
+      Devise: 2,
+      Nom_Fournisseur: "LE RELAIS MADAGASCAR",
+      CT_Num: "40L070",
+    },
+    {
+      Devise: 2,
+      Nom_Fournisseur: "RECUTEX",
+      CT_Num: "40R106",
+    },
+    {
+      Devise: 2,
+      Nom_Fournisseur: "RECUTEX PRO",
+      CT_Num: "40R106",
+    },
+    {
+      Devise: 2,
+      Nom_Fournisseur: "RIMATEX BVBA",
+      CT_Num: "40R244",
+    },
+    {
+      Devise: 2,
+      Nom_Fournisseur: "RIMATEX BVBA PRO",
+      CT_Num: "40R244",
+    },
+    {
+      Devise: 0,
+      Nom_Fournisseur: "Société Miezaka Eurl",
+      CT_Num: "40S121",
+    },
+    // {
+    //   Devise: 2,
+    //   Nom_Fournisseur: "Société Miezaka Eurl",
+    //   CT_Num: "40S121",
+    // },
+    // {
+    //   Devise: 1,
+    //   Nom_Fournisseur: "Société Miezaka Eurl",
+    //   CT_Num: "40S121",
+    // },
+    {
+      Devise: 1,
+      Nom_Fournisseur: "Société Miezaka Eurl PRO",
+      CT_Num: "40S121",
+    },
+    {
+      Devise: 2,
+      Nom_Fournisseur: "SOEX",
+      CT_Num: "40S124",
+    },
+    {
+      Devise: 2,
+      Nom_Fournisseur: "SOEX DUBAI",
+      CT_Num: "40S126",
+    },
+    // {
+    //   Devise: 3,
+    //   Nom_Fournisseur: "SOEX DUBAI",
+    //   CT_Num: "40S126",
+    // },
+    {
+      Devise: 2,
+      Nom_Fournisseur: "SOEX PRO",
+      CT_Num: "40S124",
+    },
+    {
+      Devise: 2,
+      Nom_Fournisseur: "TR/A (ATTAR TRIER)",
+      CT_Num: "40T171",
+    },
+    {
+      Devise: 2,
+      Nom_Fournisseur: "TR/S (SOEX DUBAI)",
+      CT_Num: "40T170",
+    },
+    {
+      Devise: 2,
+      Nom_Fournisseur: "TR/T (TTR TRIER )",
+      CT_Num: "40T169",
+    },
+    {
+      Devise: 2,
+      Nom_Fournisseur: "TTR ANCIEN",
+      CT_Num: "40T173",
+    },
+    {
+      Devise: 2,
+      Nom_Fournisseur: "TTR ANCIEN PRO",
+      CT_Num: "40T173",
+    },
+    {
+      Devise: 2,
+      Nom_Fournisseur: "TTR D",
+      CT_Num: "40T143",
+    },
+    {
+      Devise: 2,
+      Nom_Fournisseur: "TTR D PRO",
+      CT_Num: "40T143",
+    },
+    {
+      Devise: 0,
+      Nom_Fournisseur: "ZOMATEL",
+      CT_Num: "40Z182",
+    },
+  ]);
   const [selected, setSelected] = useState<string[]>([]);
   const { router, pathname, params, searchParams } = initializeParamsTools();
 
@@ -180,204 +376,6 @@ export function ProviderFilter() {
     const values = options.map((options) => options.value);
     setSelected(values);
   }
-
-  // const providers = [
-  //   {
-  //     Devise: 2,
-  //     Nom_Fournisseur: "A - (ATTAR REMBALLE)",
-  //     CT_Num: "40T172",
-  //   },
-  //   {
-  //     Devise: 2,
-  //     Nom_Fournisseur: "AFRETEX",
-  //     CT_Num: "40A003",
-  //   },
-  //   {
-  //     Devise: 2,
-  //     Nom_Fournisseur: "AH- ATTAR",
-  //     CT_Num: "40T175",
-  //   },
-  //   {
-  //     Devise: 2,
-  //     Nom_Fournisseur: "ATTAR",
-  //     CT_Num: "40B014",
-  //   },
-  //   {
-  //     Devise: 2,
-  //     Nom_Fournisseur: "ATTAR AOR (TRIAGE OR)",
-  //     CT_Num: "40T174",
-  //   },
-  //   {
-  //     Devise: 2,
-  //     Nom_Fournisseur: "ATTAR PRO",
-  //     CT_Num: "40B014",
-  //   },
-  //   {
-  //     Devise: 2,
-  //     Nom_Fournisseur: "ATTAR REMBALLE",
-  //     CT_Num: "40T176",
-  //   },
-  //   {
-  //     Devise: 2,
-  //     Nom_Fournisseur: "ATTAR REMBALLE PRO",
-  //     CT_Num: "40T176",
-  //   },
-  //   {
-  //     Devise: 3,
-  //     Nom_Fournisseur: "EUROTEX GLOBAL FZC",
-  //     CT_Num: "40E225",
-  //   },
-  //   {
-  //     Devise: 3,
-  //     Nom_Fournisseur: "EUROTEX GLOBAL FZC PRO",
-  //     CT_Num: "40E225",
-  //   },
-  //   {
-  //     Devise: 2,
-  //     Nom_Fournisseur: "EUROTEX GLOBAL FZC PRO",
-  //     CT_Num: "40E225",
-  //   },
-  //   {
-  //     Devise: 2,
-  //     Nom_Fournisseur: "GENERAL-TEX",
-  //     CT_Num: "40G243",
-  //   },
-  //   {
-  //     Devise: 2,
-  //     Nom_Fournisseur: "GENERAL-TEX PRO",
-  //     CT_Num: "40G243",
-  //   },
-  //   {
-  //     Devise: 3,
-  //     Nom_Fournisseur: "LE RELAIS FRANCE $",
-  //     CT_Num: "40L068",
-  //   },
-  //   {
-  //     Devise: 2,
-  //     Nom_Fournisseur: "LE RELAIS FRANCE $",
-  //     CT_Num: "40L068",
-  //   },
-  //   {
-  //     Devise: 2,
-  //     Nom_Fournisseur: "LE RELAIS FRANCE €",
-  //     CT_Num: "40L069",
-  //   },
-  //   {
-  //     Devise: 2,
-  //     Nom_Fournisseur: "LE RELAIS FRANCE € PRO",
-  //     CT_Num: "40L069",
-  //   },
-  //   {
-  //     Devise: 2,
-  //     Nom_Fournisseur: "LE RELAIS MADA ABR",
-  //     CT_Num: "40L177",
-  //   },
-  //   {
-  //     Devise: 2,
-  //     Nom_Fournisseur: "LE RELAIS MADAGASCAR",
-  //     CT_Num: "40L070",
-  //   },
-  //   {
-  //     Devise: 2,
-  //     Nom_Fournisseur: "RECUTEX",
-  //     CT_Num: "40R106",
-  //   },
-  //   {
-  //     Devise: 2,
-  //     Nom_Fournisseur: "RECUTEX PRO",
-  //     CT_Num: "40R106",
-  //   },
-  //   {
-  //     Devise: 2,
-  //     Nom_Fournisseur: "RIMATEX BVBA",
-  //     CT_Num: "40R244",
-  //   },
-  //   {
-  //     Devise: 2,
-  //     Nom_Fournisseur: "RIMATEX BVBA PRO",
-  //     CT_Num: "40R244",
-  //   },
-  //   {
-  //     Devise: 0,
-  //     Nom_Fournisseur: "Société Miezaka Eurl",
-  //     CT_Num: "40S121",
-  //   },
-  //   {
-  //     Devise: 2,
-  //     Nom_Fournisseur: "Société Miezaka Eurl",
-  //     CT_Num: "40S121",
-  //   },
-  //   {
-  //     Devise: 1,
-  //     Nom_Fournisseur: "Société Miezaka Eurl",
-  //     CT_Num: "40S121",
-  //   },
-  //   {
-  //     Devise: 1,
-  //     Nom_Fournisseur: "Société Miezaka Eurl PRO",
-  //     CT_Num: "40S121",
-  //   },
-  //   {
-  //     Devise: 2,
-  //     Nom_Fournisseur: "SOEX",
-  //     CT_Num: "40S124",
-  //   },
-  //   {
-  //     Devise: 2,
-  //     Nom_Fournisseur: "SOEX DUBAI",
-  //     CT_Num: "40S126",
-  //   },
-  //   {
-  //     Devise: 3,
-  //     Nom_Fournisseur: "SOEX DUBAI",
-  //     CT_Num: "40S126",
-  //   },
-  //   {
-  //     Devise: 2,
-  //     Nom_Fournisseur: "SOEX PRO",
-  //     CT_Num: "40S124",
-  //   },
-  //   {
-  //     Devise: 2,
-  //     Nom_Fournisseur: "TR/A (ATTAR TRIER)",
-  //     CT_Num: "40T171",
-  //   },
-  //   {
-  //     Devise: 2,
-  //     Nom_Fournisseur: "TR/S (SOEX DUBAI)",
-  //     CT_Num: "40T170",
-  //   },
-  //   {
-  //     Devise: 2,
-  //     Nom_Fournisseur: "TR/T (TTR TRIER )",
-  //     CT_Num: "40T169",
-  //   },
-  //   {
-  //     Devise: 2,
-  //     Nom_Fournisseur: "TTR ANCIEN",
-  //     CT_Num: "40T173",
-  //   },
-  //   {
-  //     Devise: 2,
-  //     Nom_Fournisseur: "TTR ANCIEN PRO",
-  //     CT_Num: "40T173",
-  //   },
-  //   {
-  //     Devise: 2,
-  //     Nom_Fournisseur: "TTR D",
-  //     CT_Num: "40T143",
-  //   },
-  //   {
-  //     Devise: 2,
-  //     Nom_Fournisseur: "TTR D PRO",
-  //     CT_Num: "40T143",
-  //   },
-  //   {
-  //     Devise: 0,
-  //     Nom_Fournisseur: "ZOMATEL",
-  //     CT_Num: "40Z182",
-  //   },
-  // ];
 
   return (
     <Dropdown color="gray" label={selected.length ? `Fournisseurs (${selected.length})` : "Fournisseurs"}>
