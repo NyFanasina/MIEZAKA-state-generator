@@ -32,7 +32,7 @@ export default async function Page() {
           <Card name="Vente" value={45700} className="border-blue-500" unity="Ar" />
           <Card name="Stock" value={284500} className="border-gray-500" unity="Ar" />
         </div>
-        {/* <GlobalStaticChart /> */}
+        <GlobalStaticChart />
       </div>
 
       <div>
@@ -41,8 +41,8 @@ export default async function Page() {
           <span>Meilleur ventes</span>
         </h1>
         <div className="flex gap-x-3 w-full *:h-[350px] *:max-w-[742px] *:overflow-auto ">
-          <BestSellerQteTable />
-          <BestSellerAmountTable />
+          {/* <BestSellerQteTable />
+          <BestSellerAmountTable /> */}
         </div>
       </div>
     </div>

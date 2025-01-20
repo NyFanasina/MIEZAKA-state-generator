@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { IconType } from "react-icons/lib";
 
 interface Props {
@@ -10,6 +11,9 @@ interface Props {
 }
 
 export default function NavLink({ href = "#", value, isActive, Icon }: Props) {
+  const params = useSearchParams();
+  const expand = Number(params.get("expand")) ? true : false;
+
   return (
     <Link
       href={href}
@@ -18,7 +22,7 @@ export default function NavLink({ href = "#", value, isActive, Icon }: Props) {
       })}
     >
       {Icon && <Icon size={30} />}
-      <span className="">{value}</span>
+      {expand && <span>{value}</span>}
     </Link>
   );
 }

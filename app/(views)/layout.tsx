@@ -1,20 +1,9 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
 import Sidenav from "@/app/ui/users/Sidenav";
 import { PropsWithChildren } from "react";
 import BreadCrumbItemProvider from "@/app/ui/BreadcrumbItemProvider";
 import AccountSetting from "../ui/AccountSetting";
-
-const geistSans = localFont({
-  src: "../fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "../fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
+import Brand from "../ui/Brand";
 
 export const metadata: Metadata = {
   title: "State generator",
@@ -25,7 +14,7 @@ export default function layout({ children }: PropsWithChildren) {
   return (
     <div className={`flex flex-col h-full`}>
       <div className="flex justify-between items-center bg-slate-900 text-white">
-        <h1 className="text-3xl p-3">Miezaka EURL</h1>
+        <Brand />
         <AccountSetting />
       </div>
       <div className="flex h-full">

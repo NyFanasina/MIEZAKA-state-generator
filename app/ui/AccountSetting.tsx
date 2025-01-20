@@ -1,3 +1,4 @@
+"use server";
 import { Avatar, Dropdown, DropdownHeader, DropdownItem } from "flowbite-react";
 import { logOut } from "../lib/actions/auth";
 import { getSession } from "../lib/session";
