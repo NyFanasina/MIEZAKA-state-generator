@@ -24,7 +24,6 @@ export default function Header({ children }: { children: string }) {
           email: <span className="text-indigo-900">{data.email}</span>
         </p>
       </div>
-      <p></p>
     </header>
   );
 }

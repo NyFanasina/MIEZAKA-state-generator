@@ -3,12 +3,12 @@ import TableBody from "./TableBody";
 import TableFoot from "./TableFoot";
 import TableHead from "./TableHead";
 
-export default function StateTable() {
+export default function StateTable({ print = false }: { print?: boolean }) {
   return (
-    <div className="overflow-auto">
+    <div className="overflow-auto print:overflow-visible">
       <table className="state-table">
         <TableHead />
-        <TableBody />
+        <TableBody print={print} />
         <TableFoot />
       </table>
     </div>

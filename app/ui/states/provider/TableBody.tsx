@@ -26,7 +26,7 @@ export default function TableBody({ rows }: { rows: any }) {
 
   return (
     <tbody className="text-end">
-      {rows.map(([provider, rowsGrouped]: [string, any], i) => {
+      {rows.map(([provider, rowsGrouped]: [string, any], i: number) => {
         const Vente_Qte_Provider = calculateTotalQteForOneProvider(rowsGrouped, "vente");
         const Achat_Qte_Provider = calculateTotalQteForOneProvider(rowsGrouped, "achat");
         const Stock_Qte_Provider = calculateTotalQteForOneProvider(rowsGrouped, "stock");

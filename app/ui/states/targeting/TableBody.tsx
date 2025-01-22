@@ -23,11 +23,12 @@ import { handleRowClick } from "../full/TableBody";
 import { RowsContext } from "@/app/contexts/DataContext";
 import { initializeParamsTools } from "../Filters";
 
-export default function TableBody() {
+export default function TableBody({ print = false }: { print?: boolean }) {
   const [rows, rowsCountPerPage] = useContext(RowsContext);
   const { params, searchParams } = initializeParamsTools();
 
   const [currentRows, setCurrentRows] = useState<Mouvement[]>(() => {
+    if (print) return sortData(searchParams.get("sortBy"), rows);
     const page = parseInt(params.get("page") || "1");
     const [start, end] = [page * rowsCountPerPage - rowsCountPerPage, page * rowsCountPerPage];
     return sortData(searchParams.get("sortBy"), rows.slice(start, end));
@@ -42,6 +43,7 @@ export default function TableBody() {
 
   useEffect(() => {
     setCurrentRows(() => {
+      if (print) return sortData(searchParams.get("sortBy"), rows);
       const page = parseInt(params.get("page") || "1");
       const [start, end] = [page * rowsCountPerPage - rowsCountPerPage, page * rowsCountPerPage];
       return sortData(searchParams.get("sortBy"), rows.slice(start, end));

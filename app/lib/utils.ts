@@ -324,9 +324,8 @@ export function sortData(by: string | null, data: Mouvement[]) {
   }
 }
 
-export function sortDataSupplier(by?: string, data: [string, any][]) {
-  by = by ?? "";
-  if (by) {
+export function sortDataSupplier(by: string = "", data: [string, any][]) {
+  if (!by) {
     return data;
   }
 

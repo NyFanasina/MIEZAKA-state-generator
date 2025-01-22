@@ -14,15 +14,18 @@ import { fetchFournisseursAvecDevise } from "@/app/lib/data/ste_utils";
 import clsx from "clsx";
 import { useContext, useEffect, useState } from "react";
 import { RowsContext } from "@/app/contexts/DataContext";
+import { Provider } from "@/app/lib/ste_definition";
+import useSWR from "swr";
 
 export default function TableFoot() {
   const [rows] = useContext(RowsContext);
-  const [devise_Fournisseur, setDevise_Fournisseur] = useState([]);
+  const [devise_Fournisseur, setDevise_Fournisseur] = useState<Provider[]>([]);
+  const { data } = useSWR("fetchFournisseursAvecDevise", fetchFournisseursAvecDevise);
 
   useEffect(() => {
     (async () => {
-      const devise_Fournisseur: any = await fetchFournisseursAvecDevise();
-      setDevise_Fournisseur(devise_Fournisseur);
+      const nextDevise_Fournisseur: any = await fetchFournisseursAvecDevise();
+      setDevise_Fournisseur(nextDevise_Fournisseur);
     })();
   }, []);
 
@@ -37,7 +40,7 @@ export default function TableFoot() {
   function calculateValDedouanDev(rowsByProvider: any[], type: "report" | "achat" | "stock" | "vente" | "production") {
     const ValEnDevise = Object.entries(rowsByProvider).map(([provider, data]: [string, Array<any>]) => {
       let valDevise = 1;
-      const AF_Devise = devise_Fournisseur.filter((item: any) => item.Nom_Fournisseur === provider)[0]?.Devise;
+      const AF_Devise = devise_Fournisseur.filter((item: any) => item.Nom_Fournisseur === provider)[0].Devise;
       if (AF_Devise == 2) valDevise = 5000;
       if (AF_Devise == 3) valDevise = 4500;
       return calculateTotalMontDedouanForOneProvider(data, type) / valDevise;

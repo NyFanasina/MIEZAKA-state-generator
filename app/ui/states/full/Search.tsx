@@ -2,13 +2,16 @@
 import { Button } from "flowbite-react";
 import { CategoryFilter, DateFilter, EtatFilter, ProviderFilter, Vente_p100_Filter, WeightFilter } from "../Filters";
 import { useReactToPrint } from "react-to-print";
-import { MutableRefObject } from "react";
+import { MutableRefObject, useRef } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import clsx from "clsx";
+import Table from "@/app/ui/states/full/Table";
+import Header from "../Header";
 
-export default function Search({ pdfRef }: { pdfRef: MutableRefObject<any> }) {
+export default function Search() {
   const searchParams = useSearchParams();
   const pathname = usePathname();
+  const pdfRef = useRef(null);
   const printPDF = useReactToPrint({
     contentRef: pdfRef,
     documentTitle: `MOUVEMENT COMPLET du ${searchParams.get("from")} au ${searchParams.get("to")}`,
@@ -40,6 +43,12 @@ export default function Search({ pdfRef }: { pdfRef: MutableRefObject<any> }) {
           EXPORTER
         </Button>
       </DateFilter>
+
+      {/* Document PDF */}
+      <div ref={pdfRef} className="hidden print:block">
+        <Header>MOUVEMENT ARTICLE COMPLET</Header>
+        <Table print={true} />
+      </div>
     </div>
   );
 }
