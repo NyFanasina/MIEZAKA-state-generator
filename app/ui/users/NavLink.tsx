@@ -12,7 +12,7 @@ interface Props {
 
 export default function NavLink({ href = "#", value, isActive, Icon }: Props) {
   const params = useSearchParams();
-  const expand = Number(params.get("expand")) ? true : false;
+  const expand = Number(params.get("exp")) ? true : false;
 
   return (
     <Link

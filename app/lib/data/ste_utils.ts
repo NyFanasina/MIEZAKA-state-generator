@@ -3,8 +3,6 @@
 import { prisma } from "@/prisma/client";
 import { STE_miezaka } from "@/prisma/clientSTE_Miezaka";
 import { Provider } from "../ste_definition";
-import { BestSellerSchema, GlobalStaticChartSchema } from "../ste_definition";
-import { z } from "zod";
 
 export async function fetchEtats() {
   const etats: [] =
@@ -112,30 +110,6 @@ export async function fetchStatistiquesGlobales() {
   };
 }
 
-export async function fetchVenteQteByMonth() {
-  const res = await STE_miezaka.$queryRaw`SELECT 
-        Top(10)
-            SUM([F_DOCLIGNE].[DL_Qte]) AS Qte_Vente,
-            MONTH(dbo.[F_DOCLIGNE].[DO_Date]) as Mois
-        FROM dbo.[F_DOCLIGNE]
-        JOIN dbo.[F_ARTICLE] 
-        ON dbo.[F_DOCLIGNE].[AR_Ref] = dbo.[F_ARTICLE].[AR_Ref]
-        WHERE
-            dbo.[F_DOCLIGNE].[DO_Domaine] IN (0)
-        AND dbo.F_DOCLIGNE.DO_Type IN (6,7)
-        AND dbo.[F_DOCLIGNE].AR_Ref IS NOT NULL
-        AND dbo.[F_ARTICLE].AR_PoidsNet > 0
-        AND dbo.[F_DOCLIGNE].[DO_Type] IN (6,7,16,17,20,21,26)
-        AND dbo.[F_DOCLIGNE].[DE_No] NOT IN (18,29,31,38,39,47,50)
-        AND YEAR(dbo.[F_DOCLIGNE].[DO_Date]) = '2024' 
-        GROUP BY
-            MONTH(dbo.[F_DOCLIGNE].[DO_Date])
-        ORDER BY
-        Qte_Vente DESC`;
-
-  return BestSellerSchema.array().parse(res);
-}
-
 export async function fetchBestSellerByQte(year: string = "2024") {
   const res = await STE_miezaka.$queryRaw`SELECT 
         Top(10)
@@ -161,7 +135,7 @@ export async function fetchBestSellerByQte(year: string = "2024") {
         ORDER BY
         Qte_Vente DESC`;
 
-  return res;
+  return JSON.parse(JSON.stringify(res));
 }
 
 export async function fetcthBestSellerByVente_Reel() {
@@ -192,32 +166,134 @@ export async function fetcthBestSellerByVente_Reel() {
     ORDER BY
     Vente_Reelle DESC`;
 
-  return res;
+  return JSON.parse(JSON.stringify(res));
 }
 
-export async function fetchGlobalStaticChart() {
-  const res = await STE_miezaka.$queryRaw`SELECT 
-        SUM([F_DOCLIGNE].[DL_Qte]) AS Qte_Vente,
-        FORMAT(dbo.[F_DOCLIGNE].[DO_Date], 'yyyy-MM') as Mois
-    FROM dbo.[F_DOCLIGNE]
-    JOIN dbo.[F_ARTICLE] 
-        ON dbo.[F_DOCLIGNE].[AR_Ref] = dbo.[F_ARTICLE].[AR_Ref]
-    WHERE
-        dbo.[F_DOCLIGNE].[DO_Domaine] IN (0)
-        AND dbo.F_DOCLIGNE.DO_Type IN (6,7)
-        AND dbo.[F_ARTICLE].[FA_CodeFamille] IN  ('FRIPPE', 'BALLE')
-        AND dbo.[F_DOCLIGNE].AR_Ref IS NOT NULL
-        AND dbo.[F_ARTICLE].AR_PoidsNet > 0
-        AND dbo.[F_ARTICLE].AR_PoidsBrut > 0
-        AND dbo.[F_ARTICLE].Etat != 'C'
-        AND dbo.[F_DOCLIGNE].[DO_Type] IN (6,7,16,17,20,21,26)
-        AND dbo.[F_DOCLIGNE].[DE_No] NOT IN (18,29,31,38,39,47,50)
-        AND dbo.[F_DOCLIGNE].[DO_Date] >= DATEADD(MONTH, -11, DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1)) 
-        AND dbo.[F_DOCLIGNE].[DO_Date] <= EOMONTH(GETDATE())
-    GROUP BY
-        FORMAT(dbo.[F_DOCLIGNE].[DO_Date], 'yyyy-MM')
-    ORDER BY
-    Mois ASC`;
+export async function fetchGlobalStatistic() {
+  const res = await STE_miezaka.$queryRaw`SELECT
+  SUM(
+      CASE
+          WHEN dbo.F_DOCLIGNE.DO_Type IN (6,7) THEN dbo.[F_DOCLIGNE].[DL_Qte] ELSE 0
+      END
+  ) AS Qte_Vente,
+  SUM(
+      CASE
+          WHEN dbo.F_DOCLIGNE.DO_Type IN (6,7) THEN dbo.[F_DOCLIGNE].[DL_Qte] * [F_ARTICLE].[AR_PoidsBrut] ELSE 0
+      END
+  ) AS Montant_Vente,
+  SUM(
+      CASE
+          WHEN dbo.F_DOCLIGNE.DO_Type IN (16,17) THEN dbo.[F_DOCLIGNE].[DL_Qte]
+      ELSE 0
+  END) AS Qte_Achat,
+  SUM(
+      CASE
+          WHEN dbo.F_DOCLIGNE.DO_Type IN (16,17) THEN dbo.[F_DOCLIGNE].[DL_Qte] * [F_ARTICLE].[AR_PoidsBrut]
+      ELSE 0
+  END) AS Montant_Achat,
+  SUM(
+      CASE
+          WHEN dbo.F_DOCLIGNE.DO_Type = 26 AND dbo.[F_DOCLIGNE].DL_TNomencl = 0 THEN dbo.[F_DOCLIGNE].[DL_Qte]
+      ELSE 0
+  END) AS Qte_Prod,
+  SUM(
+      CASE
+          WHEN dbo.F_DOCLIGNE.DO_Type = 26 AND dbo.[F_DOCLIGNE].DL_TNomencl = 0 THEN dbo.[F_DOCLIGNE].[DL_Qte]  * [F_ARTICLE].[AR_PoidsBrut]
+      ELSE 0
+  END) AS Montant_Prod,
+  FORMAT(dbo.[F_DOCLIGNE].[DO_Date], 'yyyy-MM') as Mois
+FROM dbo.[F_DOCLIGNE]
+  JOIN dbo.[F_ARTICLE]
+  ON dbo.[F_DOCLIGNE].[AR_Ref] = dbo.[F_ARTICLE].[AR_Ref]
+WHERE
+      dbo.[F_DOCLIGNE].[DO_Domaine] IN (0,1,2)
+  AND dbo.[F_DOCLIGNE].[AR_Ref] IS NOT NULL
+  AND dbo.[F_ARTICLE].[AR_PoidsNet] > 0
+  AND dbo.[F_ARTICLE].[AR_PoidsBrut] > 0
+  AND dbo.[F_DOCLIGNE].[DO_Type] IN (6,7,16,17,20,21,26)
+  AND dbo.[F_DOCLIGNE].[DE_No] NOT IN (18,29,31,38,39,47,50)
+  AND dbo.[F_DOCLIGNE].[DO_Date] >= DATEADD(MONTH, -11, DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1))
+  AND dbo.[F_DOCLIGNE].[DO_Date] <= EOMONTH(GETDATE())
+GROUP BY
+          FORMAT(dbo.[F_DOCLIGNE].[DO_Date], 'yyyy-MM')
+ORDER BY
+      Mois ASC`;
 
-  return res;
+  return JSON.parse(JSON.stringify(res));
+}
+
+export async function fetchStockStatic() {
+  const res = await STE_miezaka.$queryRaw<Record<string, any>[]>`SELECT
+  SUM(Qte_Prod + Qte_Achat + MouvEntree -MouveSortie - Qte_Vente) AS Qte,
+  SUM(Montant_Prod + Montant_Achat + Montant_MouvEntree -Montant_MouveSortie - Montant_Vente) AS Montant
+  FROM
+  (
+  SELECT
+  DISTINCT
+  dbo.[F_DOCLIGNE].AR_Ref,
+  SUM(CASE
+      WHEN dbo.F_DOCLIGNE.DO_Type = 26 AND dbo.[F_DOCLIGNE].DL_TNomencl = 0 THEN dbo.[F_DOCLIGNE].[DL_Qte]
+      WHEN dbo.F_DOCLIGNE.DO_Type = 26 AND dbo.[F_DOCLIGNE].DL_TNomencl = 1 THEN -dbo.[F_DOCLIGNE].[DL_Qte]
+      ELSE 0
+      END) AS Qte_Prod,
+  SUM(CASE
+      WHEN dbo.F_DOCLIGNE.DO_Type IN (6,7) THEN dbo.[F_DOCLIGNE].[DL_Qte]
+          ELSE 0
+      END) AS Qte_Vente,
+  SUM(CASE
+          WHEN dbo.F_DOCLIGNE.DO_Type IN (16,17) THEN dbo.[F_DOCLIGNE].[DL_Qte]
+          ELSE 0
+      END) AS Qte_Achat,
+  SUM(CASE
+          WHEN dbo.F_DOCLIGNE.DO_Type IN (20) THEN dbo.[F_DOCLIGNE].[DL_Qte]
+          ELSE 0
+      END) AS MouvEntree,
+  SUM(CASE
+          WHEN dbo.F_DOCLIGNE.DO_Type IN (21) THEN dbo.[F_DOCLIGNE].[DL_Qte]
+          ELSE 0
+      END) AS MouveSortie,
+      
+
+  SUM(CASE
+      WHEN dbo.F_DOCLIGNE.DO_Type = 26 AND dbo.[F_DOCLIGNE].DL_TNomencl = 0 THEN dbo.[F_DOCLIGNE].[DL_Qte] * dbo.[F_ARTICLE].AR_PoidsBrut
+      WHEN dbo.F_DOCLIGNE.DO_Type = 26 AND dbo.[F_DOCLIGNE].DL_TNomencl = 1 THEN -dbo.[F_DOCLIGNE].[DL_Qte] * dbo.[F_ARTICLE].AR_PoidsBrut
+      ELSE 0
+      END) AS Montant_Prod,
+  SUM(CASE
+      WHEN dbo.F_DOCLIGNE.DO_Type IN (6,7) THEN dbo.[F_DOCLIGNE].[DL_Qte] * dbo.[F_ARTICLE].AR_PoidsBrut
+          ELSE 0
+      END) AS Montant_Vente,
+  SUM(CASE
+          WHEN dbo.F_DOCLIGNE.DO_Type IN (16,17) THEN dbo.[F_DOCLIGNE].[DL_Qte] * dbo.[F_ARTICLE].AR_PoidsBrut
+          ELSE 0
+      END) AS Montant_Achat,
+  SUM(CASE
+          WHEN dbo.F_DOCLIGNE.DO_Type IN (20) THEN dbo.[F_DOCLIGNE].[DL_Qte] * dbo.[F_ARTICLE].AR_PoidsBrut
+          ELSE 0
+      END) AS Montant_MouvEntree,
+  SUM(CASE
+          WHEN dbo.F_DOCLIGNE.DO_Type IN (21) THEN dbo.[F_DOCLIGNE].[DL_Qte] * dbo.[F_ARTICLE].AR_PoidsBrut
+          ELSE 0
+      END) AS Montant_MouveSortie
+
+  FROM dbo.[F_DOCLIGNE]
+  JOIN dbo.[F_ARTICLE] 
+      ON dbo.[F_ARTICLE].AR_Ref = dbo.[F_DOCLIGNE].[AR_Ref]
+  WHERE
+          dbo.[F_ARTICLE].[FA_CodeFamille] IN  ('BALLE', 'FRIPPE')
+              AND
+          dbo.[F_ARTICLE].[Etat] != 'C'
+              AND 
+          dbo.[F_ARTICLE].[AR_PoidsBrut] > 0
+              AND
+          dbo.[F_DOCLIGNE].[DO_Domaine] IN (0,2,1)
+          AND dbo.[F_DOCLIGNE].AR_Ref IS NOT NULL
+          AND dbo.[F_DOCLIGNE].[DO_Type] IN (6,7,16,17,20,21,26)
+          AND dbo.[F_DOCLIGNE].[Do_Date] <= GETDATE()
+          AND dbo.[F_DOCLIGNE].[DE_No] NOT IN (18,29,31,38,39,47,50)
+  GROUP BY
+  dbo.[F_DOCLIGNE].AR_Ref
+
+) AS Fango`;
+  return res[0];
 }

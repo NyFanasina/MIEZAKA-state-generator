@@ -1,16 +1,13 @@
 import { MdSell } from "react-icons/md";
 import { HiPresentationChartLine } from "react-icons/hi";
-import { Card } from "@/app/ui/dashboard/Card";
+import Cards from "@/app/ui/dashboard/DashboardCards";
 import GlobalStaticChart from "@/app/ui/dashboard/GlobalStaticChart";
 import BestSellerQteTable from "@/app/ui/dashboard/BestSellerQteTable";
 import BestSellerAmountTable from "@/app/ui/dashboard/BestSellerAmountTable";
+import { fetchGlobalStatistic } from "@/app/lib/data/ste_utils";
 
 export default async function Page() {
-  const selectOptions = [
-    { name: "Les 30 dernier jours ", value: 30 },
-    { name: "Les 60 dernier jours ", value: 60 },
-    { name: "Les 365 dernier jours ", value: 365 },
-  ];
+  const statistic = await fetchGlobalStatistic();
 
   return (
     <div className="flex flex-col px-2">
@@ -19,20 +16,8 @@ export default async function Page() {
           <HiPresentationChartLine size={21} className="mb-[2px]" />
           <span>Statistiques Globales</span>
         </h1>
-
-        <div className="flex *:flex-1 gap-x-3">
-          <Card name="Achat" value={2500} className="border-emerald-500" unity="kg" />
-          <Card name="Production" value={2500} className="border-orange-700" unity="kg" />
-          <Card name="Vente" value={2500} className="border-blue-500" unity="kg" />
-          <Card name="Stock" value={2500} className="border-gray-500" unity="kg" />
-        </div>
-        <div className="flex *:flex-1 gap-x-3 my-4">
-          <Card name="Achat" value={359600} className="border-emerald-500" unity="Ar" />
-          <Card name="Production" value={212700} className="border-orange-700" unity="Ar" />
-          <Card name="Vente" value={45700} className="border-blue-500" unity="Ar" />
-          <Card name="Stock" value={284500} className="border-gray-500" unity="Ar" />
-        </div>
-        <GlobalStaticChart />
+        <Cards QteByMonth={statistic} />
+        <GlobalStaticChart QteByMonth={statistic} />
       </div>
 
       <div>
@@ -40,9 +25,9 @@ export default async function Page() {
           <MdSell />
           <span>Meilleur ventes</span>
         </h1>
-        <div className="flex gap-x-3 w-full *:h-[350px] *:max-w-[742px] *:overflow-auto ">
-          {/* <BestSellerQteTable />
-          <BestSellerAmountTable /> */}
+        <div className="flex gap-x-3 *:w-full *:h-[350px] *:overflow-auto ">
+          <BestSellerQteTable />
+          <BestSellerAmountTable />
         </div>
       </div>
     </div>

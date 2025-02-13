@@ -1,19 +1,9 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from "chart.js";
 import { Line } from "react-chartjs-2";
-import { fetchGlobalStaticChart } from "@/app/lib/data/ste_utils";
 
-export default function GlobalStaticChart() {
-  const [QteByMonth, setQteByMonth] = useState<any[]>([]);
-
-  useEffect(() => {
-    fetchGlobalStaticChart().then((resp) => {
-      setQteByMonth(resp);
-      console.log(resp);
-    });
-  }, []);
-
+export default function GlobalStaticChart({ QteByMonth }: { QteByMonth: Record<string, any>[] }) {
   ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
   const data = {
@@ -24,6 +14,18 @@ export default function GlobalStaticChart() {
         data: QteByMonth.map((item) => item.Qte_Vente),
         fill: false,
         borderColor: "#3f83f8",
+      },
+      {
+        label: "Achat (kg)",
+        data: QteByMonth.map((item) => item.Qte_Achat),
+        fill: false,
+        borderColor: "#10b981",
+      },
+      {
+        label: "Production (kg)",
+        data: QteByMonth.map((item) => item.Qte_Prod),
+        fill: false,
+        borderColor: "#b43403",
       },
     ],
   };

@@ -6,7 +6,7 @@ export default async function UserTable({ query }: { query: string }) {
   const users = await fetchFilteredUsers(query);
 
   return (
-    <Table striped>
+    <Table striped theme={theme}>
       <TableHead>
         <TableHeadCell></TableHeadCell>
         <TableHeadCell>Nom d'Utilisateurs</TableHeadCell>
@@ -38,3 +38,12 @@ export default async function UserTable({ query }: { query: string }) {
     </Table>
   );
 }
+
+const theme = {
+  body: {
+    base: "group/body",
+    cell: {
+      base: "px-6 py-2",
+    },
+  },
+};

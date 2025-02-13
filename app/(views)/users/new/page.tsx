@@ -21,7 +21,7 @@ export default function Page({ user }: { user?: User }) {
   const required = <span className="text-red-500 text-lg">*&nbsp;</span>;
 
   return (
-    <form action={action} className="flex flex-col gap-5" encType="multipart/form-data">
+    <form action={action} className="flex flex-col gap-5 sm:px-6" encType="multipart/form-data">
       {state?.message && (
         <Alert color={clsx(state?.ok ? "success" : "failure")} icon={state.ok ? AiFillCheckCircle : HiInformationCircle}>
           {state?.message}

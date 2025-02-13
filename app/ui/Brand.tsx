@@ -6,8 +6,8 @@ export default function Brand() {
   const { router, pathname, params } = initializeParamsTools();
 
   function handleClick() {
-    const expand = params.get("expand") ? "" : "1";
-    params.set("expand", expand);
+    const expand = params.get("exp") ? "" : "1";
+    params.set("exp", expand);
     router.replace(`${pathname}?${params.toString()}`);
   }
 

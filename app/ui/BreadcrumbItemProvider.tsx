@@ -2,7 +2,6 @@
 import { Breadcrumb } from "flowbite-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { capitalizeString } from "../lib/utils";
 import { HiHome } from "react-icons/hi";
 
 export default function BreadCrumbItemProvider() {
@@ -23,7 +22,7 @@ export default function BreadCrumbItemProvider() {
           return (
             <Breadcrumb.Item key={i}>
               <Link href={href} className="text-[17px] text-gray-700 hover:text-cyan-700">
-                {capitalizeString(segment)}
+                {getName(segment)}
               </Link>
             </Breadcrumb.Item>
           );
@@ -31,4 +30,23 @@ export default function BreadCrumbItemProvider() {
       })}
     </Breadcrumb>
   );
+}
+
+function getName(uri: string) {
+  switch (uri) {
+    case "dashboard":
+      return "Tableau de Bords";
+    case "full":
+      return "Mouvement Complet";
+    case "targeting":
+      return "Ciblage Article";
+    case "provider":
+      return "Suivi Fournisseurs";
+    case "filters":
+      return "Filtres personnalisés";
+    case "states":
+      return "États";
+    default:
+      return uri;
+  }
 }

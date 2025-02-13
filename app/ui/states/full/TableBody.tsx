@@ -101,129 +101,127 @@ export default function TableBody({ print = false }: { print?: boolean }) {
                   const PU_Provider = calculate_PU_Provider(rowsGrouped);
 
                   return (
-                    <>
-                      <Fragment key={i2}>
-                        {/* Article's rows */}
-                        {rowsGrouped.map((row: Mouvement, i: number) => {
-                          const Stock_Qte = calculateQteStock(row);
-                          const Vente_Poids = calculatePoids(row, "vente");
-                          const Stock_Poids = calculatePoidsStock(row);
-                          const Report_Poids = calculatePoids(row, "report");
-                          const Achat_Poids = calculatePoids(row, "achat");
-                          const Prod_Poids = calculatePoids(row, "production");
-                          const Report_MontDedouan = calculateMontDedouan(row, "report");
-                          const Report_MontAchat = calculateMontAchat(row, "report");
+                    <Fragment key={i2}>
+                      {/* Article's rows */}
+                      {rowsGrouped.map((row: Mouvement, i: number) => {
+                        const Stock_Qte = calculateQteStock(row);
+                        const Vente_Poids = calculatePoids(row, "vente");
+                        const Stock_Poids = calculatePoidsStock(row);
+                        const Report_Poids = calculatePoids(row, "report");
+                        const Achat_Poids = calculatePoids(row, "achat");
+                        const Prod_Poids = calculatePoids(row, "production");
+                        const Report_MontDedouan = calculateMontDedouan(row, "report");
+                        const Report_MontAchat = calculateMontAchat(row, "report");
 
-                          // Calcul % vente
-                          const Vente_p100 = calculateVente_p100(row);
+                        // Calcul % vente
+                        const Vente_p100 = calculateVente_p100(row);
 
-                          // Calcul % marge
-                          const Marge_p100 = calculateMarge_p100(row);
+                        // Calcul % marge
+                        const Marge_p100 = calculateMarge_p100(row);
 
-                          return (
-                            <tr key={i} onClick={handleRowClick} className={clsx("active:bg-amber-500 hover:bg-amber-200 hover:border")}>
-                              {/* Article */}
-                              <td
-                                className={clsx("border-orange-400 border text-center", {
-                                  "text-red-vif": Marge_p100 < 0,
-                                })}
-                              >
-                                {lowerThan15(Vente_p100)}
-                              </td>
-                              <td className="text-center ">{row.article.Etat}</td>
-                              <td className="text-sm px-1 py-0">
-                                <sub>{Stock_Poids >= 5000 ? "*" : ""}</sub>
-                              </td>
-                              <td
-                                className={clsx("text-start font-bold", {
-                                  "text-red-600": Marge_p100 < 0,
-                                  "bg-pink-200": Stock_Poids >= 5000 && Marge_p100 < 0,
-                                })}
-                              >
-                                <span title={row.article.AR_Design}>{row.article.AR_Ref}</span>
-                              </td>
-                              <td className="text-center">{parseDecimal(row.article.AR_PrixAch)}</td>
-                              <td>{parseDecimal(row.article.AR_PoidsBrut)}</td>
-                              <td>{parseDecimal(row.article.AC_PrixVen)}</td>
-                              {/* Report */}
-                              <td className="text-violet-950">{parseDecimal(row.report?.Qte)}</td>
-                              <td className="text-violet-950">{parseDecimal(Report_Poids)}</td>
-                              <td className="text-violet-950">{parseDecimal(Report_MontAchat)}</td>
-                              <td className="text-violet-950">{parseDecimal(Report_MontDedouan)}</td>
-                              {/* Achats */}
-                              <td className="text-green-900">{parseDecimal(row.achat?.Qte)}</td> {/* misy vide */}
-                              <td className="text-emerald-900">{parseDecimal(Achat_Poids)}</td>
-                              <td className="text-emerald-900">{parseDecimal(row.article?.AR_PrixAch * Achat_Poids)}</td>
-                              <td className="text-emerald-900">{parseDecimal(calculateMontDedouan(row, "achat"))}</td>
-                              {/* Production */}
-                              <td className="text-orange-800">{parseDecimal(row.production?.Qte)}</td>
-                              <td className="text-orange-800">{parseDecimal(Prod_Poids)}</td>
-                              {/* Vente */}
-                              <td className="text-blue-800">{parseDecimal(row.vente?.Qte)}</td>
-                              <td className="text-blue-800">{parseDecimal(Vente_Poids)}</td>
-                              <td className="text-blue-800">{parseDecimal(calculateMontDedouan(row, "vente"))}</td>
-                              <td className="text-blue-800">{parseDecimal(row.vente?.Vente_Reelle)}</td>
-                              {/* Stock */}
-                              <td>{parseDecimal(Stock_Qte)}</td>
-                              <td>{parseDecimal(Stock_Poids)}</td>
-                              <td>{parseDecimal(row.article.AR_PoidsBrut * Stock_Qte)}</td>
-                              {/* %vente et Marge % */}
-                              <td className="border-orange-400 border text-blue-800">{parseDecimal(Vente_p100)}</td>
-                              <td
-                                className={clsx("border-orange-400 border", {
-                                  "text-red-vif": Marge_p100 < 0,
-                                  "text-blue-800": Marge_p100 > 0,
-                                })}
-                              >
-                                {parseDecimal(Marge_p100)}
-                              </td>
-                            </tr>
-                          );
-                        })}
-                        <tr className="active:bg-amber-400 hover:bg-slate-100 hover:border hover:border-amber-500">
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td className="text-amber-700 text-start font-semibold">{provider}</td>
-                          <td className="text-center">{parseDecimal(PU_Provider)}</td>
-                          <td></td>
-                          <td></td>
-                          {/* Report */}
-                          <td className="text-violet-950">{parseDecimal(Report_Qte_Provider)}</td>
-                          <td className="text-violet-950">{parseDecimal(Report_Poids_Provider)}</td>
-                          <td className="text-violet-950">{parseDecimal(Report_MontAchat_Provider)}</td>
-                          <td className="text-violet-950">{parseDecimal(Report_MontDedouan_Provider)}</td>
-                          {/* Achat */}
-                          <td className="text-emerald-900">{parseDecimal(Achat_Qte_Provider)}</td>
-                          <td className="text-emerald-900">{parseDecimal(Achat_Poids_Provider)}</td>
-                          <td className="text-emerald-900">{parseDecimal(Achat_MontAchat_Provider)}</td>
-                          <td className="text-emerald-900">{parseDecimal(Achat_MontDedouan_Provider)}</td>
-                          {/* Production */}
-                          <td className="text-orange-800">{parseDecimal(Prod_Qte_Provider)}</td>
-                          <td className="text-orange-800">{parseDecimal(Prod_Poids_Provider)}</td>
-                          {/* Vente */}
-                          <td className="text-blue-800">{parseDecimal(Vente_Qte_Provider)}</td>
-                          <td className="text-blue-800">{parseDecimal(Vente_Poids_Provider)}</td>
-                          <td className="text-blue-800">{parseDecimal(Vente_MontDedouan_Provider)}</td>
-                          <td className="text-blue-800">{parseDecimal(Vente_VenteReelle_Provider)}</td>
-                          {/* Stock */}
-                          <td>{parseDecimal(Stock_Qte_Provider)}</td>
-                          <td>{parseDecimal(Stock_Poids_Provider)}</td>
-                          <td>{parseDecimal(Stock_MontDedouan_Provider)}</td>
-                          {/* % vente and % marge */}
-                          <td className="text-blue-800">{parseDecimal(Vente_p100_Provider)}</td>
-                          <td
-                            className={clsx("border-orange-400 border ", {
-                              "text-red-vif": Marge_p100_Provider < 0,
-                              "text-blue-800": Marge_p100_Provider > 0,
-                            })}
-                          >
-                            {parseDecimal(Marge_p100_Provider)}
-                          </td>
-                        </tr>
-                        {Object.entries(dataInCategories).length - 1 !== i2 && <tr className="h-4" />}
-                      </Fragment>
-                    </>
+                        return (
+                          <tr key={i} onClick={handleRowClick} className={clsx("active:bg-amber-500 hover:bg-amber-200 hover:border")}>
+                            {/* Article */}
+                            <td
+                              className={clsx("border-orange-400 border text-center", {
+                                "text-red-vif": Marge_p100 < 0,
+                              })}
+                            >
+                              {lowerThan15(Vente_p100)}
+                            </td>
+                            <td className="text-center ">{row.article.Etat}</td>
+                            <td className="text-sm px-1 py-0">
+                              <sub>{Stock_Poids >= 5000 ? "*" : ""}</sub>
+                            </td>
+                            <td
+                              className={clsx("text-start font-bold", {
+                                "text-red-600": Marge_p100 < 0,
+                                "bg-pink-200": Stock_Poids >= 5000 && Marge_p100 < 0,
+                              })}
+                            >
+                              <span title={row.article.AR_Design}>{row.article.AR_Ref}</span>
+                            </td>
+                            <td className="text-center">{parseDecimal(row.article.AR_PrixAch)}</td>
+                            <td>{parseDecimal(row.article.AR_PoidsBrut)}</td>
+                            <td>{parseDecimal(row.article.AC_PrixVen)}</td>
+                            {/* Report */}
+                            <td className="text-violet-950">{parseDecimal(row.report?.Qte)}</td>
+                            <td className="text-violet-950">{parseDecimal(Report_Poids)}</td>
+                            <td className="text-violet-950">{parseDecimal(Report_MontAchat)}</td>
+                            <td className="text-violet-950">{parseDecimal(Report_MontDedouan)}</td>
+                            {/* Achats */}
+                            <td className="text-green-900">{parseDecimal(row.achat?.Qte)}</td> {/* misy vide */}
+                            <td className="text-emerald-900">{parseDecimal(Achat_Poids)}</td>
+                            <td className="text-emerald-900">{parseDecimal(row.article?.AR_PrixAch * Achat_Poids)}</td>
+                            <td className="text-emerald-900">{parseDecimal(calculateMontDedouan(row, "achat"))}</td>
+                            {/* Production */}
+                            <td className="text-orange-800">{parseDecimal(row.production?.Qte)}</td>
+                            <td className="text-orange-800">{parseDecimal(Prod_Poids)}</td>
+                            {/* Vente */}
+                            <td className="text-blue-800">{parseDecimal(row.vente?.Qte)}</td>
+                            <td className="text-blue-800">{parseDecimal(Vente_Poids)}</td>
+                            <td className="text-blue-800">{parseDecimal(calculateMontDedouan(row, "vente"))}</td>
+                            <td className="text-blue-800">{parseDecimal(row.vente?.Vente_Reelle)}</td>
+                            {/* Stock */}
+                            <td>{parseDecimal(Stock_Qte)}</td>
+                            <td>{parseDecimal(Stock_Poids)}</td>
+                            <td>{parseDecimal(row.article.AR_PoidsBrut * Stock_Qte)}</td>
+                            {/* %vente et Marge % */}
+                            <td className="border-orange-400 border text-blue-800">{parseDecimal(Vente_p100)}</td>
+                            <td
+                              className={clsx("border-orange-400 border", {
+                                "text-red-vif": Marge_p100 < 0,
+                                "text-blue-800": Marge_p100 > 0,
+                              })}
+                            >
+                              {parseDecimal(Marge_p100)}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                      <tr className="active:bg-amber-400 hover:bg-slate-100 hover:border hover:border-amber-500">
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td className="text-amber-700 text-start font-semibold">{provider}</td>
+                        <td className="text-center">{parseDecimal(PU_Provider)}</td>
+                        <td></td>
+                        <td></td>
+                        {/* Report */}
+                        <td className="text-violet-950">{parseDecimal(Report_Qte_Provider)}</td>
+                        <td className="text-violet-950">{parseDecimal(Report_Poids_Provider)}</td>
+                        <td className="text-violet-950">{parseDecimal(Report_MontAchat_Provider)}</td>
+                        <td className="text-violet-950">{parseDecimal(Report_MontDedouan_Provider)}</td>
+                        {/* Achat */}
+                        <td className="text-emerald-900">{parseDecimal(Achat_Qte_Provider)}</td>
+                        <td className="text-emerald-900">{parseDecimal(Achat_Poids_Provider)}</td>
+                        <td className="text-emerald-900">{parseDecimal(Achat_MontAchat_Provider)}</td>
+                        <td className="text-emerald-900">{parseDecimal(Achat_MontDedouan_Provider)}</td>
+                        {/* Production */}
+                        <td className="text-orange-800">{parseDecimal(Prod_Qte_Provider)}</td>
+                        <td className="text-orange-800">{parseDecimal(Prod_Poids_Provider)}</td>
+                        {/* Vente */}
+                        <td className="text-blue-800">{parseDecimal(Vente_Qte_Provider)}</td>
+                        <td className="text-blue-800">{parseDecimal(Vente_Poids_Provider)}</td>
+                        <td className="text-blue-800">{parseDecimal(Vente_MontDedouan_Provider)}</td>
+                        <td className="text-blue-800">{parseDecimal(Vente_VenteReelle_Provider)}</td>
+                        {/* Stock */}
+                        <td>{parseDecimal(Stock_Qte_Provider)}</td>
+                        <td>{parseDecimal(Stock_Poids_Provider)}</td>
+                        <td>{parseDecimal(Stock_MontDedouan_Provider)}</td>
+                        {/* % vente and % marge */}
+                        <td className="text-blue-800">{parseDecimal(Vente_p100_Provider)}</td>
+                        <td
+                          className={clsx("border-orange-400 border ", {
+                            "text-red-vif": Marge_p100_Provider < 0,
+                            "text-blue-800": Marge_p100_Provider > 0,
+                          })}
+                        >
+                          {parseDecimal(Marge_p100_Provider)}
+                        </td>
+                      </tr>
+                      {Object.entries(dataInCategories).length - 1 !== i2 && <tr className="h-4" />}
+                    </Fragment>
                   );
                 })}
               </Fragment>
